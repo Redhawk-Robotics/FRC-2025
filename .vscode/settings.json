@@ -1,4 +1,6 @@
 {
+  "editor.detectIndentation": false,
+  "editor.tabSize": 4,
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.server.launchMode": "Standard",
   "files.exclude": {
@@ -57,5 +59,7 @@
     "edu.wpi.first.math.proto.*",
     "edu.wpi.first.math.**.proto.*",
     "edu.wpi.first.math.**.struct.*",
-  ]
+  ],
+  "java.format.settings.url": "eclipse-formatter.xml",
+  "java.format.settings.profile": "GoogleStyle",
 }

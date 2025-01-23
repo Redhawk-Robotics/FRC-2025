@@ -4,6 +4,7 @@
 
 layout: home
 ---
-# FRC Team 8739 -- Redhawk Robotics
 
 From Ozone Park, Queens, NYC
+
+TODO Add documentation

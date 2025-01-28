@@ -49,7 +49,7 @@ public class RobotContainer {
 
     private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
             drivetrain.getKinematics(), drivetrain.getPigeon2().getRotation2d(),
-            drivetrain.getState().ModulePositions, null//
+            drivetrain.getState().ModulePositions, new Pose2d()//
     ); // TODO should we set initialPoseMeters from the selected Auto?
 
     private final Vision m_vision = new Vision(//

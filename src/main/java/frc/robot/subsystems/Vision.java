@@ -50,6 +50,8 @@ public class Vision extends SubsystemBase {
                 this.m_getRobotYawInDegrees.get(), 0.0, 0.0, 0.0, 0.0, 0.0);
         LimelightHelpers.PoseEstimate limelightMeasurement =
                 LimelightHelpers.getBotPoseEstimate_wpiBlue(this.LIMELIGHT_NUM_1);
+        if (limelightMeasurement == null)
+            return;
         if (limelightMeasurement.tagCount >= 2) { // Only trust measurement if we see multiple tags
             // m_poseEstimator.setVisionMeasurementStdDevs();
             this.m_setVisionMeasurementStdDevs.accept(VecBuilder.fill(0.7, 0.7, 9999999));

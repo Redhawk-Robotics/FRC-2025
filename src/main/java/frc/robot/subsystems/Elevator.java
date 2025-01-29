@@ -29,13 +29,14 @@ public class Elevator extends SubsystemBase {
 
     /** Creates a new Elevator Subsystem. */
     public Elevator() {
-        // TODO make these IDs constants
+        // TODO make these IDs into constants
         // looking at the elevator with the motors in view
-        this.firstMotor = new SparkMax(1, MotorType.kBrushless); // top-right
+        this.firstMotor = new SparkMax(1, MotorType.kBrushless); // top-right (**leader**)
         this.secondMotor = new SparkMax(2, MotorType.kBrushless); // bottom-right
         this.thirdMotor = new SparkMax(3, MotorType.kBrushless); // top-left
         this.fourthMotor = new SparkMax(4, MotorType.kBrushless); // bottom-left
 
+        // TODO verify these config settings
         SparkMaxConfig globalConfig = new SparkMaxConfig();
         globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
 
@@ -44,39 +45,51 @@ public class Elevator extends SubsystemBase {
         SparkMaxConfig thirdMotorConfig = new SparkMaxConfig();
         SparkMaxConfig fourthMotorConfig = new SparkMaxConfig();
 
+        // TODO verify these config settings
         firstMotorConfig.apply(globalConfig);
         secondMotorConfig.apply(globalConfig).follow(firstMotor);
         thirdMotorConfig.apply(globalConfig).inverted(true).follow(firstMotor);
         fourthMotorConfig.apply(globalConfig).inverted(true).follow(firstMotor);
 
         // firstMotorConfig.alternateEncoder.apply(new
-        // AlternateEncoderConfig().countsPerRevolution(8192)); // TODO how do we want to configure
-        // the through-boro encoder?
+        // AlternateEncoderConfig().countsPerRevolution(8192));
+        // TODO how do we want to configure the through-boro encoder?
         // https://docs.revrobotics.com/brushless/spark-max/encoders/alternate-encoder
 
         firstMotor.configure(firstMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        secondMotor.configure(firstMotorConfig, ResetMode.kResetSafeParameters,
+        secondMotor.configure(secondMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        thirdMotor.configure(firstMotorConfig, ResetMode.kResetSafeParameters,
+        thirdMotor.configure(thirdMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
         fourthMotor.configure(fourthMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
     }
 
-    public Command raise() {
-        return null;
+    public Command up() {
+        // TODO invert this in testing if needed
+        return this.applySpeed(0.5);
     }
 
-    public Command lower() {
-        return null;
+    public Command down() {
+        // TODO invert this in testing if needed
+        return this.applySpeed(-0.5);
     }
 
+    public Command stop() {
+        return this.applySpeed(0);
+    }
+
+    private Command applySpeed(double speed) {
+        // SubsystemBase.runOnce implicitly requires `this` subsystem.
+        return this.runOnce(() -> {
+            this.firstMotor.set(speed);
+        });
+    }
 
     @Override
     public void periodic() {
-
         // This method will be called once per scheduler run
     }
 }

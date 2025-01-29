@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
@@ -40,8 +41,7 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController DRIVER = new CommandXboxController(0);
-    // TODO configure operator buttons
-    // private final CommandXboxController OPERATOR = new CommandXboxController(1);
+    private final CommandXboxController OPERATOR = new CommandXboxController(1);
 
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -58,6 +58,8 @@ public class RobotContainer {
             poseAndTime -> m_poseEstimator.addVisionMeasurement(//
                     poseAndTime.getFirst(), poseAndTime.getSecond())//
     );
+
+    private final Elevator m_elevator = new Elevator();
 
 
     public RobotContainer() {
@@ -97,6 +99,11 @@ public class RobotContainer {
         DRIVER.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        // TODO see if this is correct
+        OPERATOR.povUp().onTrue(this.m_elevator.up()); // TODO POV should be the D-Pad but check that this is correct
+        OPERATOR.povCenter().onTrue(this.m_elevator.stop());
+        OPERATOR.povDown().onTrue(this.m_elevator.down());
     }
 
     public Command getAutonomousCommand() {

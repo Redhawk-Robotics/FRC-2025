@@ -5,13 +5,13 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+// import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,7 +50,7 @@ public class RobotContainer {
     private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
             drivetrain.getKinematics(), drivetrain.getPigeon2().getRotation2d(),
             drivetrain.getState().ModulePositions, new Pose2d()//
-    ); // TODO should we set initialPoseMeters from the selected Auto?
+    ); // TODO we set initialPoseMeters from the selected Auto
 
     private final Vision m_vision = new Vision(//
             () -> drivetrain.getPigeon2().getRotation2d().getDegrees(),
@@ -63,8 +63,19 @@ public class RobotContainer {
 
 
     public RobotContainer() {
-        SmartDashboard.putData("Auto Mode", autoChooser);
         configureBindings();
+
+        SmartDashboard.putData("Auto Mode", autoChooser);
+
+        this.drivetrain.setPoseUpdater(//
+                t -> this.m_poseEstimator.update(t.getFirst(), t.getSecond()));
+                // t -> this.m_poseEstimator.updateWithTime(Timer.getFPGATimestamp(), t.getFirst(), t.getSecond())); // TODO should we use this one?
+        drivetrain.registerTelemetry(logger::telemeterize);
+    }
+
+    private void configureBindings() {
+        this.configureDriverBindings();
+        this.configureOperatorBindings();
     }
 
     private SwerveRequest.FieldCentric getFieldCentricDrive() {
@@ -79,7 +90,7 @@ public class RobotContainer {
                         Math.pow(-DRIVER.getRightX() * MaxAngularRate / 1.25, 5));
     }
 
-    private void configureBindings() {
+    private void configureDriverBindings() {
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 drivetrain.applyRequest(this::getFieldCentricDrive));
@@ -97,17 +108,23 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press
         DRIVER.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+    }
 
-        drivetrain.registerTelemetry(logger::telemeterize);
+    private void configureOperatorBindings() {
+        // TODO see if the elevator works
 
-        // TODO see if this is correct
-        OPERATOR.povUp().onTrue(this.m_elevator.up()); // TODO POV should be the D-Pad but check that this is correct
+        // TODO POV should be the D-Pad, but check that this is correct
+
+        OPERATOR.povUp().onTrue(this.m_elevator.up());
         OPERATOR.povCenter().onTrue(this.m_elevator.stop());
         OPERATOR.povDown().onTrue(this.m_elevator.down());
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        // reset the poseEstimator's initialPoseMeters to the AutoBuilder's pose // TODO verify
+        this.m_poseEstimator.resetPose(AutoBuilder.getCurrentPose());
+        // return the autoChooser's selected Auto
+        return this.autoChooser.getSelected();
     }
 
     public Pose2d getEstimatedPosition() {

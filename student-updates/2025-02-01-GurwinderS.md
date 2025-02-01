@@ -1,0 +1,2 @@
+# What did I do today?
+Today I was able to teach Adrian about how to navigate through files but also help Navjot to fix his Pull Request error for github Desktop. We were also trying to test the Zombie bot of why swerve moves even though no controler touched just enabled. Last but not least, I was able to show Rookies about w3schools website so they can practice at home too.

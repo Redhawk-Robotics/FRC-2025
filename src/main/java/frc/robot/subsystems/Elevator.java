@@ -51,6 +51,7 @@ public class Elevator extends SubsystemBase {
         thirdMotorConfig.apply(globalConfig).inverted(true).follow(firstMotor);
         fourthMotorConfig.apply(globalConfig).inverted(true).follow(firstMotor);
 
+
         // firstMotorConfig.alternateEncoder.apply(new
         // AlternateEncoderConfig().countsPerRevolution(8192));
         // TODO how do we want to configure the through-boro encoder?

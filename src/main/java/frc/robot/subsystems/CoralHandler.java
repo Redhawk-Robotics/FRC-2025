@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -13,21 +14,24 @@ public class CoralHandler extends SubsystemBase {
         // TODO
     }
 
-    public Command intake() {
+    public Command intakeFromStation() {
         return this.runOnce(() -> {
             // TODO turn on the motor to intake
+            DriverStation.reportWarning("Please implement me!", null);
         });
     }
 
-    public Command outtake() {
+    public Command spitItOut() {
         return this.runOnce(() -> {
             // TODO turn on the motor to outtake
+            DriverStation.reportWarning("Please implement me!", null);
         });
     }
 
     public Command stop() {
         return this.runOnce(() -> {
             // TODO stop the motor
+            DriverStation.reportWarning("Please implement me!", null);
         });
     }
 

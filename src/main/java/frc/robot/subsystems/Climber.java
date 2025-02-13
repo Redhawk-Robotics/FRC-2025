@@ -46,7 +46,7 @@ public class Climber extends SubsystemBase {
             // TODO
             // Then, apply power to the motor such that the
             // winch is released.
-
+            DriverStation.reportWarning("Please implement me!", null);
         }).andThen(Commands.waitSeconds(0.5)).andThen(this.stopWinch());
     }
 
@@ -61,6 +61,7 @@ public class Climber extends SubsystemBase {
             }
             // TODO
             // make the robot "climb"
+            DriverStation.reportWarning("Please implement me!", null);
         });
     }
 
@@ -75,6 +76,7 @@ public class Climber extends SubsystemBase {
             }
             // TODO
             // make the robot "un-climb"
+            DriverStation.reportWarning("Please implement me!", null);
         });
     }
 
@@ -82,6 +84,7 @@ public class Climber extends SubsystemBase {
         return this.runOnce(() -> {
             // TODO
             // turn off power from the winch motor
+            DriverStation.reportWarning("Please implement me!", null);
         });
     }
 }

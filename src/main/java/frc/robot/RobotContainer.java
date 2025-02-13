@@ -159,9 +159,9 @@ public class RobotContainer {
         OPERATOR.y().onTrue(this.m_elevator.L4().andThen(this.m_pivot.L4()));
 
         /* Configure CoralHandler */
-        OPERATOR.leftBumper().onTrue(this.m_coralHandler.intake())
+        OPERATOR.leftBumper().onTrue(this.m_coralHandler.intakeFromStation())
                 .onFalse(this.m_coralHandler.stop());
-        OPERATOR.leftTrigger().onTrue(this.m_coralHandler.outtake())
+        OPERATOR.leftTrigger().onTrue(this.m_coralHandler.spitItOut())
                 .onFalse(this.m_coralHandler.stop());
 
         /* Configure AlgaeHandler */

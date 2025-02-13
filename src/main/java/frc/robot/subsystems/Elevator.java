@@ -4,9 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-<<<<<<< Updated upstream
-=======
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 import com.revrobotics.RelativeEncoder;
@@ -17,21 +16,18 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
->>>>>>> Stashed changes
 
 // TODO fill this in
 
 public class Elevator extends SubsystemBase {
   /** Creates a new Elevator Subsystem. */
-  public Elevator() {}
 
-<<<<<<< Updated upstream
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
-=======
     // https://docs.revrobotics.com/rev-crossover-products/sensors/tbe/application-examples#brushless-motors
+
+    public final SparkMax firstMotor;
+    public final SparkMax secondMotor;
+    public final SparkMax thirdMotor;
+    public final SparkMax fourthMotor;
 
     /** Creates a new Elevator Subsystem. */
     public Elevator() {
@@ -98,5 +94,4 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
     }
->>>>>>> Stashed changes
 }

@@ -31,9 +31,9 @@ public class Elevator extends SubsystemBase {
     public Elevator() {
         // TODO make these IDs into constants
         // looking at the elevator with the motors in view
-        this.firstMotor = new SparkMax(1, MotorType.kBrushless); // top-right (**leader**)
+        this.firstMotor = new SparkMax(1, MotorType.kBrushless); // top-right (** right leader**)
         this.secondMotor = new SparkMax(2, MotorType.kBrushless); // bottom-right
-        this.thirdMotor = new SparkMax(3, MotorType.kBrushless); // top-left
+        this.thirdMotor = new SparkMax(3, MotorType.kBrushless); // top-left ( ** left leader **)
         this.fourthMotor = new SparkMax(4, MotorType.kBrushless); // bottom-left
 
         // TODO verify these config settings
@@ -45,11 +45,16 @@ public class Elevator extends SubsystemBase {
         SparkMaxConfig thirdMotorConfig = new SparkMaxConfig();
         SparkMaxConfig fourthMotorConfig = new SparkMaxConfig();
 
+        /*
+         I would find having only one leader to be more preferable, but I also want to see if this works. 
+         */
+
         // TODO verify these config settings
         firstMotorConfig.apply(globalConfig);
         secondMotorConfig.apply(globalConfig).follow(firstMotor);
-        thirdMotorConfig.apply(globalConfig).inverted(true).follow(firstMotor);
-        fourthMotorConfig.apply(globalConfig).inverted(true).follow(firstMotor);
+
+        thirdMotorConfig.apply(globalConfig).inverted(true);
+        fourthMotorConfig.apply(globalConfig).inverted(true).follow(secondMotor);
 
 
         // firstMotorConfig.alternateEncoder.apply(new

@@ -8,6 +8,9 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.robot.Constants.Ports;
+import frc.robot.Constants.Settings;
+
 public class CoralPivot extends SubsystemBase {
   /** Creates a new CoralPivot. */
 
@@ -17,8 +20,12 @@ public class CoralPivot extends SubsystemBase {
 
   public CoralPivot() {
     // TODO GET VALUES FOR THESE
+
+    this.leftMotor = new SparkMax(Ports.CoralIntake.PIVOT_LEFT, Settings.Pivot.LEFT_PIVOT_MOTORTYPE);
+    this.rightMotor = new SparkMax(Ports.CoralIntake.PIVOT_RIGHT, Settings.Pivot.LEFT_PIVOT_MOTORTYPE);
     this.leftMotor = new SparkMax(0, null);
     this.rightMotor = new SparkMax(0, null);
+
   }
 
   @Override

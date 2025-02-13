@@ -24,5 +24,3 @@ public class Settings {
         public static MotorType LEFT_PIVOT_MOTORTYPE = MotorType.kBrushless;
         public static MotorType RIGHT_PIVOT_MOTORTYPE = MotorType.kBrushless;
     }
-    
-}

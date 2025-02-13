@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -8,9 +9,11 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -107,6 +110,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
+
+    private Consumer<Pair<Rotation2d, SwerveModulePosition[]>> m_poseEstimatorUpdate = (p) -> {
+        // default to no-op
+    };
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -238,6 +245,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
+    public void setPoseUpdater(Consumer<Pair<Rotation2d, SwerveModulePosition[]>> update) {
+        if (update == null) {
+            DriverStation.reportError("pose estimator update function is null -- programmer issue", null);
+            return;
+        }
+        this.m_poseEstimatorUpdate = update;
+    }
+
     @Override
     public void periodic() {
         /*
@@ -255,6 +270,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        this.m_poseEstimatorUpdate.accept(//
+                new Pair<Rotation2d, SwerveModulePosition[]>(//
+                        this.getPigeon2().getRotation2d(), this.getState().ModulePositions));
     }
 
     private void startSimThread() {

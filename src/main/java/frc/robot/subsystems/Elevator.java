@@ -33,7 +33,8 @@ public class Elevator extends SubsystemBase {
     public Elevator() {
         // TODO make these IDs into constants
         // looking at the elevator with the motors in view
-        this.firstMotor = new SparkMax(Ports.Elevator.kCAN_ID_TOP_RIGHT, MotorType.kBrushless); // top-right (**leader**)
+        this.firstMotor = new SparkMax(Ports.Elevator.kCAN_ID_TOP_RIGHT, MotorType.kBrushless); // top-right
+                                                                                                // (**leader**)
         this.secondMotor = new SparkMax(Ports.Elevator.kCAN_ID_BOTTOM_RIGHT, MotorType.kBrushless); // bottom-right
         this.thirdMotor = new SparkMax(Ports.Elevator.kCAN_ID_TOP_LEFT, MotorType.kBrushless); // top-left
         this.fourthMotor = new SparkMax(Ports.Elevator.kCAN_ID_BOTTOM_LEFT, MotorType.kBrushless); // bottom-left
@@ -50,8 +51,10 @@ public class Elevator extends SubsystemBase {
         // TODO verify these config settings
         firstMotorConfig.apply(globalConfig);
         secondMotorConfig.apply(globalConfig).follow(firstMotor);
-        thirdMotorConfig.apply(globalConfig).inverted(Settings.Elevator.TOP_LEFT_INVERT).follow(firstMotor);
-        fourthMotorConfig.apply(globalConfig).inverted(Settings.Elevator.BOTTOM_LEFT_INVERT).follow(firstMotor);
+        thirdMotorConfig.apply(globalConfig).inverted(Settings.Elevator.TOP_LEFT_INVERT)
+                .follow(firstMotor);
+        fourthMotorConfig.apply(globalConfig).inverted(Settings.Elevator.BOTTOM_LEFT_INVERT)
+                .follow(firstMotor);
 
 
         // firstMotorConfig.alternateEncoder.apply(new
@@ -84,10 +87,34 @@ public class Elevator extends SubsystemBase {
         return this.applySpeed(0);
     }
 
-    private Command applySpeed(double speed) {
+    public Command applySpeed(double speed) {
         // SubsystemBase.runOnce implicitly requires `this` subsystem.
         return this.runOnce(() -> {
             this.firstMotor.set(speed);
+        });
+    }
+
+    public Command L1() {
+        return this.runOnce(() -> {
+            // TODO this should put the elevator in the L1 position
+        });
+    }
+
+    public Command L2() {
+        return this.runOnce(() -> {
+            // TODO this should put the elevator in the L2 position
+        });
+    }
+
+    public Command L3() {
+        return this.runOnce(() -> {
+            // TODO this should put the elevator in the L3 position
+        });
+    }
+
+    public Command L4() {
+        return this.runOnce(() -> {
+            // TODO this should put the elevator in the L4 position
         });
     }
 

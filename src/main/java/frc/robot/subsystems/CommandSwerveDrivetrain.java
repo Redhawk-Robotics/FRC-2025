@@ -115,6 +115,26 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // default to no-op
     };
 
+
+    public enum speeds {
+        FAST(0.8), //
+        NORMAL(0.7), //
+        SLOW(0.3);
+
+        private final double m;
+
+        private speeds(double multiplier) {
+            this.m = multiplier;
+        }
+
+        public double mult() {
+            return this.m;
+        }
+    }
+
+    private speeds m_speedMultiplier = speeds.NORMAL;
+
+
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
      * <p>
@@ -247,10 +267,41 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public void setPoseUpdater(Consumer<Pair<Rotation2d, SwerveModulePosition[]>> update) {
         if (update == null) {
-            DriverStation.reportError("pose estimator update function is null -- programmer issue", null);
+            DriverStation.reportError("pose estimator update function is null -- programmer issue",
+                    null);
             return;
         }
         this.m_poseEstimatorUpdate = update;
+    }
+
+    public void increaseSpeedMultiplier() {
+        switch (this.m_speedMultiplier) {
+            case SLOW:
+                this.m_speedMultiplier = speeds.NORMAL;
+                break;
+            case NORMAL:
+                this.m_speedMultiplier = speeds.FAST;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void decreaseSpeedMultiplier() {
+        switch (this.m_speedMultiplier) {
+            case FAST:
+                this.m_speedMultiplier = speeds.NORMAL;
+                break;
+            case NORMAL:
+                this.m_speedMultiplier = speeds.SLOW;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public double speedMultiplier() {
+        return this.m_speedMultiplier.mult();
     }
 
     @Override

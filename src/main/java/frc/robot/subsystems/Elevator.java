@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Ports;
+import frc.robot.Constants.Settings;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -31,10 +33,10 @@ public class Elevator extends SubsystemBase {
     public Elevator() {
         // TODO make these IDs into constants
         // looking at the elevator with the motors in view
-        this.firstMotor = new SparkMax(1, MotorType.kBrushless); // top-right (**leader**)
-        this.secondMotor = new SparkMax(2, MotorType.kBrushless); // bottom-right
-        this.thirdMotor = new SparkMax(3, MotorType.kBrushless); // top-left
-        this.fourthMotor = new SparkMax(4, MotorType.kBrushless); // bottom-left
+        this.firstMotor = new SparkMax(Ports.Elevator.kCAN_ID_TOP_RIGHT, MotorType.kBrushless); // top-right (**leader**)
+        this.secondMotor = new SparkMax(Ports.Elevator.kCAN_ID_BOTTOM_RIGHT, MotorType.kBrushless); // bottom-right
+        this.thirdMotor = new SparkMax(Ports.Elevator.kCAN_ID_TOP_LEFT, MotorType.kBrushless); // top-left
+        this.fourthMotor = new SparkMax(Ports.Elevator.kCAN_ID_BOTTOM_LEFT, MotorType.kBrushless); // bottom-left
 
         // TODO verify these config settings
         SparkMaxConfig globalConfig = new SparkMaxConfig();
@@ -48,8 +50,8 @@ public class Elevator extends SubsystemBase {
         // TODO verify these config settings
         firstMotorConfig.apply(globalConfig);
         secondMotorConfig.apply(globalConfig).follow(firstMotor);
-        thirdMotorConfig.apply(globalConfig).inverted(true).follow(firstMotor);
-        fourthMotorConfig.apply(globalConfig).inverted(true).follow(firstMotor);
+        thirdMotorConfig.apply(globalConfig).inverted(Settings.Elevator.TOP_LEFT_INVERT).follow(firstMotor);
+        fourthMotorConfig.apply(globalConfig).inverted(Settings.Elevator.BOTTOM_LEFT_INVERT).follow(firstMotor);
 
 
         // firstMotorConfig.alternateEncoder.apply(new

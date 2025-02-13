@@ -17,30 +17,30 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-// TODO fill this in
+// see:
+// https://github.com/REVrobotics/REVLib-Examples/blob/9b4cd410b6cc7fa8ed96b324dd9ecf1b4a2bbfd5/Java/SPARK/Open%20Loop%20Arcade%20Drive/src/main/java/frc/robot/Robot.java
 
 public class Elevator extends SubsystemBase {
-  /** Creates a new Elevator Subsystem. */
+    // private final SparkMax RelativeEncoder;
+    private final SparkMax firstMotor;
+    private final SparkMax secondMotor;
+    private final SparkMax thirdMotor;
+    private final SparkMax fourthMotor;
 
     // https://docs.revrobotics.com/rev-crossover-products/sensors/tbe/application-examples#brushless-motors
-
-    public final SparkMax firstMotor;
-    public final SparkMax secondMotor;
-    public final SparkMax thirdMotor;
-    public final SparkMax fourthMotor;
 
     /** Creates a new Elevator Subsystem. */
     public Elevator() {
         // TODO make these IDs into constants
         // looking at the elevator with the motors in view
-        this.firstMotor = new SparkMax(Ports.Elevator.TOP_RIGHT, Settings.Elevator.TOP_RIGHT_MOTORTYPE); // top-right (**leader**)
-        this.secondMotor = new SparkMax(Ports.Elevator.BOTTOM_RIGHT, Settings.Elevator.BOTTOM_RIGHT_MOTORTYPE); // bottom-right
-        this.thirdMotor = new SparkMax(Ports.Elevator.TOP_LEFT, Settings.Elevator.TOP_LEFT_MOTORTYPE); // top-left
-        this.fourthMotor = new SparkMax(Ports.Elevator.BOTTOM_LEFT, Settings.Elevator.TOP_RIGHT_MOTORTYPE); // bottom-left
+        this.firstMotor = new SparkMax(Ports.Elevator.kCAN_ID_TOP_RIGHT, MotorType.kBrushless); // top-right (**leader**)
+        this.secondMotor = new SparkMax(Ports.Elevator.kCAN_ID_BOTTOM_RIGHT, MotorType.kBrushless); // bottom-right
+        this.thirdMotor = new SparkMax(Ports.Elevator.kCAN_ID_TOP_LEFT, MotorType.kBrushless); // top-left
+        this.fourthMotor = new SparkMax(Ports.Elevator.kCAN_ID_BOTTOM_LEFT, MotorType.kBrushless); // bottom-left
 
         // TODO verify these config settings
         SparkMaxConfig globalConfig = new SparkMaxConfig();
-        globalConfig.smartCurrentLimit(Settings.Elevator.CURRENT_LIMIT).idleMode(Settings.Elevator.IDLE_MODE);
+        globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
 
         SparkMaxConfig firstMotorConfig = new SparkMaxConfig();
         SparkMaxConfig secondMotorConfig = new SparkMaxConfig();
@@ -52,6 +52,7 @@ public class Elevator extends SubsystemBase {
         secondMotorConfig.apply(globalConfig).follow(firstMotor);
         thirdMotorConfig.apply(globalConfig).inverted(Settings.Elevator.TOP_LEFT_INVERT).follow(firstMotor);
         fourthMotorConfig.apply(globalConfig).inverted(Settings.Elevator.BOTTOM_LEFT_INVERT).follow(firstMotor);
+
 
         // firstMotorConfig.alternateEncoder.apply(new
         // AlternateEncoderConfig().countsPerRevolution(8192));

@@ -7,33 +7,31 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Ports;
-import frc.robot.Constants.Settings;
 
 public class CoralPivot extends SubsystemBase {
-  /** Creates a new CoralPivot. */
+    /** Creates a new CoralPivot. */
 
-  //Declare Motors here
-  SparkMax leftMotor;
-  SparkMax rightMotor;
+    // Declare Motors here
+    SparkMax leftMotor;
+    SparkMax rightMotor;
 
-  public CoralPivot() {
-    // TODO GET VALUES FOR THESE
-    this.leftMotor = new SparkMax(Ports.CoralIntake.PIVOT_LEFT, Settings.Pivot.LEFT_PIVOT_MOTORTYPE);
-    this.rightMotor = new SparkMax(Ports.CoralIntake.PIVOT_RIGHT, Settings.Pivot.LEFT_PIVOT_MOTORTYPE);
-  }
+    public CoralPivot() {
+        // TODO GET VALUES FOR THESE
+        this.leftMotor = new SparkMax(0, null);
+        this.rightMotor = new SparkMax(0, null);
+    }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
-  // TODO Uncomment lines 29-35 and implement routines for them.
-//   public Command pivotUp() {}
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+    }
+    // TODO Uncomment lines 29-35 and implement routines for them.
+    // public Command pivotUp() {}
 
-//   public Comand pivotDown() {}
+    // public Comand pivotDown() {}
 
-//   public Command wheelIntake() {}
+    // public Command wheelIntake() {}
 
-//   public Command wheelOutake() {}
+    // public Command wheelOutake() {}
 
 }

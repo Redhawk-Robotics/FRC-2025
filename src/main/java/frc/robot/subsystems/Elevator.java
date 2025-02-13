@@ -4,11 +4,13 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -25,38 +27,77 @@ public class Elevator extends SubsystemBase {
     private final SparkMax thirdMotor;
     private final SparkMax fourthMotor;
 
-    // https://docs.revrobotics.com/rev-crossover-products/sensors/tbe/application-examples#brushless-motors
+    private final SparkMaxConfig firstMotorConfig;
+    private final SparkMaxConfig secondMotorConfig;
+    private final SparkMaxConfig thirdMotorConfig;
+    private final SparkMaxConfig fourthMotorConfig;
+
+    /*
+     Documentation Referenced: 
+     https://docs.revrobotics.com/brushless/spark-max/encoders/alternate-encoder
+     https://docs.revrobotics.com/rev-crossover-products/sensors/tbe/application-examples
+
+     According to this documentation, the through-bore encoder is interpreted as an alternate encoder via code. So, we must use 
+     an alternateencoder configuration. However, when we retrieve the through bore encoder from the SparkMAX it is connected to,
+     it returns a relative encoder object, hence why it is declared as such below.
+     */
+
+     // ! PLEASE LEAVE THESE COMMENTED, IF AN ENCODER IS DECLARED BUT IS NOT CONNECTED IT WILL RETURN AN ERROR
+    // private final RelativeEncoder throughBoreEncoder;
+    // private final AlternateEncoderConfig alternateEncoderConfig;
 
     /** Creates a new Elevator Subsystem. */
     public Elevator() {
         // TODO make these IDs into constants
         // looking at the elevator with the motors in view
+
         this.firstMotor = new SparkMax(1, MotorType.kBrushless); // top-right (**leader**)
         this.secondMotor = new SparkMax(2, MotorType.kBrushless); // bottom-right
         this.thirdMotor = new SparkMax(3, MotorType.kBrushless); // top-left
         this.fourthMotor = new SparkMax(4, MotorType.kBrushless); // bottom-left
 
+        // ! PLEASE LEAVE THIS LINE COMMENTED FOR THE SAME REASON
+        // this.throughBoreEncoder = firstMotor.getAlternateEncoder();
+
+        /*
+        Instead of setting a global configuration, I want to try setting these individually. I am unsure if the global configurations 
+        were overriding correctly. Perahps if we configure each motor seperately?
+         */
+
         // TODO verify these config settings
-        SparkMaxConfig globalConfig = new SparkMaxConfig();
-        globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
+        // && FIRST MOTOR CONFIGURATION 
+        firstMotorConfig = new SparkMaxConfig();
+        firstMotorConfig.idleMode(IdleMode.kBrake);
+        firstMotorConfig.smartCurrentLimit(60);
 
-        SparkMaxConfig firstMotorConfig = new SparkMaxConfig();
-        SparkMaxConfig secondMotorConfig = new SparkMaxConfig();
-        SparkMaxConfig thirdMotorConfig = new SparkMaxConfig();
-        SparkMaxConfig fourthMotorConfig = new SparkMaxConfig();
+        // && SECOND MOTOR CONFIG
+        secondMotorConfig = new SparkMaxConfig();
+        secondMotorConfig.idleMode(IdleMode.kBrake);
+        secondMotorConfig.smartCurrentLimit(60);
+        secondMotorConfig.follow(firstMotor);
 
-        // TODO verify these config settings
-        firstMotorConfig.apply(globalConfig);
-        secondMotorConfig.apply(globalConfig).follow(firstMotor);
-        thirdMotorConfig.apply(globalConfig).inverted(true).follow(firstMotor);
-        fourthMotorConfig.apply(globalConfig).inverted(true).follow(firstMotor);
+        //&& THIRD MOTOR CONFIG
+        thirdMotorConfig = new SparkMaxConfig();
+        thirdMotorConfig.idleMode(IdleMode.kBrake);
+        thirdMotorConfig.smartCurrentLimit(60);
+        thirdMotorConfig.inverted(true);
+        thirdMotorConfig.follow(firstMotor);
 
+        //&& FOURTH MOTOR CONFIG
+        fourthMotorConfig = new SparkMaxConfig();
+        fourthMotorConfig.idleMode(IdleMode.kBrake);
+        fourthMotorConfig.smartCurrentLimit(60);
+        fourthMotorConfig.inverted(true);
+        fourthMotorConfig.follow(firstMotor);
 
         // firstMotorConfig.alternateEncoder.apply(new
         // AlternateEncoderConfig().countsPerRevolution(8192));
         // TODO how do we want to configure the through-boro encoder?
         // https://docs.revrobotics.com/brushless/spark-max/encoders/alternate-encoder
 
+        /* 
+         Here, the configurations are applied to the motors individually.
+         */
         firstMotor.configure(firstMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
         secondMotor.configure(secondMotorConfig, ResetMode.kResetSafeParameters,
@@ -69,12 +110,10 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command up() {
-        // TODO invert this in testing if needed
         return this.applySpeed(0.5);
     }
 
     public Command down() {
-        // TODO invert this in testing if needed
         return this.applySpeed(-0.5);
     }
 

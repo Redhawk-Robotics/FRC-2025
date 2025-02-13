@@ -20,7 +20,11 @@ public class CoralPivot extends SubsystemBase {
   public CoralPivot() {
     // TODO GET VALUES FOR THESE
     this.leftMotor = new SparkMax(Ports.CoralIntake.PIVOT_LEFT, Settings.Pivot.LEFT_PIVOT_MOTORTYPE);
+<<<<<<< Updated upstream
     this.rightMotor = new SparkMax(Ports.CoralIntake.PIVOT_RIGHT, Settings.Pivot.LEFT_PIVOT_MOTORTYPE);
+=======
+    this.rightMotor = new SparkMax(Ports.CoralIntake.PIVOT_RIGHT, Settings.Pivot.RIGHT_PIVOT_MOTORTYPE);
+>>>>>>> Stashed changes
   }
 
   @Override

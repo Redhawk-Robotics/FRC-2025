@@ -49,8 +49,8 @@ public class Elevator extends SubsystemBase {
         SparkMaxConfig fourthMotorConfig = new SparkMaxConfig();
 
         // TODO verify these config settings
-        firstMotorConfig.apply(globalConfig);
-        secondMotorConfig.apply(globalConfig).follow(secondMotor);
+        firstMotorConfig.apply(globalConfig).follow(secondMotor);
+        secondMotorConfig.apply(globalConfig);
         thirdMotorConfig.apply(globalConfig).inverted(Settings.Elevator.TOP_LEFT_INVERT)
                 .follow(secondMotor);
         fourthMotorConfig.apply(globalConfig).inverted(Settings.Elevator.BOTTOM_LEFT_INVERT)

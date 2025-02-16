@@ -5,10 +5,12 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
+import javax.print.attribute.SetOfIntegerSyntax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
@@ -16,6 +18,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.AlternateEncoderConfigAccessor;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -24,6 +27,15 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 // https://github.com/REVrobotics/REVLib-Examples/blob/9b4cd410b6cc7fa8ed96b324dd9ecf1b4a2bbfd5/Java/SPARK/Open%20Loop%20Arcade%20Drive/src/main/java/frc/robot/Robot.java
 
 public class Elevator extends SubsystemBase {
+
+    public enum Setpoint {
+        kFeederStation,
+        kL1,
+        kL2,
+        kL3,
+        kL4;
+    }
+
     // private final SparkMax RelativeEncoder;
     private final SparkMax firstMotor;
     private final SparkMax secondMotor;
@@ -32,7 +44,9 @@ public class Elevator extends SubsystemBase {
 
     private final AlternateEncoderConfig throughBoreConfig;
     private final RelativeEncoder throughBoreEncoder;
-    private final SparkClosedLoopController elevatorPid;
+
+    private final SparkClosedLoopController elevatorController;
+    private double elevatorCurrentTarget = Settings.Elevator.HOME_SETPOINT;
 
     // https://docs.revrobotics.com/rev-crossover-products/sensors/tbe/application-examples#brushless-motors
 
@@ -49,7 +63,7 @@ public class Elevator extends SubsystemBase {
         this.throughBoreConfig = new AlternateEncoderConfig();
         /* Through bore is registered as alternate, but is interpreted as a relative encoder object. */
         this.throughBoreEncoder = secondMotor.getAlternateEncoder();
-        this.elevatorPid = secondMotor.getClosedLoopController();
+        this.elevatorController = secondMotor.getClosedLoopController();
 
         // TODO verify these config settings
         SparkMaxConfig globalConfig = new SparkMaxConfig();
@@ -69,10 +83,9 @@ public class Elevator extends SubsystemBase {
                 .follow(secondMotor);
 
 
-        // firstMotorConfig.alternateEncoder.apply(new
-        // AlternateEncoderConfig().countsPerRevolution(8192));
-        // TODO how do we want to configure the through-boro encoder?
-        // https://docs.revrobotics.com/brushless/spark-max/encoders/alternate-encoder
+        
+        secondMotorConfig.alternateEncoder.apply(new
+        AlternateEncoderConfig().countsPerRevolution(8192));
 
         firstMotor.configure(firstMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
@@ -82,7 +95,49 @@ public class Elevator extends SubsystemBase {
                 PersistMode.kPersistParameters);
         fourthMotor.configure(fourthMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        
+
+        // Zero the encoders on init
+        throughBoreEncoder.setPosition(0);
+
+    }
+
+    // && UPDATES SETPOINTS WITH SCHEDULER 
+    /* This will be run periodically with the scheduler. */
+    public void moveToSetPoint() {
+        /*
+         The elevatorCurrentTargetVariable is changed by the Command method setSetPointCommand, as
+         this runs continously in periodic() method.
+         */
+        elevatorController.setReference(elevatorCurrentTarget, ControlType.kMAXMotionPositionControl);
+    }
+
+    // && CASE SWITCH COMMANDS FOR ELEVATOR SETPOINTS, REUSED IN COMMAND METHODS USED IN ROBOTCONTAINER
+    public Command setSetpointCommand(Setpoint setpoint) {
+        /*
+         This returns a command that changes the setpoint of the elevator based on
+         the parameters. More specifically, it takes the input and changes the variable 
+         "elevatorCurrentTarget" to the target it needs to travel to. This is then later implemented
+         in a closed PID loop.
+         */
+        return this.runOnce(
+            () -> {
+                switch(setpoint) {
+                    case kFeederStation:
+                        elevatorCurrentTarget = Settings.Elevator.FEEDERSTATION_SETPOINT;
+                        break;
+                    case kL1:
+                        elevatorCurrentTarget = Settings.Elevator.L1_SETPOINT;
+                        break;
+                    case kL2:
+                        elevatorCurrentTarget = Settings.Elevator.L2_SETPOINT;
+                        break;
+                    case kL3:
+                        elevatorCurrentTarget =  Settings.Elevator.L3_SETPOINT;
+                        break;
+                    case kL4:
+                        elevatorCurrentTarget = Settings.Elevator.L4_SETPOINT; 
+                }
+            });
     }
 
     public Command up() {
@@ -106,36 +161,57 @@ public class Elevator extends SubsystemBase {
         });
     }
 
+    public Command Feeder() {
+        return this.runOnce(() -> {
+            /* This runs the elevator to the L1 position */
+            // TODO TO BE TESTED
+            DriverStation.reportWarning("Running to L1", null);
+            setSetpointCommand(Setpoint.kFeederStation);
+            
+        });
+    }
+
     public Command L1() {
         return this.runOnce(() -> {
-            // TODO this should put the elevator in the L1 position
-            DriverStation.reportWarning("Please implement me!", null);
+            /* This runs the elevator to the L1 position */
+            // TODO TO BE TESTED
+            DriverStation.reportWarning("Running to L1", null);
+            setSetpointCommand(Setpoint.kL1);
+            
         });
     }
 
     public Command L2() {
         return this.runOnce(() -> {
-            // TODO this should put the elevator in the L2 position
-            DriverStation.reportWarning("Please implement me!", null);
+            /* This runs the elevator to the L2 position */
+            // TODO TO BE TESTED
+            DriverStation.reportWarning("Running to L2", null);
+            setSetpointCommand(Setpoint.kL2);
         });
     }
 
     public Command L3() {
         return this.runOnce(() -> {
-            // TODO this should put the elevator in the L3 position
-            DriverStation.reportWarning("Please implement me!", null);
+            /* This runs the robot to the L3 Position */
+            // TODO TO BE TESTED
+            DriverStation.reportWarning("Running to L3", null);
+            setSetpointCommand(Setpoint.kL3);
         });
     }
 
     public Command L4() {
         return this.runOnce(() -> {
-            // TODO this should put the elevator in the L4 position
-            DriverStation.reportWarning("Please implement me!", null);
+            /* This runs the robot to the L4 Position */
+            // TODO TO BE TESTED 
+            DriverStation.reportWarning("Running to L4", null);
+            setSetpointCommand(Setpoint.kL4);
         });
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        SmartDashboard.putNumber("Elevator Real Position", throughBoreEncoder.getPosition());
+        moveToSetPoint();
     }
 }

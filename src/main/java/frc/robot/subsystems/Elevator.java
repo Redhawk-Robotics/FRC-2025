@@ -10,9 +10,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
+import com.revrobotics.spark.config.AlternateEncoderConfigAccessor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -28,10 +30,15 @@ public class Elevator extends SubsystemBase {
     private final SparkMax thirdMotor;
     private final SparkMax fourthMotor;
 
+    private final AlternateEncoderConfig throughBoreConfig;
+    private final RelativeEncoder throughBoreEncoder;
+    private final SparkClosedLoopController elevatorPid;
+
     // https://docs.revrobotics.com/rev-crossover-products/sensors/tbe/application-examples#brushless-motors
 
     /** Creates a new Elevator Subsystem. */
     public Elevator() {
+
         // TODO make these IDs into constants
         // looking at the elevator with the motors in view
         this.firstMotor = new SparkMax(Ports.Elevator.kCAN_ID_TOP_RIGHT, MotorType.kBrushless); // top-right
@@ -39,6 +46,11 @@ public class Elevator extends SubsystemBase {
         this.secondMotor = new SparkMax(Ports.Elevator.kCAN_ID_BOTTOM_RIGHT, MotorType.kBrushless); // bottom-right
         this.thirdMotor = new SparkMax(Ports.Elevator.kCAN_ID_TOP_LEFT, MotorType.kBrushless); // top-left
         this.fourthMotor = new SparkMax(Ports.Elevator.kCAN_ID_BOTTOM_LEFT, MotorType.kBrushless); // bottom-left
+
+        this.throughBoreConfig = new AlternateEncoderConfig();
+        /* Through bore is registered as alternate, but is interpreted as a relative encoder object. */
+        this.throughBoreEncoder = secondMotor.getAlternateEncoder();
+        this.elevatorPid = secondMotor.getClosedLoopController();
 
         // TODO verify these config settings
         SparkMaxConfig globalConfig = new SparkMaxConfig();
@@ -51,12 +63,15 @@ public class Elevator extends SubsystemBase {
 
         // TODO verify these config settings
         firstMotorConfig.apply(globalConfig);
-        secondMotorConfig.apply(globalConfig).follow(firstMotor);
+
+        /* Second motor encoder needs to be configured as well.... hmmmmm.... global config */
+        secondMotorConfig.apply(globalConfig).follow(firstMotor); 
+
         thirdMotorConfig.apply(globalConfig).inverted(Settings.Elevator.TOP_LEFT_INVERT)
                 .follow(firstMotor);
         fourthMotorConfig.apply(globalConfig).inverted(Settings.Elevator.BOTTOM_LEFT_INVERT)
                 .follow(firstMotor);
-
+        
 
         // firstMotorConfig.alternateEncoder.apply(new
         // AlternateEncoderConfig().countsPerRevolution(8192));
@@ -71,7 +86,7 @@ public class Elevator extends SubsystemBase {
                 PersistMode.kPersistParameters);
         fourthMotor.configure(fourthMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-
+        
     }
 
     public Command up() {

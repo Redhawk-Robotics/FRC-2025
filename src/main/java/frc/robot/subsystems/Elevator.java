@@ -35,8 +35,7 @@ public class Elevator extends SubsystemBase {
         // TODO make these IDs into constants
         // looking at the elevator with the motors in view
         this.firstMotor = new SparkMax(Ports.Elevator.kCAN_ID_TOP_RIGHT, MotorType.kBrushless); // top-right
-                                                                                                // (**leader**)
-        this.secondMotor = new SparkMax(Ports.Elevator.kCAN_ID_BOTTOM_RIGHT, MotorType.kBrushless); // bottom-right
+        this.secondMotor = new SparkMax(Ports.Elevator.kCAN_ID_BOTTOM_RIGHT, MotorType.kBrushless); // bottom-right (**leader**)
         this.thirdMotor = new SparkMax(Ports.Elevator.kCAN_ID_TOP_LEFT, MotorType.kBrushless); // top-left
         this.fourthMotor = new SparkMax(Ports.Elevator.kCAN_ID_BOTTOM_LEFT, MotorType.kBrushless); // bottom-left
 
@@ -50,12 +49,12 @@ public class Elevator extends SubsystemBase {
         SparkMaxConfig fourthMotorConfig = new SparkMaxConfig();
 
         // TODO verify these config settings
-        firstMotorConfig.apply(globalConfig);
-        secondMotorConfig.apply(globalConfig).follow(firstMotor);
+        firstMotorConfig.apply(globalConfig).follow(secondMotor);
+        secondMotorConfig.apply(globalConfig);
         thirdMotorConfig.apply(globalConfig).inverted(Settings.Elevator.TOP_LEFT_INVERT)
-                .follow(firstMotor);
+                .follow(secondMotor);
         fourthMotorConfig.apply(globalConfig).inverted(Settings.Elevator.BOTTOM_LEFT_INVERT)
-                .follow(firstMotor);
+                .follow(secondMotor);
 
 
         // firstMotorConfig.alternateEncoder.apply(new
@@ -91,7 +90,7 @@ public class Elevator extends SubsystemBase {
     public Command applySpeed(double speed) {
         // SubsystemBase.runOnce implicitly requires `this` subsystem.
         return this.runOnce(() -> {
-            this.firstMotor.set(speed);
+            this.secondMotor.set(speed);
         });
     }
 

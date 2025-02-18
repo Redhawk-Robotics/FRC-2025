@@ -18,6 +18,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.AlternateEncoderConfigAccessor;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -76,7 +77,23 @@ public class Elevator extends SubsystemBase {
 
         // TODO verify these config settings
         firstMotorConfig.apply(globalConfig).follow(secondMotor);
+
+        secondMotorConfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
+        .p(0)
+        .i(0)
+        .d(0)
+        .outputRange(-0.8, 0.8)
+        .velocityFF(0.2);  // TODO FIGURE OUT WHAT THIS IS
+
+        secondMotorConfig.closedLoop.maxMotion
+        .maxVelocity(10)
+        .maxAcceleration(10);
+
         secondMotorConfig.apply(globalConfig);
+        // TODO CONFIRM THIS
+        
+
         thirdMotorConfig.apply(globalConfig).inverted(Settings.Elevator.TOP_LEFT_INVERT)
                 .follow(secondMotor);
         fourthMotorConfig.apply(globalConfig).inverted(Settings.Elevator.BOTTOM_LEFT_INVERT)

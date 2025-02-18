@@ -25,4 +25,10 @@ public final class Settings {
         public static MotorType RIGHT_PIVOT_MOTORTYPE = MotorType.kBrushless;
     }
 
+    public static final class CoralIntake{
+        
+        public static MotorType INTAKE_MOTORTYPE = MotorType.kBrushless;
+        public static boolean INTAKE_INVERSED = false;
+    }
+
 }

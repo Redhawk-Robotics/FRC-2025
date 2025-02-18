@@ -4,15 +4,22 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Ports;
+import frc.robot.Constants.Settings;
 
 public class CoralHandler extends SubsystemBase {
     /** Creates a new CoralHandler. */
-    public CoralHandler() {
-        // TODO
-    }
+
+
+  
+    /* Declare here */
+    public CoralHandler() {}
 
     public Command intakeFromStation() {
         return this.runOnce(() -> {

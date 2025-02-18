@@ -5,21 +5,26 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Ports;
+import frc.robot.Constants.Settings;
 
 public class Pivot extends SubsystemBase {
-    /** Creates a new CoralPivot. */
 
     // Declare Motors here
-    SparkMax leftMotor;
-    // SparkMax rightMotor; // no longer using two motors for pivot
+    private final SparkMax pivotMotorOne;
+    private final SparkMaxConfig pivotMotorConfig;
 
+     /** Creates a new CoralPivot. */
     public Pivot() {
-        this.leftMotor = new SparkMax(5, MotorType.kBrushless);
+        
+        pivotMotorOne = new SparkMax(Ports.CoralIntake.PIVOT_RIGHT, Settings.Pivot.RIGHT_PIVOT_MOTORTYPE);
+        pivotMotorConfig = new SparkMaxConfig();
     }
 
     public Command applySpeeds(double speed) {

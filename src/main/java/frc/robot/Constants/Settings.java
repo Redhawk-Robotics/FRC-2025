@@ -25,4 +25,10 @@ public final class Settings {
         public static MotorType RIGHT_PIVOT_MOTORTYPE = MotorType.kBrushless;
     }
 
+    public static final class AlgaeHandler {
+
+        public static MotorType INTAKE_MOTORTYPE = MotorType.kBrushless;
+        public static MotorType ROLLER_MOTORTYPE = MotorType.kBrushless;
+    }
+
 }

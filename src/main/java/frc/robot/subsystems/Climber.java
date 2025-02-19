@@ -37,17 +37,34 @@ public class Climber extends SubsystemBase {
      * releaseClimbWinch releases the climbing winch to allow for climbing
      */
     public Command releaseClimbWinch() {
-        if (!this.canWinch()) {
-            DriverStation.reportWarning("tried to release climber winch, but cannot do that yet",
-                    null);
-            return Commands.none();
-        }
-        return this.runOnce(() -> {
-            // TODO
-            // Then, apply power to the motor such that the
-            // winch is released.
-            DriverStation.reportWarning("Please implement me!", null);
-        }).andThen(Commands.waitSeconds(0.5)).andThen(this.stopWinch());
+        Command c = Commands.either(//
+                this.runOnce(() -> { // canWinch == TRUE
+                    // TODO
+                    // Then, apply power to the motor such that the
+                    // winch is released.
+                    DriverStation.reportWarning("Please implement me!", null);
+                }).andThen(Commands.waitSeconds(0.5)).andThen(this.stopWinch()), //
+                this.runOnce(() -> { // canWinch == FALSE
+                    DriverStation.reportWarning(
+                            "tried to release climber winch, but cannot do that yet", null);
+                }), //
+                this::canWinch);
+        c.addRequirements(this);
+        return c;
+
+
+
+        // if (!this.canWinch()) {
+        // DriverStation.reportWarning("tried to release climber winch, but cannot do that yet",
+        // null);
+        // return Commands.none();
+        // }
+        // return this.runOnce(() -> {
+        // // TODO
+        // // Then, apply power to the motor such that the
+        // // winch is released.
+        // DriverStation.reportWarning("Please implement me!", null);
+        // }).andThen(Commands.waitSeconds(0.5)).andThen(this.stopWinch());
     }
 
     /**

@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
+import java.util.function.Supplier;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,7 +23,7 @@ public class Pivot extends SubsystemBase {
         this.leftMotor = new SparkMax(5, MotorType.kBrushless);
     }
 
-    public Command applySpeeds(double speed) {
+    public Command applySpeeds(Supplier<Double> speed) {
         // TODO
         return Commands.none();
     }

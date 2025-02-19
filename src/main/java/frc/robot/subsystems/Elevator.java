@@ -5,10 +5,13 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
+import java.util.function.Supplier;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -75,22 +78,25 @@ public class Elevator extends SubsystemBase {
 
     public Command up() {
         // TODO invert this in testing if needed
-        return this.applySpeed(0.5);
+        return this.applySpeed(() -> 0.5);
     }
 
     public Command down() {
         // TODO invert this in testing if needed
-        return this.applySpeed(-0.5);
+        return this.applySpeed(() -> -0.5);
     }
 
     public Command stop() {
-        return this.applySpeed(0);
+        return this.applySpeed(() -> 0.);
     }
 
-    public Command applySpeed(double speed) {
+    public Command applySpeed(Supplier<Double> speed) {
+        if (speed == null) {
+            return Commands.none();
+        }
         // SubsystemBase.runOnce implicitly requires `this` subsystem.
         return this.runOnce(() -> {
-            this.secondMotor.set(speed);
+            this.secondMotor.set(speed.get());
         });
     }
 
@@ -118,12 +124,13 @@ public class Elevator extends SubsystemBase {
     public Command L4() {
         return this.runOnce(() -> {
             // TODO this should put the elevator in the L4 position
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        SmartDashboard.putNumber("Elevator Speed", this.secondMotor.get());
     }
 }

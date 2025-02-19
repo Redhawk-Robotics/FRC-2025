@@ -322,9 +322,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-        this.m_poseEstimatorUpdate.accept(//
-                new Pair<Rotation2d, SwerveModulePosition[]>(//
-                        this.getPigeon2().getRotation2d(), this.getState().ModulePositions));
+        // This causes a loop-overrun by about 0.01s
+        // this.m_poseEstimatorUpdate.accept(//
+        //         new Pair<Rotation2d, SwerveModulePosition[]>(//
+        //                 this.getPigeon2().getRotation2d(), this.getState().ModulePositions));
     }
 
     private void startSimThread() {

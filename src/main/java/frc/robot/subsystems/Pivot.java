@@ -30,14 +30,14 @@ public class Pivot extends SubsystemBase {
     public Command L1() {
         return this.runOnce(() -> {
             // TODO this should put the pivot in the L1 position
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 
     public Command L2() {
         return this.runOnce(() -> {
             // TODO this should put the pivot in the L2 position
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 
@@ -48,7 +48,7 @@ public class Pivot extends SubsystemBase {
     public Command L4() {
         return this.runOnce(() -> {
             // TODO this should put the pivot in the L4 position
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 

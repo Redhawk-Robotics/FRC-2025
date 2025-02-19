@@ -132,7 +132,9 @@ public class RobotContainer {
         // TODO -- furthermore, we can implement "zoned" speeds using the pose estimator
 
         /* Configure Climb */
-        DRIVER.a().onTrue(this.m_climber.releaseClimbWinch());
+        DRIVER.a().onTrue(() -> {
+            this.m_climber.releaseClimbWinch();
+        });
         DRIVER.rightBumper().whileTrue(this.m_climber.winchUp())
                 .onFalse(this.m_climber.stopWinch());
         DRIVER.rightTrigger().whileTrue(this.m_climber.winchDown())

@@ -17,21 +17,21 @@ public class AlgaeHandler extends SubsystemBase {
     public Command rotateCW() {
         return this.runOnce(() -> {
             // TODO turn the motor CW
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 
     public Command rotateCCW() {
         return this.runOnce(() -> {
             // TODO turn the motor CCW
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 
     public Command stop() {
         return this.runOnce(() -> {
             // TODO stop the motor
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 

@@ -17,6 +17,7 @@
     "**/*~": true
   },
   "files.eol": "\n",
+  "files.autoSave": "onFocusChange",
   "java.test.config": [
     {
       "name": "WPIlibUnitTests",

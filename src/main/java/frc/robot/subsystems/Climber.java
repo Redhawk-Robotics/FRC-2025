@@ -42,29 +42,17 @@ public class Climber extends SubsystemBase {
                     // TODO
                     // Then, apply power to the motor such that the
                     // winch is released.
-                    DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
+                    DriverStation.reportWarning("Please implement me!",
+                            Thread.currentThread().getStackTrace());
                 }).andThen(Commands.waitSeconds(0.5)).andThen(this.stopWinch()), //
                 this.runOnce(() -> { // canWinch == FALSE
                     DriverStation.reportWarning(
-                            "tried to release climber winch, but cannot do that yet", Thread.currentThread().getStackTrace());
+                            "tried to release climber winch, but cannot do that yet",
+                            Thread.currentThread().getStackTrace());
                 }), //
                 this::canWinch);
         c.addRequirements(this);
         return c;
-
-
-
-        // if (!this.canWinch()) {
-        // DriverStation.reportWarning("tried to release climber winch, but cannot do that yet",
-        // null);
-        // return Commands.none();
-        // }
-        // return this.runOnce(() -> {
-        // // TODO
-        // // Then, apply power to the motor such that the
-        // // winch is released.
-        // DriverStation.reportWarning("Please implement me!", null);
-        // }).andThen(Commands.waitSeconds(0.5)).andThen(this.stopWinch());
     }
 
     /**
@@ -73,12 +61,14 @@ public class Climber extends SubsystemBase {
     public Command winchUp() {
         return this.runOnce(() -> {
             if (!this.canWinch()) {
-                DriverStation.reportWarning("tried to 'climb', but cannot do that yet", Thread.currentThread().getStackTrace());
+                DriverStation.reportWarning("tried to 'climb', but cannot do that yet",
+                        Thread.currentThread().getStackTrace());
                 return;
             }
             // TODO
             // make the robot "climb"
-            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
+            DriverStation.reportWarning("Please implement me!",
+                    Thread.currentThread().getStackTrace());
         });
     }
 
@@ -88,12 +78,14 @@ public class Climber extends SubsystemBase {
     public Command winchDown() {
         return this.runOnce(() -> {
             if (!this.canWinch()) {
-                DriverStation.reportWarning("tried to 'un-climb', but cannot do that yet", Thread.currentThread().getStackTrace());
+                DriverStation.reportWarning("tried to 'un-climb', but cannot do that yet",
+                        Thread.currentThread().getStackTrace());
                 return;
             }
             // TODO
             // make the robot "un-climb"
-            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
+            DriverStation.reportWarning("Please implement me!",
+                    Thread.currentThread().getStackTrace());
         });
     }
 
@@ -101,7 +93,8 @@ public class Climber extends SubsystemBase {
         return this.runOnce(() -> {
             // TODO
             // turn off power from the winch motor
-            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
+            DriverStation.reportWarning("Please implement me!",
+                    Thread.currentThread().getStackTrace());
         });
     }
 }

@@ -97,21 +97,21 @@ public class Elevator extends SubsystemBase {
     public Command L1() {
         return this.runOnce(() -> {
             // TODO this should put the elevator in the L1 position
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 
     public Command L2() {
         return this.runOnce(() -> {
             // TODO this should put the elevator in the L2 position
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 
     public Command L3() {
         return this.runOnce(() -> {
             // TODO this should put the elevator in the L3 position
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 

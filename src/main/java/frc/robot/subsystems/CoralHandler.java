@@ -17,21 +17,21 @@ public class CoralHandler extends SubsystemBase {
     public Command intakeFromStation() {
         return this.runOnce(() -> {
             // TODO turn on the motor to intake
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 
     public Command spitItOut() {
         return this.runOnce(() -> {
             // TODO turn on the motor to outtake
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 
     public Command stop() {
         return this.runOnce(() -> {
             // TODO stop the motor
-            DriverStation.reportWarning("Please implement me!", null);
+            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 

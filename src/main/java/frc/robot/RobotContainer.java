@@ -140,17 +140,12 @@ public class RobotContainer {
     }
 
     private void configureOperatorBindings() {
-        // TODO see if the elevator works
-
-        // TODO POV should be the D-Pad, but check that this is correct
-
         /* Configure Elevator */
-        OPERATOR.rightStick()
-                .onChange(this.m_elevator.applySpeed(() -> -1 * OPERATOR.getRightY() / 2));
+        m_elevator.setDefaultCommand(this.m_elevator.applySpeedRequest(() -> -1 * OPERATOR.getRightY() / 2));
         // on the controller: up == -1, down == 1
 
         /* Configure Pivot */
-        OPERATOR.leftStick().onChange(this.m_pivot.applySpeeds(() -> -1 * OPERATOR.getLeftY() / 2));
+        m_pivot.setDefaultCommand(this.m_pivot.applySpeedRequest(() -> -1 * OPERATOR.getLeftY() / 2));
         // on the controller: up == -1, down == 1
 
         /* Configure joint Elevator/Pivot positioning */

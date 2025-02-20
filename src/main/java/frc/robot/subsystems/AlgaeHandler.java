@@ -4,19 +4,26 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Ports;
+import frc.robot.Constants.Settings;
 
 public class AlgaeHandler extends SubsystemBase {
     /** Creates a new AlgaeHandler. */
+    private final SparkMax algaeHandlerMotor;
     public AlgaeHandler() {
+        this.algaeHandlerMotor = new SparkMax(Ports.AlgaeHandler.ALGAEINTAKE_MOTOR, Settings.AlgaeHandler.ALGAE_INTAKE_MOTORTYPE);
         // TODO
     }
 
     public Command rotateCW() {
         return this.runOnce(() -> {
             // TODO turn the motor CW
+            algaeHandlerMotor.set(1);
             DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
@@ -24,6 +31,7 @@ public class AlgaeHandler extends SubsystemBase {
     public Command rotateCCW() {
         return this.runOnce(() -> {
             // TODO turn the motor CCW
+            algaeHandlerMotor.set(-1);
             DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
@@ -31,6 +39,7 @@ public class AlgaeHandler extends SubsystemBase {
     public Command stop() {
         return this.runOnce(() -> {
             // TODO stop the motor
+            algaeHandlerMotor.set(0);
             DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }

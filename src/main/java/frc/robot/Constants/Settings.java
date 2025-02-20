@@ -20,6 +20,11 @@ public final class Settings {
     public static final class Pivot {
         public static MotorType LEFT_PIVOT_MOTORTYPE = MotorType.kBrushless;
         public static MotorType RIGHT_PIVOT_MOTORTYPE = MotorType.kBrushless;
+
+        public static MotorType CORAL_INTAKE_MOTORTYPE = MotorType.kBrushless;
     }
 
+    public static final class AlgaeHandler {
+        public static MotorType ALGAE_INTAKE_MOTORTYPE = MotorType.kBrushless;
+    }
 }

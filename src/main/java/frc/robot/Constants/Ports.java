@@ -20,7 +20,7 @@ public final class Ports {
     public static final class CoralIntake {
         public static int PIVOT_LEFT = 0;
         public static int PIVOT_RIGHT = 0;
-        public static int WHEEL_INTAKE = 0;
+        public static int WHEEL_INTAKE = 7;
 
         public static boolean PIVOT_INVERTED = false;
         public static boolean WHEEL_INTAKE_INVERTED = false;
@@ -30,4 +30,9 @@ public final class Ports {
     public static final class LIGHTS {
         public static int LED1 = 0;
     }
+
+    public static final class AlgaeHandler {
+        public static int ALGAEINTAKE_MOTOR = 0;
+    }
 }
+

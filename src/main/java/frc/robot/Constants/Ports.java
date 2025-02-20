@@ -32,7 +32,7 @@ public final class Ports {
     }
 
     public static final class AlgaeHandler {
-        public static int ALGAEINTAKE_MOTOR = 0;
+        public static int ALGAEINTAKE_MOTOR = 6;
     }
 }
 

@@ -36,8 +36,8 @@ public class CoralHandler extends SubsystemBase {
     public Command spitItOut() {
         return this.runOnce(() -> {
             
-            // TODO turn on the motor to outtake
-            coralIntakeMotor.set(-1);
+            // TODO turn on the motor to outtake     
+            coralIntakeMotor.set(-.7);
             DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }

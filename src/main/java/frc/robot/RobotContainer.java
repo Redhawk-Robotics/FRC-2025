@@ -27,6 +27,7 @@ import frc.robot.subsystems.CoralHandler;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.CommandSwerveDrivetrain.speeds;
+import edu.wpi.first.math.MathUtil;
 
 public class RobotContainer {
     // kSpeedAt12Volts desired top speed
@@ -141,11 +142,18 @@ public class RobotContainer {
 
     private void configureOperatorBindings() {
         /* Configure Elevator */
-        m_elevator.setDefaultCommand(this.m_elevator.applySpeedRequest(() -> -1 * OPERATOR.getRightY() / 2));
+        m_elevator.setDefaultCommand(
+            this.m_elevator.applySpeedRequest(
+                () -> -1 * OPERATOR.getRightY() / 2));
         // on the controller: up == -1, down == 1
 
         /* Configure Pivot */
-        m_pivot.setDefaultCommand(this.m_pivot.applySpeedRequest(() -> -1 * OPERATOR.getLeftY() / 2));
+        m_pivot.setDefaultCommand(
+            this.m_pivot.applySpeedRequest(
+                () -> MathUtil.applyDeadband(
+                        (-1 * OPERATOR.getLeftY() / 2),
+                        0.1)));
+        //() -> -1 * OPERATOR.getLeftY() / 2
         // on the controller: up == -1, down == 1
 
         /* Configure joint Elevator/Pivot positioning */

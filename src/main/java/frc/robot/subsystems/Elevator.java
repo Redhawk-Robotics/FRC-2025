@@ -60,8 +60,8 @@ public class Elevator extends SubsystemBase {
         SparkMaxConfig bottomLeftMotorConfig = new SparkMaxConfig();
 
         // TODO verify these per-motor config settings
-        topRightMotorConfig.apply(globalConfig).follow(bottomRightMotor, false);
-        bottomRightMotorConfig.apply(globalConfig); // leader
+        topRightMotorConfig.apply(globalConfig);
+        bottomRightMotorConfig.apply(globalConfig).follow(topRightMotor, false);; // leader
         topLeftMotorConfig.apply(globalConfig).follow(bottomRightMotor, true);
         bottomLeftMotorConfig.apply(globalConfig).follow(bottomRightMotor, true);
 
@@ -124,7 +124,7 @@ public class Elevator extends SubsystemBase {
         }
         // SubsystemBase.runOnce implicitly requires `this` subsystem.
         return this.runOnce(() -> {
-            this.bottomRightMotor.set(speed.get());
+            this.topRightMotor.set(speed.get());
         });
     }
 
@@ -203,6 +203,21 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         SmartDashboard.putNumber("Elevator Speed", this.bottomRightMotor.get());
+
+        SmartDashboard.putNumber( "Elevator Motor 1: ", topRightMotor.get());
+        SmartDashboard.putNumber( "Elevator Motor 2: ", bottomRightMotor.get());
+        SmartDashboard.putNumber( "Elevator Motor 3: ", topLeftMotor.get());
+        SmartDashboard.putNumber( "Elevator Motor 4: ", bottomLeftMotor.get());
+
+        SmartDashboard.putNumber("Elevator Motor 1:", topRightMotor.getBusVoltage());
+
+        /*
+         * 
+         * Config topRightMotorConfig = new SparkMaxConfig();
+            SparkMaxConfig bottomRightMotorConfig = new SparkMaxConfig();
+            SparkMaxConfig topLeftMotorConfig = new SparkMaxConfig();
+            SparkMaxConfig bottomLeftMotorConfig = new SparkMaxConfig();
+         */
         // TODO put other relevant values, eg
         // bottomRightMotor.getAlternateEncoder().getPosition();
     }

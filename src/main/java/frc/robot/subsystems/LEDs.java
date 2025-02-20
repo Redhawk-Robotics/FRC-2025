@@ -4,11 +4,14 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashMap;
 
-public class LEDs extends SubsystemBase {
+// TODO -- set this up
+// https://docs.revrobotics.com/rev-crossover-products/blinkin/gs
 
+public class LEDs extends SubsystemBase {
     private static Spark m_blinkin;
     private static LEDs m_controller = null;
     private static blinkinColors m_pattern;
@@ -49,18 +52,13 @@ public class LEDs extends SubsystemBase {
   }
 
   public void idleColor(){
+    setPattern(blinkinColors.LARSONSCANNER_RED);
+  }
+  public void elevatorColor(){
     setPattern(blinkinColors.COLORWAVE_RAINBOW);
   }
+  public void intakeColor(){
+    setPattern(blinkinColors.VIOLET);
+  }
 
-// TODO -- set this up
-// https://docs.revrobotics.com/rev-crossover-products/blinkin/gs
-
-public class LEDs extends SubsystemBase {
-    /** Creates a new LEDs Subsystem. */
-    public LEDs() {}
-
-    @Override
-    public void periodic() {
-        // This method will be called once per scheduler run
-    }
 }

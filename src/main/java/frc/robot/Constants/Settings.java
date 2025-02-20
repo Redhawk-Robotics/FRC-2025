@@ -12,9 +12,6 @@ public final class Settings {
         public static MotorType TOP_LEFT_MOTORTYPE = MotorType.kBrushless;
         public static MotorType BOTTOM_LEFT_MOTORTYPE = MotorType.kBrushless;
 
-        public static boolean TOP_LEFT_INVERT = true;
-        public static boolean BOTTOM_LEFT_INVERT = true;
-
         public static int CURRENT_LIMIT = 60;
         public static IdleMode IDLE_MODE = IdleMode.kBrake;
 

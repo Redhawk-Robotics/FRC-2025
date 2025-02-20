@@ -117,9 +117,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
 
     public enum speeds {
-        FAST(0.8), //
-        NORMAL(0.7), //
-        SLOW(0.3);
+        FAST(0.9), //
+        NORMAL(0.6), //
+        SLOW(0.2);
 
         private final double m;
 
@@ -268,7 +268,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public void setPoseUpdater(Consumer<Pair<Rotation2d, SwerveModulePosition[]>> update) {
         if (update == null) {
             DriverStation.reportError("pose estimator update function is null -- programmer issue",
-                    null);
+                    Thread.currentThread().getStackTrace());
             return;
         }
         this.m_poseEstimatorUpdate = update;
@@ -285,6 +285,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             default:
                 break;
         }
+        System.out.printf("Drive speed multiplier is now %f\n", this.speedMultiplier());
     }
 
     public void decreaseSpeedMultiplier() {
@@ -298,6 +299,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             default:
                 break;
         }
+        System.out.printf("Drive speed multiplier is now %f\n", this.speedMultiplier());
     }
 
     public double speedMultiplier() {
@@ -323,9 +325,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         // This causes a loop-overrun by about 0.01s
-        // this.m_poseEstimatorUpdate.accept(//
-        //         new Pair<Rotation2d, SwerveModulePosition[]>(//
-        //                 this.getPigeon2().getRotation2d(), this.getState().ModulePositions));
+        // TODO make sure this only happens on the first loop, which is OK
+        this.m_poseEstimatorUpdate.accept(//
+                new Pair<Rotation2d, SwerveModulePosition[]>(//
+                        this.getPigeon2().getRotation2d(), this.getState().ModulePositions));
     }
 
     private void startSimThread() {

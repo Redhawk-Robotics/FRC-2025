@@ -16,22 +16,27 @@ public class Pivot extends SubsystemBase {
     /** Creates a new CoralPivot. */
 
     // Declare Motors here
-    SparkMax leftMotor;
-    // SparkMax rightMotor; // no longer using two motors for pivot
+    private final SparkMax leftMotor;
 
     public Pivot() {
         this.leftMotor = new SparkMax(5, MotorType.kBrushless);
     }
 
-    public Command applySpeeds(Supplier<Double> speed) {
-        // TODO
-        return Commands.none();
+    public Command applySpeedRequest(Supplier<Double> speed) {
+        if (speed == null) {
+            return Commands.none();
+        }
+        // SubsystemBase.runOnce implicitly requires `this` subsystem.
+        return this.runOnce(() -> {
+            this.leftMotor.set(speed.get());
+        });
     }
 
     public Command L1() {
         return this.runOnce(() -> {
             // TODO this should put the pivot in the L1 position
             DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
+            // do not break from this command until the pivot is at the position
         });
     }
 
@@ -39,6 +44,7 @@ public class Pivot extends SubsystemBase {
         return this.runOnce(() -> {
             // TODO this should put the pivot in the L2 position
             DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
+            // do not break from this command until the pivot is at the position
         });
     }
 
@@ -50,6 +56,7 @@ public class Pivot extends SubsystemBase {
         return this.runOnce(() -> {
             // TODO this should put the pivot in the L4 position
             DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
+            // do not break from this command until the pivot is at the position
         });
     }
 

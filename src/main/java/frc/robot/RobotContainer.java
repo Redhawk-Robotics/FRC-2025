@@ -5,18 +5,25 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 // import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Commands.CoralPositionFactory;
 import frc.robot.Constants.Ports;
 import frc.robot.subsystems.Pivot;
 import frc.robot.generated.TunerConstants;
@@ -82,6 +89,21 @@ public class RobotContainer {
         // t -> this.m_poseEstimator.updateWithTime(Timer.getFPGATimestamp(), t.getFirst(),
         // t.getSecond())); // TODO should we use this one?
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        // TODO!
+        // Orchestra m_orchestra = new Orchestra();
+        // for (SwerveModule<TalonFX, TalonFX, CANcoder> module: this.drivetrain.getModules()) {
+        //     m_orchestra.addInstrument(module.getDriveMotor());
+        //     m_orchestra.addInstrument(module.getSteerMotor());
+        // }
+        // var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory()+"/chrp/wii-shop.chrp");
+        // if (!status.isOK()) {
+        //     // log error
+        //     DriverStation.reportError(status.toString(), Thread.currentThread().getStackTrace());
+        // } else {
+        //     System.out.println(m_orchestra.play());
+        // }
+        // System.out.println(m_orchestra.isPlaying());
     }
 
     private void configureBindings() {
@@ -94,11 +116,20 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         return drive//
                 .withVelocityX( // Drive forward with positive Y (forward)
-                        Math.pow(DRIVER.getLeftY() * MaxSpeed * drivetrain.speedMultiplier(), 5))
+                        Math.pow(
+                                MathUtil.applyDeadband(DRIVER.getLeftY()
+                                        * MaxSpeed * drivetrain.speedMultiplier(), 0.1),
+                                5))
                 .withVelocityY( // Drive left with positive X (left)
-                        Math.pow(DRIVER.getLeftX() * MaxSpeed * drivetrain.speedMultiplier(), 5))
+                        Math.pow(
+                                MathUtil.applyDeadband(
+                                        DRIVER.getLeftX() * MaxSpeed * drivetrain.speedMultiplier(),
+                                        0.1),
+                                5))
                 .withRotationalRate( // Drive counterclockwise with negative X (left)
-                        Math.pow(-DRIVER.getRightX() * MaxAngularRate / 1.25, 5));
+                        Math.pow(MathUtil.applyDeadband(
+                                -DRIVER.getRightX() * MaxAngularRate * drivetrain.speedMultiplier(),
+                                0.1), 5));
     }
 
     private void configureDriverBindings() {
@@ -138,29 +169,27 @@ public class RobotContainer {
                 .onFalse(this.m_climber.stopWinch());
         DRIVER.rightTrigger().whileTrue(this.m_climber.winchDown())
                 .onFalse(this.m_climber.stopWinch());
+
+        /* Configure joing Elevator/Pivot positioning */
+        DRIVER.x().onTrue(CoralPositionFactory.Feed(this.m_elevator, this.m_pivot));
     }
 
     private void configureOperatorBindings() {
         /* Configure Elevator */
-        m_elevator.setDefaultCommand(
-            this.m_elevator.applySpeedRequest(
-                () -> -1 * OPERATOR.getRightY() / 2));
+        m_elevator.setDefaultCommand(this.m_elevator.applySpeedRequest(
+                () -> MathUtil.applyDeadband((-1. * OPERATOR.getLeftY() / 2.5), 0.1)));
         // on the controller: up == -1, down == 1
 
         /* Configure Pivot */
-        m_pivot.setDefaultCommand(
-            this.m_pivot.applySpeedRequest(
-                () -> MathUtil.applyDeadband(
-                        (-1 * OPERATOR.getLeftY() / 2),
-                        0.1)));
-        //() -> -1 * OPERATOR.getLeftY() / 2
+        m_pivot.setDefaultCommand(this.m_pivot.applySpeedRequest(
+                () -> MathUtil.applyDeadband((-1. * OPERATOR.getRightY() / 2.5), 0.1)));
         // on the controller: up == -1, down == 1
 
         /* Configure joint Elevator/Pivot positioning */
-        OPERATOR.a().onTrue(this.m_elevator.L1().andThen(this.m_pivot.L1()));
-        OPERATOR.b().onTrue(this.m_elevator.L2().andThen(this.m_pivot.L2()));
-        OPERATOR.x().onTrue(this.m_elevator.L3().andThen(this.m_pivot.L3()));
-        OPERATOR.y().onTrue(this.m_elevator.L4().andThen(this.m_pivot.L4()));
+        // OPERATOR.a().onTrue(CoralPositionFactory.L1(this.m_elevator, this.m_pivot));
+        // OPERATOR.b().onTrue(CoralPositionFactory.L2(this.m_elevator, this.m_pivot));
+        // OPERATOR.x().onTrue(CoralPositionFactory.L3(this.m_elevator, this.m_pivot));
+        // OPERATOR.y().onTrue(CoralPositionFactory.L4(this.m_elevator, this.m_pivot));
 
         /* Configure CoralHandler */
         OPERATOR.leftBumper().onTrue(this.m_coralHandler.intakeFromStation())

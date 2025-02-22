@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,10 +13,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
 import java.util.function.Supplier;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.AlternateEncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -32,8 +35,8 @@ public class Elevator extends SubsystemBase {
     private final SparkMax topLeftMotor;
     private final SparkMax bottomLeftMotor;
 
-    // TODO
-    // private final SparkClosedLoopController controller;
+    private final RelativeEncoder encoder;
+    private final SparkClosedLoopController controller;
 
     // https://docs.revrobotics.com/rev-crossover-products/sensors/tbe/application-examples#brushless-motors
 
@@ -61,7 +64,7 @@ public class Elevator extends SubsystemBase {
 
         // TODO verify these per-motor config settings
         topRightMotorConfig.apply(globalConfig);
-        bottomRightMotorConfig.apply(globalConfig).follow(topRightMotor, false);; // leader
+        bottomRightMotorConfig.apply(globalConfig).follow(topRightMotor, false); // leader
         topLeftMotorConfig.apply(globalConfig).follow(bottomRightMotor, true);
         bottomLeftMotorConfig.apply(globalConfig).follow(bottomRightMotor, true);
 
@@ -72,10 +75,22 @@ public class Elevator extends SubsystemBase {
         // then use this configuration
         // see also <https://docs.revrobotics.com/brushless/spark-max/encoders/alternate-encoder>
         //
-        // bottomRightMotorConfig.alternateEncoder// leader config
-        //         .setSparkMaxDataPortConfig()// required
-        //         .countsPerRevolution(8192); // TODO correct value?
-        //
+
+        // elevator max == 32
+        double conversionFactor = 100. / 32.;
+        topRightMotorConfig.encoder.positionConversionFactor(conversionFactor)
+                .velocityConversionFactor(conversionFactor);
+
+        // double zeroOffset = 0.13;
+        // // double conversionFactor = Inches.of(74).minus(Inches.of(43.5)).magnitude();
+        // double conversionFactor = 150.;
+        // topRightMotorConfig.absoluteEncoder// leader config
+        //         .setSparkMaxDataPortConfig()//
+        //         .inverted(true)// positive == go up
+        //         .zeroOffset(zeroOffset)// TODO
+        //         .positionConversionFactor(conversionFactor)// inch/rev (max-min)
+        //         .velocityConversionFactor(conversionFactor);
+
         // TODO
         // make sure the closed-loop configuration is correct
         // we should use MAXMotion:
@@ -83,13 +98,16 @@ public class Elevator extends SubsystemBase {
         // for tuning PID see
         // <https://docs.revrobotics.com/revlib/spark/closed-loop/getting-started-with-pid-tuning#tuning>
         //
-        // bottomRightMotorConfig.closedLoop// configure closed-loop PID control
-        //         .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)//
-        //         .pid(0.5, 0, 0)// TODO tune PID constants -- no kF
-        //                 .maxMotion//
-        //                         .maxVelocity(0)//
-        //                         .maxAcceleration(0)//
-        //                         .allowedClosedLoopError(0);
+
+        topRightMotorConfig.closedLoop// configure closed-loop PID control
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)//
+                .pid(0.5, 0, 0)// TODO tune PID constants -- no kF
+        ;
+        // .maxMotion//
+        //         .maxVelocity(100)// ??
+        //         .maxAcceleration(3)//
+        //         .allowedClosedLoopError(5);
+
 
         topRightMotor.configure(topRightMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
@@ -100,26 +118,18 @@ public class Elevator extends SubsystemBase {
         bottomLeftMotor.configure(bottomLeftMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        // TODO use this
-        // this.controller = bottomRightMotor.getClosedLoopController();
-    }
-
-    public Command up() {
-        // TODO invert this in testing if needed
-        return this.applySpeedRequest(() -> 0.5);
-    }
-
-    public Command down() {
-        // TODO invert this in testing if needed
-        return this.applySpeedRequest(() -> -0.5);
-    }
-
-    public Command stop() {
-        return this.applySpeedRequest(() -> 0.);
+        this.encoder = topRightMotor.getEncoder();
+        // thru-bore is connected to:
+        // blue port 0
+        // yellow port 1
+        this.controller = topRightMotor.getClosedLoopController();
     }
 
     public Command applySpeedRequest(Supplier<Double> speed) {
         if (speed == null) {
+            DriverStation.reportWarning(
+                    "Elevator applySpeedRequest received null position supplier",
+                    Thread.currentThread().getStackTrace());
             return Commands.none();
         }
         // SubsystemBase.runOnce implicitly requires `this` subsystem.
@@ -128,97 +138,41 @@ public class Elevator extends SubsystemBase {
         });
     }
 
-    private Command goToPosition(String name, double position, double error) {
-        return this.runOnce(() -> {
-            // TODO this should put the elevator in the given position
-            DriverStation.reportWarning("Please implement me!",
+    public Command applyAddPositionRequest(Supplier<Double> position) {
+        if (position == null) {
+            DriverStation.reportWarning(
+                    "Elevator applyAddPositionRequest received null position supplier",
                     Thread.currentThread().getStackTrace());
-            // EG:
-            // this.controller.setReference(position, ControlType.kMAXMotionPositionControl);
-            // do not break from this command until the elevator is at the position
-        }).andThen(Commands.run(() -> { // should run repeatedly
-            System.out.printf("Waiting for Elevator to get to position %f for '%s'...\n", position,
-                    name);
-            try {
-                // TODO -- ensure that this does not block the robot
-                // from doing anything else. It _shouldn't_, but check to be sure
-                wait(1000); // wait 1000ms before printing again
-            } catch (InterruptedException e) {
-                // the command was interrupted while waiting
-                // OK to ignore
-            }
-        }).until(() -> {
-            // return when the Elevator is in/near the correct position
-            // EG:
-            //
-            // return Math.abs(//
-            // this.bottomRightMotor.getAlternateEncoder().getPosition() - position) < error;
-
-            return true;
-        })).andThen(() -> {
-            System.out.printf("Elevator at position '%s'!\n", name);
+            return Commands.none();
+        }
+        // SubsystemBase.runOnce implicitly requires `this` subsystem.
+        return this.runOnce(() -> {
+            this.setPosition(this.getPosition() + position.get());
         });
     }
 
-    public Command L1() {
-        // EG, when ready:
-        // return this.goToPosition("L1", 3, 0.1); // tune these!
-
-        return this.runOnce(() -> {
-            // TODO this should put the elevator in the L1 position
-            DriverStation.reportWarning("Please implement me!",
-                    Thread.currentThread().getStackTrace());
-            // do not break from this command until the elevator is at the position
-        });
+    public double getPosition() {
+        return this.encoder.getPosition();
     }
 
-    public Command L2() {
-        return this.runOnce(() -> {
-            // TODO this should put the elevator in the L2 position
-            DriverStation.reportWarning("Please implement me!",
-                    Thread.currentThread().getStackTrace());
-            // do not break from this command until the elevator is at the position
-        });
-    }
-
-    public Command L3() {
-        return this.runOnce(() -> {
-            // TODO this should put the elevator in the L3 position
-            DriverStation.reportWarning("Please implement me!",
-                    Thread.currentThread().getStackTrace());
-            // do not break from this command until the elevator is at the position
-        });
-    }
-
-    public Command L4() {
-        return this.runOnce(() -> {
-            // TODO this should put the elevator in the L4 position
-            DriverStation.reportWarning("Please implement me!",
-                    Thread.currentThread().getStackTrace());
-            // do not break from this command until the elevator is at the position
-        });
+    public void setPosition(double position) {
+        this.controller.setReference(position, ControlType.kPosition);
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        SmartDashboard.putNumber("Elevator Speed", this.bottomRightMotor.get());
+        SmartDashboard.putNumber("Elevator/Motor1/speed", topRightMotor.get());
+        SmartDashboard.putNumber("Elevator/Motor2/speed", bottomRightMotor.get());
+        SmartDashboard.putNumber("Elevator/Motor3/speed", topLeftMotor.get());
+        SmartDashboard.putNumber("Elevator/Motor4/speed", bottomLeftMotor.get());
 
-        SmartDashboard.putNumber( "Elevator Motor 1: ", topRightMotor.get());
-        SmartDashboard.putNumber( "Elevator Motor 2: ", bottomRightMotor.get());
-        SmartDashboard.putNumber( "Elevator Motor 3: ", topLeftMotor.get());
-        SmartDashboard.putNumber( "Elevator Motor 4: ", bottomLeftMotor.get());
+        SmartDashboard.putNumber("Elevator/Motor1/voltage", topRightMotor.getBusVoltage());
+        SmartDashboard.putNumber("Elevator/Motor2/voltage", bottomRightMotor.getBusVoltage());
+        SmartDashboard.putNumber("Elevator/Motor3/voltage", topLeftMotor.getBusVoltage());
+        SmartDashboard.putNumber("Elevator/Motor4/voltage", bottomLeftMotor.getBusVoltage());
 
-        SmartDashboard.putNumber("Elevator Motor 1:", topRightMotor.getBusVoltage());
-
-        /*
-         * 
-         * Config topRightMotorConfig = new SparkMaxConfig();
-            SparkMaxConfig bottomRightMotorConfig = new SparkMaxConfig();
-            SparkMaxConfig topLeftMotorConfig = new SparkMaxConfig();
-            SparkMaxConfig bottomLeftMotorConfig = new SparkMaxConfig();
-         */
-        // TODO put other relevant values, eg
-        // bottomRightMotor.getAlternateEncoder().getPosition();
+        SmartDashboard.putNumber("Elevator/Position", this.encoder.getPosition());
+        SmartDashboard.putNumber("Elevator/Velocity", this.encoder.getVelocity());
     }
 }

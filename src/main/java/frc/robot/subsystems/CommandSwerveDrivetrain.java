@@ -18,6 +18,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -75,11 +76,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * SysId routine for characterizing steer. This is used to find PID gains for the steer motors.
      */
     private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(new SysIdRoutine.Config(null, // Use
-                                                                                                    // default
-                                                                                                    // ramp
-                                                                                                    // rate
-                                                                                                    // (1
-                                                                                                    // V/s)
+            // default
+            // ramp
+            // rate
+            // (1
+            // V/s)
             Volts.of(7), // Use dynamic voltage of 7 V
             null, // Use default timeout (10 s)
             // Log state with SignalLogger class
@@ -117,9 +118,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
 
     public enum speeds {
-        FAST(0.8), //
-        NORMAL(0.7), //
-        SLOW(0.3);
+        FAST(0.9), //
+        NORMAL(0.2), //
+        SLOW(0.005);
 
         private final double m;
 
@@ -129,6 +130,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         public double mult() {
             return this.m;
+        }
+
+        public String toString() {
+            switch (this) {
+                case FAST:
+                    return "FAST";
+                case NORMAL:
+                    return "NORMAL";
+                case SLOW:
+                    return "SLOW";
+                default:
+                    return "<unk?>";
+            }
         }
     }
 
@@ -268,7 +282,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public void setPoseUpdater(Consumer<Pair<Rotation2d, SwerveModulePosition[]>> update) {
         if (update == null) {
             DriverStation.reportError("pose estimator update function is null -- programmer issue",
-                    null);
+                    Thread.currentThread().getStackTrace());
             return;
         }
         this.m_poseEstimatorUpdate = update;
@@ -285,6 +299,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             default:
                 break;
         }
+        System.out.printf("Drive speed multiplier is now %f\n", this.speedMultiplier());
     }
 
     public void decreaseSpeedMultiplier() {
@@ -298,6 +313,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             default:
                 break;
         }
+        System.out.printf("Drive speed multiplier is now %f\n", this.speedMultiplier());
     }
 
     public double speedMultiplier() {
@@ -323,9 +339,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         // This causes a loop-overrun by about 0.01s
-        // this.m_poseEstimatorUpdate.accept(//
-        //         new Pair<Rotation2d, SwerveModulePosition[]>(//
-        //                 this.getPigeon2().getRotation2d(), this.getState().ModulePositions));
+        // TODO make sure this only happens on the first loop, which is OK
+        this.m_poseEstimatorUpdate.accept(//
+                new Pair<Rotation2d, SwerveModulePosition[]>(//
+                        this.getPigeon2().getRotation2d(), this.getState().ModulePositions));
+
+        SmartDashboard.putString("Drive/speedMultiplier", this.m_speedMultiplier.toString());
+        SmartDashboard.putNumber("Drive/speedMultiplierVal", this.m_speedMultiplier.mult());
     }
 
     private void startSimThread() {

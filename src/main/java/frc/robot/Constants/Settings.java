@@ -12,9 +12,6 @@ public final class Settings {
         public static MotorType TOP_LEFT_MOTORTYPE = MotorType.kBrushless;
         public static MotorType BOTTOM_LEFT_MOTORTYPE = MotorType.kBrushless;
 
-        public static boolean TOP_LEFT_INVERT = true;
-        public static boolean BOTTOM_LEFT_INVERT = true;
-
         public static int CURRENT_LIMIT = 60;
         public static IdleMode IDLE_MODE = IdleMode.kBrake;
 
@@ -23,6 +20,11 @@ public final class Settings {
     public static final class Pivot {
         public static MotorType LEFT_PIVOT_MOTORTYPE = MotorType.kBrushless;
         public static MotorType RIGHT_PIVOT_MOTORTYPE = MotorType.kBrushless;
+
+        public static MotorType CORAL_INTAKE_MOTORTYPE = MotorType.kBrushless;
     }
 
+    public static final class AlgaeHandler {
+        public static MotorType ALGAE_INTAKE_MOTORTYPE = MotorType.kBrushless;
+    }
 }

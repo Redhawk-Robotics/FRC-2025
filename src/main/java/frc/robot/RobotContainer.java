@@ -33,7 +33,6 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralHandler;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Vision;
-import frc.robot.subsystems.CommandSwerveDrivetrain.speeds;
 import edu.wpi.first.math.MathUtil;
 
 public class RobotContainer {
@@ -79,6 +78,8 @@ public class RobotContainer {
     private final CoralHandler m_coralHandler = new CoralHandler();
     private final AlgaeHandler m_algaeHandler = new AlgaeHandler();
 
+    private final Orchestra m_orchestra = new Orchestra();
+
     public RobotContainer() {
         configureBindings();
 
@@ -90,20 +91,24 @@ public class RobotContainer {
         // t.getSecond())); // TODO should we use this one?
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        // TODO!
-        // Orchestra m_orchestra = new Orchestra();
-        // for (SwerveModule<TalonFX, TalonFX, CANcoder> module: this.drivetrain.getModules()) {
-        //     m_orchestra.addInstrument(module.getDriveMotor());
-        //     m_orchestra.addInstrument(module.getSteerMotor());
-        // }
-        // var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory()+"/chrp/wii-shop.chrp");
-        // if (!status.isOK()) {
-        //     // log error
-        //     DriverStation.reportError(status.toString(), Thread.currentThread().getStackTrace());
-        // } else {
-        //     System.out.println(m_orchestra.play());
-        // }
-        // System.out.println(m_orchestra.isPlaying());
+        if (true) { // todo
+            configureMusic();
+        }
+    }
+
+    private void configureMusic() {
+        for (SwerveModule<TalonFX, TalonFX, CANcoder> module : this.drivetrain.getModules()) {
+            m_orchestra.addInstrument(module.getDriveMotor());
+            m_orchestra.addInstrument(module.getSteerMotor());
+        }
+        var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory() + "/chrp/wii-shop.chrp");
+        if (!status.isOK()) {
+            // log error
+            DriverStation.reportError(status.toString(), Thread.currentThread().getStackTrace());
+        } else {
+            System.out.println(m_orchestra.play());
+        }
+        System.out.println(m_orchestra.isPlaying());
     }
 
     private void configureBindings() {
@@ -116,20 +121,14 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         return drive//
                 .withVelocityX( // Drive forward with positive Y (forward)
-                        Math.pow(
-                                MathUtil.applyDeadband(DRIVER.getLeftY()
-                                        * MaxSpeed * drivetrain.speedMultiplier(), 0.1),
-                                5))
+                        Math.pow(MathUtil.applyDeadband(DRIVER.getLeftY(), 0.1), 5)//
+                                * MaxSpeed * drivetrain.speedMultiplier())
                 .withVelocityY( // Drive left with positive X (left)
-                        Math.pow(
-                                MathUtil.applyDeadband(
-                                        DRIVER.getLeftX() * MaxSpeed * drivetrain.speedMultiplier(),
-                                        0.1),
-                                5))
+                        Math.pow(MathUtil.applyDeadband(DRIVER.getLeftX(), 0.1), 5)//
+                                * MaxSpeed * drivetrain.speedMultiplier())
                 .withRotationalRate( // Drive counterclockwise with negative X (left)
-                        Math.pow(MathUtil.applyDeadband(
-                                -DRIVER.getRightX() * MaxAngularRate * drivetrain.speedMultiplier(),
-                                0.1), 5));
+                        Math.pow(MathUtil.applyDeadband(-DRIVER.getRightX(), 0.1), 5)//
+                                * MaxAngularRate * drivetrain.speedMultiplier());
     }
 
     private void configureDriverBindings() {

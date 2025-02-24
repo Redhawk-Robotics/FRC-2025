@@ -34,6 +34,16 @@ public class Pivot extends SubsystemBase {
     public Pivot() {
         this.leftMotor = new SparkMax(5, MotorType.kBrushless);
 
+        this.configureMotors(0.1, 0, 0);
+
+        this.encoder = leftMotor.getAbsoluteEncoder();
+        this.controller = leftMotor.getClosedLoopController();
+    }
+
+    // this is only public so we can tune PID
+    public void configureMotors(double kP, double kI, double kD) {
+        System.out.printf("Configuring Pivot motors (kP:%f kI:%f kD:%f)...\n", kP, kI, kD);
+
         SparkMaxConfig globalConfig = new SparkMaxConfig();
         globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
 
@@ -45,12 +55,12 @@ public class Pivot extends SubsystemBase {
         leftMotorConfig.absoluteEncoder//
                 .setSparkMaxDataPortConfig()//
                 .inverted(true)//
-                .zeroOffset(zeroOffset)// TODO
+                .zeroOffset(zeroOffset)//
                 .positionConversionFactor(conversionFactor)// 360deg/rev
                 .velocityConversionFactor(conversionFactor);
         leftMotorConfig.closedLoop//
                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)//
-                .pid(0.1, 0, 0.01)//
+                .pid(kP,kI,kD)//
                 ;
                         // .maxMotion//
                         //         .maxVelocity(5)//
@@ -59,8 +69,7 @@ public class Pivot extends SubsystemBase {
         leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        this.encoder = leftMotor.getAbsoluteEncoder();
-        this.controller = leftMotor.getClosedLoopController();
+        System.out.println("Done configuring Pivot motors.");
     }
 
     public Command applySpeedRequest(Supplier<Double> speed) {

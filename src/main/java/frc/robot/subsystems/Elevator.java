@@ -53,6 +53,28 @@ public class Elevator extends SubsystemBase {
         this.bottomLeftMotor = new SparkMax(//
                 Ports.Elevator.kCAN_ID_BOTTOM_LEFT, MotorType.kBrushless);
 
+        this.configureMotors(0.1, 0, 0);
+
+        // no longer using thru-bore, because the measurement goes beyond 360deg
+        // so we can't use it as an absolute encoder
+        // we _could_ use it in quadrature (relative) mode --
+        //   thru-bore is connected to:
+        //   blue port 0
+        //   yellow port 1
+        // but I don't know how we can configure the Max's PID controller
+        // to use an encoder not connected to the Max directly
+        // So, we're just going to use the built-in relative encoder
+        // which fine because the elevator always starts at the bottom (zero)
+        this.encoder = topRightMotor.getEncoder();
+        this.controller = topRightMotor.getClosedLoopController();
+        // TODO -- verify that re-configuring the motors
+        // does not invalidate the two objects above
+    }
+
+    // this is only public so we can tune PID
+    public void configureMotors(double kP, double kI, double kD) {
+        System.out.printf("Configuring Elevator motors (kP:%f kI:%f kD:%f)...\n", kP, kI, kD);
+
         // TODO verify these global config settings
         SparkMaxConfig globalConfig = new SparkMaxConfig();
         globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
@@ -101,13 +123,12 @@ public class Elevator extends SubsystemBase {
 
         topRightMotorConfig.closedLoop// configure closed-loop PID control
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)//
-                .pid(0.5, 0, 0)// TODO tune PID constants -- no kF
+                .pid(kP, kI, kD)// TODO tune PID constants -- no kF
         ;
         // .maxMotion//
         //         .maxVelocity(100)// ??
         //         .maxAcceleration(3)//
         //         .allowedClosedLoopError(5);
-
 
         topRightMotor.configure(topRightMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
@@ -118,11 +139,7 @@ public class Elevator extends SubsystemBase {
         bottomLeftMotor.configure(bottomLeftMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        this.encoder = topRightMotor.getEncoder();
-        // thru-bore is connected to:
-        // blue port 0
-        // yellow port 1
-        this.controller = topRightMotor.getClosedLoopController();
+        System.out.println("Done configuring Elevator motors.");
     }
 
     public Command applySpeedRequest(Supplier<Double> speed) {

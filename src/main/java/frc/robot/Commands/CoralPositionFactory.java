@@ -121,24 +121,29 @@ public final class CoralPositionFactory {
 
     private static Command setAndWait(String system, position location, double position,
             double error, Consumer<Double> setPosition, Supplier<Double> getPosition) {
+
         return Commands.runOnce(() -> {
             setPosition.accept(position);
-        }).andThen(Commands.run(() -> { // should run repeatedly
-            System.out.printf("Waiting for '%s' to get to position %f for %s...\n", system,
-                    position, location.toString());
-            try {
-                // TODO -- ensure that this does not block the robot
-                // from doing anything else. It _shouldn't_, but check to be sure
-                Thread.sleep(1000); // wait 1000ms before printing again
-            } catch (InterruptedException e) {
-                // the command was interrupted while waiting
-                // OK to ignore
-            }
-        }).until(() -> {
-            return Math.abs(getPosition.get() - position) < error;
-        })).andThen(() -> {
-            System.out.printf("At position %s!\n", location.toString());
-        });
+        }).andThen(//
+                Commands.race(//
+                        Commands.runOnce(() -> {
+                            System.out.printf("Waiting for '%s' to get to position %f for %s...\n",
+                                    system, position, location.toString());
+                        }).andThen(//
+                                Commands.waitSeconds(1)//
+                        ).repeatedly().until(() -> {
+                            return Math.abs(getPosition.get() - position) < error;
+                        }).andThen(() -> {
+                            System.out.printf("At position %s!\n", location.toString());
+                        }),
+                        //
+                        Commands.waitSeconds(5).andThen(Commands.runOnce(() -> {
+                            System.out.printf("setAndWait timed out for %s for %s\n", system,
+                                    location.toString());
+                        })))//
+        ).andThen(Commands.runOnce(() -> {
+            System.out.printf("%s to %s done.\n", system, location.toString());
+        }));
     }
 
     private static Command orchestrate(Elevator elevator, Pivot pivot, position p) {
@@ -149,7 +154,7 @@ public final class CoralPositionFactory {
                         setAndWait("Elevator", p, kElevatorMinBlocking, 1, elevator::setPosition,
                                 elevator::getPosition)),
                 Commands.runOnce(() -> {
-                    System.out.println("no overlap detected");
+                    System.out.println("no overlap detected"); // TODO fix this
                 }), //
                 () -> {
                     double Ec = elevator.getPosition(), Ew = p.elevatorPosition();

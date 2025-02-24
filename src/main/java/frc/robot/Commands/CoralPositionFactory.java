@@ -34,11 +34,11 @@ public final class CoralPositionFactory {
     // actually, maybe it'd be better to do [0,100]
 
     private static enum position {
-        F0(0., 0.), //
-        L1(0., 25.), //
-        L2(10., 50.), //
-        L3(70., L2.pivotPosition()), // pivot L2=L3
-        L4(95., 90.);
+        F0(0., 63.), //
+        L1(0., 145.), //
+        L2(0., 156.), //
+        L3(0., L2.pivotPosition()), // pivot L2=L3
+        L4(106., 176.);
 
         private final double elevPos;
         private final double pivotPos;

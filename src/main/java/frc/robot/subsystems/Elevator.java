@@ -176,6 +176,19 @@ public class Elevator extends SubsystemBase {
         this.controller.setReference(position, ControlType.kPosition);
     }
 
+    // Just for testing you can delte later
+    public void stopElevator() {
+        this.topRightMotor.set(0.0);
+        this.bottomLeftMotor.set(0.0);
+        this.bottomRightMotor.set(0.0);
+        this.topLeftMotor.set(0.0);
+    }
+
+    // Might be useful to have this
+    public void resetElevatorPosition() {
+        this.encoder.setPosition(0.0);
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run

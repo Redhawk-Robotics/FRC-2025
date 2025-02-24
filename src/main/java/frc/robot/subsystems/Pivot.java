@@ -107,6 +107,11 @@ public class Pivot extends SubsystemBase {
         this.controller.setReference(position, ControlType.kPosition);
     }
 
+    // just for a quick test, you can delete later
+    public void stopPivotMotor() {
+        this.leftMotor.set(0.0);
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run

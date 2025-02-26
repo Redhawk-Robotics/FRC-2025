@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
-
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -27,22 +27,27 @@ public class Pivot extends SubsystemBase {
     /** Creates a new CoralPivot. */
 
     // Declare Motors here
-    private final SparkMax leftMotor;
-    private final SparkAbsoluteEncoder encoder;
-    private final SparkClosedLoopController controller;
+    private final SparkMax leftMotor= new SparkMax(5, MotorType.kBrushless);
+    private final SparkAbsoluteEncoder encoder = leftMotor.getAbsoluteEncoder();
+    private final SparkClosedLoopController controller = leftMotor.getClosedLoopController();
+
+    private double setPoint;
+    private ControlType controlType;
+    private int slotIndex;
 
     public Pivot() {
-        this.leftMotor = new SparkMax(5, MotorType.kBrushless);
 
-        this.configureMotors(0.1, 0, 0);
+        this.configureMotors(//
+                0.1, 0, 0, //
+                0.025, 0, 0);
 
-        this.encoder = leftMotor.getAbsoluteEncoder();
-        this.controller = leftMotor.getClosedLoopController();
     }
 
     // this is only public so we can tune PID
-    public void configureMotors(double kP, double kI, double kD) {
-        System.out.printf("Configuring Pivot motors (kP:%f kI:%f kD:%f)...\n", kP, kI, kD);
+    public void configureMotors(double kP0, double kI0, double kD0, double kP1, double kI1,
+            double kD1) {
+        System.out.printf("Configuring Pivot motors (kP:%f kI:%f kD:%f)(kP:%f kI:%f kD:%f)...\n",
+                kP0, kI0, kD0, kP1, kI1, kD1);
 
         SparkMaxConfig globalConfig = new SparkMaxConfig();
         globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
@@ -50,7 +55,7 @@ public class Pivot extends SubsystemBase {
         SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
         leftMotorConfig.apply(globalConfig);
         double zeroOffset = 0.8;
-        double conversionFactor = 100./0.5;
+        double conversionFactor = 100. / 0.5;
         // double conversionFactor = Degrees.of(270).minus(Degrees.of(90)).magnitude();
         leftMotorConfig.absoluteEncoder//
                 .setSparkMaxDataPortConfig()//
@@ -60,51 +65,33 @@ public class Pivot extends SubsystemBase {
                 .velocityConversionFactor(conversionFactor);
         leftMotorConfig.closedLoop//
                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)//
-                .pid(kP,kI,kD)//
-                ;
-                        // .maxMotion//
-                        //         .maxVelocity(5)//
-                        //         .maxAcceleration(4)//
-                        //         .allowedClosedLoopError(3);
+                .pid(kP0, kI0, kD0, ClosedLoopSlot.kSlot0)//
+                .pid(kP1, kI1, kD1, ClosedLoopSlot.kSlot1)//
+        ;
         leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
         System.out.println("Done configuring Pivot motors.");
     }
 
-    public Command applySpeedRequest(Supplier<Double> speed) {
-        if (speed == null) {
-            DriverStation.reportWarning(
-                    "Pivot applySpeedRequest received null position supplier",
-                    Thread.currentThread().getStackTrace());
-            return Commands.none();
-        }
-        // SubsystemBase.runOnce implicitly requires `this` subsystem.
-        return this.runOnce(() -> {
-            this.leftMotor.set(speed.get());
-        });
-    }
-
-    public Command applyAddPositionRequest(Supplier<Double> position) {
-        if (position == null) {
-            DriverStation.reportWarning(
-                    "Pivot applyAddPositionRequest received null position supplier",
-                    Thread.currentThread().getStackTrace());
-            return Commands.none();
-        }
-        // SubsystemBase.runOnce implicitly requires `this` subsystem.
-        return this.runOnce(() -> {
-            // this.leftMotor.set(position.get());
-            this.setPosition(this.getPosition() + position.get());
-        });
-    }
-
     public double getPosition() {
         return this.encoder.getPosition();
     }
 
-    public void setPosition(double position) {
-        this.controller.setReference(position, ControlType.kPosition);
+    public Command setReferenceRequest(Supplier<Double> reference, ControlType type) {
+        if (reference == null) {
+            DriverStation.reportError(
+                    "Pivot.setReferenceRequest received null reference supplier",
+                    Thread.currentThread().getStackTrace());
+            return Commands.none();
+        }
+        return this.runOnce(() -> {
+            this.setPoint = reference.get();
+            this.controlType = type;
+            // if velocity control, use slot 0
+            // otherwise use slot 1
+            this.slotIndex = type == ControlType.kVelocity ? 0 : 1;
+        });
     }
 
     // just for a quick test, you can delete later
@@ -115,6 +102,14 @@ public class Pivot extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+
+        this.controller.setReference(this.setPoint, this.controlType,
+                ClosedLoopSlot.values()[slotIndex]);
+
+        SmartDashboard.putNumber("Pivot/set point", this.setPoint);
+        SmartDashboard.putString("Pivot/control type", this.controlType.name());
+        SmartDashboard.putNumber("Pivot/slot", this.slotIndex);
+
         SmartDashboard.putNumber("Pivot/Motor/speed", this.leftMotor.get());
         SmartDashboard.putNumber("Pivot/Motor/voltage", this.leftMotor.getBusVoltage());
         SmartDashboard.putNumber("Pivot/Position", this.encoder.getPosition());

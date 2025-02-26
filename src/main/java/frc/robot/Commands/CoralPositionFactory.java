@@ -6,6 +6,7 @@ package frc.robot.Commands;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import com.revrobotics.spark.SparkBase.ControlType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Elevator;
@@ -120,11 +121,9 @@ public final class CoralPositionFactory {
     }
 
     private static Command setAndWait(String system, position location, double position,
-            double error, Consumer<Double> setPosition, Supplier<Double> getPosition) {
+            double error, Command setPosition, Supplier<Double> getPosition) {
 
-        return Commands.runOnce(() -> {
-            setPosition.accept(position);
-        }).andThen(//
+        return setPosition.andThen(//
                 Commands.race(//
                         Commands.runOnce(() -> {
                             System.out.printf("Waiting for '%s' to get to position %f for %s...\n",
@@ -149,9 +148,9 @@ public final class CoralPositionFactory {
     private static Command orchestrate(Elevator elevator, Pivot pivot, position p) {
         Command makePivotSafe = Commands.either(//
                 Commands.parallel(
-                        setAndWait("Pivot", p, kPivotMaxBlocking, 1, pivot::setPosition,
+                        setAndWait("Pivot", p, kPivotMaxBlocking, 1, pivot.setReferenceRequest(() -> kPivotMaxBlocking, ControlType.kPosition),
                                 pivot::getPosition),
-                        setAndWait("Elevator", p, kElevatorMinBlocking, 1, elevator::setPosition,
+                        setAndWait("Elevator", p, kElevatorMinBlocking, 1, elevator.setReferenceRequest(() -> kElevatorMinBlocking, ControlType.kPosition),
                                 elevator::getPosition)),
                 Commands.runOnce(() -> {
                     System.out.println("no overlap detected"); // TODO fix this
@@ -165,9 +164,9 @@ public final class CoralPositionFactory {
         Command result = Commands.sequence(//
                 makePivotSafe,
                 Commands.parallel(
-                        setAndWait("Pivot", p, p.pivotPosition(), 1, pivot::setPosition,
+                        setAndWait("Pivot", p, p.pivotPosition(), 1, pivot.setReferenceRequest(p::pivotPosition, ControlType.kPosition),
                                 pivot::getPosition),
-                        setAndWait("Elevator", p, p.elevatorPosition(), 1, elevator::setPosition,
+                        setAndWait("Elevator", p, p.elevatorPosition(), 1, elevator.setReferenceRequest(p::elevatorPosition, ControlType.kPosition),
                                 elevator::getPosition)));
         result.addRequirements(pivot, elevator);
         return result;
@@ -179,8 +178,11 @@ public final class CoralPositionFactory {
     }
 
     public static Command L1(Elevator elevator, Pivot pivot) {
-        // also default position w/ Coral
-        return orchestrate(elevator, pivot, position.L1);
+        Command result = Commands.parallel(
+                elevator.setReferenceRequest(position.L1::elevatorPosition, ControlType.kPosition),
+                pivot.setReferenceRequest(position.L1::pivotPosition, ControlType.kVelocity));
+        result.addRequirements(pivot, elevator);
+        return result;
     }
 
     public static Command L2(Elevator elevator, Pivot pivot) {
@@ -205,5 +207,13 @@ public final class CoralPositionFactory {
         //         elevator::setPosition, elevator::getPosition);
         // result.addRequirements(pivot);
         // return result;
+    }
+
+    public static Command Stop(Elevator elevator, Pivot pivot) {
+        Command result =
+                Commands.parallel(elevator.setReferenceRequest(() -> 0., ControlType.kVelocity),
+                        pivot.setReferenceRequest(() -> 0., ControlType.kVelocity));
+        result.addRequirements(pivot, elevator);
+        return result;
     }
 }

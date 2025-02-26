@@ -5,7 +5,8 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
-
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +16,8 @@ import frc.robot.Constants.Ports;
 import java.util.function.Supplier;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -30,30 +33,36 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class Elevator extends SubsystemBase {
 
-    private final SparkMax topRightMotor;
-    private final SparkMax bottomRightMotor;
-    private final SparkMax topLeftMotor;
-    private final SparkMax bottomLeftMotor;
 
-    private final RelativeEncoder encoder;
-    private final SparkClosedLoopController controller;
+
+    // looking at the elevator with the motors in view
+    // looking at the front of the robot
+    private final SparkMax topRightMotor = new SparkMax(//
+            Ports.Elevator.kCAN_ID_TOP_RIGHT, MotorType.kBrushless);
+    private final SparkMax bottomRightMotor = new SparkMax(// (**leader**)
+            Ports.Elevator.kCAN_ID_BOTTOM_RIGHT, MotorType.kBrushless);
+    private final SparkMax topLeftMotor = new SparkMax(//
+            Ports.Elevator.kCAN_ID_TOP_LEFT, MotorType.kBrushless);
+    private final SparkMax bottomLeftMotor = new SparkMax(//
+            Ports.Elevator.kCAN_ID_BOTTOM_LEFT, MotorType.kBrushless);
+
+    private final RelativeEncoder encoder = topRightMotor.getEncoder();
+    private final SparkClosedLoopController controller = topRightMotor.getClosedLoopController();
+
+    private double setPoint;
+    private ControlType controlType;
+    private int slotIndex;
 
     // https://docs.revrobotics.com/rev-crossover-products/sensors/tbe/application-examples#brushless-motors
 
     /** Creates a new Elevator Subsystem. */
     public Elevator() {
-        // looking at the elevator with the motors in view
-        // looking at the front of the robot
-        this.topRightMotor = new SparkMax(//
-                Ports.Elevator.kCAN_ID_TOP_RIGHT, MotorType.kBrushless);
-        this.bottomRightMotor = new SparkMax(// (**leader**)
-                Ports.Elevator.kCAN_ID_BOTTOM_RIGHT, MotorType.kBrushless);
-        this.topLeftMotor = new SparkMax(//
-                Ports.Elevator.kCAN_ID_TOP_LEFT, MotorType.kBrushless);
-        this.bottomLeftMotor = new SparkMax(//
-                Ports.Elevator.kCAN_ID_BOTTOM_LEFT, MotorType.kBrushless);
+        this.configureMotors(//
+                0.1, 0, 0, //
+                0.050, 0, 0, //
+                0.025, 0, 0);
 
-        this.configureMotors(0.1, 0, 0);
+        this.resetElevatorPosition();
 
         // no longer using thru-bore, because the measurement goes beyond 360deg
         // so we can't use it as an absolute encoder
@@ -65,15 +74,17 @@ public class Elevator extends SubsystemBase {
         // to use an encoder not connected to the Max directly
         // So, we're just going to use the built-in relative encoder
         // which fine because the elevator always starts at the bottom (zero)
-        this.encoder = topRightMotor.getEncoder();
-        this.controller = topRightMotor.getClosedLoopController();
+
         // TODO -- verify that re-configuring the motors
         // does not invalidate the two objects above
     }
 
     // this is only public so we can tune PID
-    public void configureMotors(double kP, double kI, double kD) {
-        System.out.printf("Configuring Elevator motors (kP:%f kI:%f kD:%f)...\n", kP, kI, kD);
+    public void configureMotors(double kP0, double kI0, double kD0, double kP1, double kI1,
+            double kD1, double kP2, double kI2, double kD2) {
+        System.out.printf(
+                "Configuring Elevator motors (kP:%f kI:%f kD:%f)(kP:%f kI:%f kD:%f)(kP:%f kI:%f kD:%f)...\n",
+                kP0, kI0, kD0, kP1, kI1, kD1, kP2, kI2, kD2);
 
         // TODO verify these global config settings
         SparkMaxConfig globalConfig = new SparkMaxConfig();
@@ -98,6 +109,7 @@ public class Elevator extends SubsystemBase {
         // see also <https://docs.revrobotics.com/brushless/spark-max/encoders/alternate-encoder>
         //
 
+        // TODO kill
         // elevator max == 32
         double conversionFactor = 100. / 32.;
         topRightMotorConfig.encoder.positionConversionFactor(conversionFactor)
@@ -123,12 +135,13 @@ public class Elevator extends SubsystemBase {
 
         topRightMotorConfig.closedLoop// configure closed-loop PID control
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)//
-                .pid(kP, kI, kD)// TODO tune PID constants -- no kF
+                .pid(kP0, kI0, kD0, ClosedLoopSlot.kSlot0)// no kF
+                .pid(kP1, kI1, kD1, ClosedLoopSlot.kSlot1)// no kF
+                .pid(kP2, kI2, kD2, ClosedLoopSlot.kSlot2)// no kF
         ;
-        // .maxMotion//
-        //         .maxVelocity(100)// ??
-        //         .maxAcceleration(3)//
-        //         .allowedClosedLoopError(5);
+        // slot 0 == velocity control
+        // slot 1 == position control, elevator up
+        // slot 2 == position control, elevator down
 
         topRightMotor.configure(topRightMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
@@ -142,41 +155,29 @@ public class Elevator extends SubsystemBase {
         System.out.println("Done configuring Elevator motors.");
     }
 
-    public Command applySpeedRequest(Supplier<Double> speed) {
-        if (speed == null) {
-            DriverStation.reportWarning(
-                    "Elevator applySpeedRequest received null position supplier",
-                    Thread.currentThread().getStackTrace());
-            return Commands.none();
-        }
-        // SubsystemBase.runOnce implicitly requires `this` subsystem.
-        return this.runOnce(() -> {
-            this.topRightMotor.set(speed.get());
-        });
-    }
-
-    public Command applyAddPositionRequest(Supplier<Double> position) {
-        if (position == null) {
-            DriverStation.reportWarning(
-                    "Elevator applyAddPositionRequest received null position supplier",
-                    Thread.currentThread().getStackTrace());
-            return Commands.none();
-        }
-        // SubsystemBase.runOnce implicitly requires `this` subsystem.
-        return this.runOnce(() -> {
-            this.setPosition(this.getPosition() + position.get());
-        });
-    }
-
     public double getPosition() {
         return this.encoder.getPosition();
     }
 
-    public void setPosition(double position) {
-        this.controller.setReference(position, ControlType.kPosition);
+    public Command setReferenceRequest(Supplier<Double> reference, ControlType type) {
+        if (reference == null) {
+            DriverStation.reportError(
+                    "Elevator.setReferenceRequest received null reference supplier",
+                    Thread.currentThread().getStackTrace());
+            return Commands.none();
+        }
+        return this.runOnce(() -> {
+            this.setPoint = reference.get();
+            this.controlType = type;
+            // if velocity control, use slot 0
+            // else if want - current > 0 then go up, so use slot 1
+            // otherwise use slot 2
+            this.slotIndex = type == ControlType.kVelocity ? 0
+                    : (reference.get() - this.getPosition() > 0 ? 1 : 2);
+        });
     }
 
-    // Just for testing you can delte later
+    // Just for testing you can delete later
     public void stopElevator() {
         this.topRightMotor.set(0.0);
         this.bottomLeftMotor.set(0.0);
@@ -192,6 +193,16 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+
+        if (this.controller != null) {
+            this.controller.setReference(this.setPoint, this.controlType,
+                    ClosedLoopSlot.values()[slotIndex]);
+        }
+
+        SmartDashboard.putNumber("Elevator/set point", this.setPoint);
+        SmartDashboard.putString("Elevator/control type", this.controlType.name());
+        SmartDashboard.putNumber("Elevator/slot", this.slotIndex);
+
         SmartDashboard.putNumber("Elevator/Motor1/speed", topRightMotor.get());
         SmartDashboard.putNumber("Elevator/Motor2/speed", bottomRightMotor.get());
         SmartDashboard.putNumber("Elevator/Motor3/speed", topLeftMotor.get());

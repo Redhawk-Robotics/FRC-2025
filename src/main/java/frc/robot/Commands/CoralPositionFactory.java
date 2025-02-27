@@ -9,20 +9,11 @@ import java.util.function.Supplier;
 import com.revrobotics.spark.SparkBase.ControlType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.Settings;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Pivot;
 
-// CoralPositionFactory
-// .L1()
-// .L2() ...
-// command composition
-
 public final class CoralPositionFactory {
-
-    private static final double kElevatorMinBlocking = 5.; // elevator blocks the pivot above this reference
-    private static final double kElevatorMaxBlocking = 55.; // elevator blocks the pivot below this reference
-    private static final double kPivotMinBlocking = 0.; // for completeness
-    private static final double kPivotMaxBlocking = 35.; // elevator can move in the range above when pivot is here
 
     // elevator goes from 43.5in to 74in ~ 30in of range
     // elevator setPosition reference is configured to range from 0 to 30
@@ -35,11 +26,12 @@ public final class CoralPositionFactory {
     // actually, maybe it'd be better to do [0,100]
 
     private static enum position {
-        F0(0., 63.), //
-        L1(0., 145.), //
-        L2(0., 156.), //
-        L3(0., L2.pivotPosition()), // pivot L2=L3
-        L4(106., 176.);
+        F0(Settings.CoralPosition.ELEVATOR_FEED_POSITION,
+                Settings.CoralPosition.PIVOT_FEED_POSITION), //
+        L1(Settings.CoralPosition.ELEVATOR_L1_POSITION, Settings.CoralPosition.PIVOT_L1_POSITION), //
+        L2(Settings.CoralPosition.ELEVATOR_L2_POSITION, Settings.CoralPosition.PIVOT_L2_POSITION), //
+        L3(Settings.CoralPosition.ELEVATOR_L3_POSITION, Settings.CoralPosition.PIVOT_L3_POSITION), //
+        L4(Settings.CoralPosition.ELEVATOR_L4_POSITION, Settings.CoralPosition.PIVOT_L4_POSITION);
 
         private final double elevPos;
         private final double pivotPos;
@@ -108,16 +100,20 @@ public final class CoralPositionFactory {
 
     private static boolean elevatorWilBlock(double Ec, double Ew) {
         if (Ec > Ew) {
-            return overlap(Ew, Ec, kElevatorMinBlocking, kElevatorMaxBlocking);
+            return overlap(Ew, Ec, Settings.CoralPosition.ELEVATOR_MIN_BLOCKING_POSITION,
+                    Settings.CoralPosition.ELEVATOR_MAX_BLOCKING_POSITION);
         }
-        return overlap(Ec, Ew, kElevatorMinBlocking, kElevatorMaxBlocking);
+        return overlap(Ec, Ew, Settings.CoralPosition.ELEVATOR_MIN_BLOCKING_POSITION,
+                Settings.CoralPosition.ELEVATOR_MAX_BLOCKING_POSITION);
     }
 
     private static boolean pivotWillBlock(double Pc, double Pw) {
         if (Pc > Pw) {
-            return overlap(Pw, Pc, kPivotMinBlocking, kPivotMaxBlocking);
+            return overlap(Pw, Pc, Settings.CoralPosition.PIVOT_MIN_BLOCKING_POSITION,
+                    Settings.CoralPosition.PIVOT_MAX_BLOCKING_POSITION);
         }
-        return overlap(Pc, Pw, kPivotMinBlocking, kPivotMaxBlocking);
+        return overlap(Pc, Pw, Settings.CoralPosition.PIVOT_MIN_BLOCKING_POSITION,
+                Settings.CoralPosition.PIVOT_MAX_BLOCKING_POSITION);
     }
 
     private static Command setAndWait(String system, position location, double position,
@@ -147,10 +143,17 @@ public final class CoralPositionFactory {
 
     private static Command orchestrate(Elevator elevator, Pivot pivot, position p) {
         Command makePivotSafe = Commands.either(//
-                Commands.parallel(
-                        setAndWait("Pivot", p, kPivotMaxBlocking, 1, pivot.setReferenceRequest(() -> kPivotMaxBlocking, ControlType.kPosition),
+                Commands.sequence(
+                        setAndWait("Pivot", p, Settings.CoralPosition.PIVOT_MAX_BLOCKING_POSITION,
+                                Settings.CoralPosition.PIVOT_ALLOWED_ERROR,
+                                pivot.runOnce(() -> pivot.setReference(
+                                        Settings.CoralPosition.PIVOT_MAX_BLOCKING_POSITION)),
                                 pivot::getPosition),
-                        setAndWait("Elevator", p, kElevatorMinBlocking, 1, elevator.setReferenceRequest(() -> kElevatorMinBlocking, ControlType.kPosition),
+                        setAndWait("Elevator", p,
+                                Settings.CoralPosition.ELEVATOR_MIN_BLOCKING_POSITION,
+                                Settings.CoralPosition.ELEVATOR_ALLOWED_ERROR,
+                                elevator.runOnce(() -> elevator.setReference(
+                                        Settings.CoralPosition.ELEVATOR_MIN_BLOCKING_POSITION)),
                                 elevator::getPosition)),
                 Commands.runOnce(() -> {
                     System.out.println("no overlap detected"); // TODO fix this
@@ -164,9 +167,13 @@ public final class CoralPositionFactory {
         Command result = Commands.sequence(//
                 makePivotSafe,
                 Commands.parallel(
-                        setAndWait("Pivot", p, p.pivotPosition(), 1, pivot.setReferenceRequest(p::pivotPosition, ControlType.kPosition),
+                        setAndWait("Pivot", p, p.pivotPosition(),
+                                Settings.CoralPosition.PIVOT_ALLOWED_ERROR,
+                                pivot.runOnce(() -> pivot.setReference(p.pivotPosition())),
                                 pivot::getPosition),
-                        setAndWait("Elevator", p, p.elevatorPosition(), 1, elevator.setReferenceRequest(p::elevatorPosition, ControlType.kPosition),
+                        setAndWait("Elevator", p, p.elevatorPosition(),
+                                Settings.CoralPosition.ELEVATOR_ALLOWED_ERROR,
+                                elevator.runOnce(() -> elevator.setReference(p.elevatorPosition())),
                                 elevator::getPosition)));
         result.addRequirements(pivot, elevator);
         return result;
@@ -178,11 +185,13 @@ public final class CoralPositionFactory {
     }
 
     public static Command L1(Elevator elevator, Pivot pivot) {
-        Command result = Commands.parallel(
-                elevator.setReferenceRequest(position.L1::elevatorPosition, ControlType.kPosition),
-                pivot.setReferenceRequest(position.L1::pivotPosition, ControlType.kVelocity));
-        result.addRequirements(pivot, elevator);
-        return result;
+        // you could use this to test out just moving both systems directly to L1
+        // Command result =
+        //         Commands.parallel(elevator.setReferenceRequest(position.L1::elevatorPosition),
+        //                 pivot.setReferenceRequest(position.L1::pivotPosition));
+        // result.addRequirements(pivot, elevator);
+        // return result;
+        return orchestrate(elevator, pivot, position.L1);
     }
 
     public static Command L2(Elevator elevator, Pivot pivot) {
@@ -195,25 +204,14 @@ public final class CoralPositionFactory {
 
     public static Command L4(Elevator elevator, Pivot pivot) {
         return orchestrate(elevator, pivot, position.L4);
-
-        // TODO use for testing
-
-        // Command result = setAndWait("Pivot", position.L4, position.L4.pivotPosition(), 1, pivot::setPosition,
-        //         pivot::getPosition);
-        // result.addRequirements(pivot);
-        // return result;
-
-        // Command result = setAndWait("Elevator", position.L4, position.L4.elevatorPosition(), 5,
-        //         elevator::setPosition, elevator::getPosition);
-        // result.addRequirements(pivot);
-        // return result;
     }
 
-    public static Command Stop(Elevator elevator, Pivot pivot) {
-        Command result =
-                Commands.parallel(elevator.setReferenceRequest(() -> 0., ControlType.kVelocity),
-                        pivot.setReferenceRequest(() -> 0., ControlType.kVelocity));
-        result.addRequirements(pivot, elevator);
-        return result;
-    }
+    // this might be useful?
+    // public static Command Stop(Elevator elevator, Pivot pivot) {
+    //     Command result = Commands.parallel(//
+    //             elevator.runOnce(() -> elevator.stopElevator()),
+    //             pivot.runOnce(() -> pivot.stopPivot()));
+    //     result.addRequirements(pivot, elevator);
+    //     return result;
+    // }
 }

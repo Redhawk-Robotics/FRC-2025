@@ -12,7 +12,6 @@ import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.revrobotics.spark.SparkBase.ControlType;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,7 +19,6 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.event.EventLoop;
 // import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.CoralPositionFactory;
 import frc.robot.Constants.Ports;
+import frc.robot.Constants.Settings;
 import frc.robot.subsystems.Pivot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AlgaeHandler;
@@ -88,7 +87,7 @@ public class RobotContainer {
     private class SendablePID implements Sendable {
         private boolean isTuningMode = false;
         //
-        private float elevator_kP = 0.05f;
+        private float elevator_kP = 0.025f;
         private float elevator_kI = 0;
         private float elevator_kD = 0;
         //
@@ -267,28 +266,33 @@ public class RobotContainer {
         DRIVER.x().onTrue(CoralPositionFactory.Feed(this.m_elevator, this.m_pivot));
     }
 
+    public void zero() {
+        this.m_elevator.stopElevator();
+        this.m_pivot.stopPivot();
+    }
+
     private void configureOperatorBindings() {
         /* Configure Elevator */
         Command elevatorDefault = Commands.either(//
                 Commands.none(), //
-                this.m_elevator.setReferenceRequest(//
-                        () -> MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1) * 2,
-                        ControlType.kVelocity), //
+                this.m_elevator.runOnce(//
+                        () -> this.m_elevator.setSpeed(
+                                MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1) / 2.25)), //
                 this.m_PID::isTuningMode);
         elevatorDefault.addRequirements(m_elevator);
-        // OPERATOR.leftStick().whileTrue();
+        this.m_elevator.setDefaultCommand(elevatorDefault);
         // on the controller: up == -1, down == 1
 
         /* Configure Pivot */
         Command pivotDefault = Commands.either(//
                 Commands.none(), //
-                this.m_pivot.setReferenceRequest(//
-                        () -> MathUtil.applyDeadband((-1. * OPERATOR.getRightY()), 0.1) * 2,
-                        ControlType.kVelocity), //
+                this.m_pivot.runOnce(//
+                        () -> this.m_pivot.setSpeed(
+                                MathUtil.applyDeadband((-1. * OPERATOR.getRightY()), 0.1) / 2.25)), //
                 this.m_PID::isTuningMode);
         pivotDefault.addRequirements(m_pivot);
-        // OPERATOR.rightStick(); // TODO event loop
-        // on the controller: up == -1, down == 1
+        this.m_pivot.setDefaultCommand(pivotDefault);
+        // // on the controller: up == -1, down == 1
 
         /* Configure joint Elevator/Pivot positioning */
         // tuning mode:
@@ -296,34 +300,36 @@ public class RobotContainer {
         // b == elevator go to setpoint
         // x == re-flash pivot motor (with new PID values)
         // y == pivot go to setpoint
-        OPERATOR.a().onTrue(//
-                Commands.either(//
-                        this.m_elevator.runOnce(() -> this.m_elevator.configureMotors(0.1, 0, 0,
-                                0.05, 0, 0, this.m_PID.getElevator_kP(),
-                                this.m_PID.getElevator_kI(), this.m_PID.getElevator_kD())), //
-                        CoralPositionFactory.L1(this.m_elevator, this.m_pivot), //
-                        this.m_PID::isTuningMode));
-        OPERATOR.b().whileTrue(//
-                Commands.either(//
-                        this.m_elevator.setReferenceRequest(() -> {
-                            return (double) this.m_PID.getElevator_setpoint();
-                        }, ControlType.kPosition), //
-                        CoralPositionFactory.L2(this.m_elevator, this.m_pivot), //
-                        this.m_PID::isTuningMode).finallyDo(() -> this.m_elevator.stopElevator()));
-        OPERATOR.x().whileTrue(//
-                Commands.either(//
-                        this.m_pivot.runOnce(() -> this.m_pivot.configureMotors(0.1, 0, 0,
+        OPERATOR.a().whileTrue(Commands.either(//
+                this.m_elevator.runOnce(//
+                        () -> this.m_elevator.configureMotors(//
+                                Settings.Elevator.kP_UP, Settings.Elevator.kI_UP,
+                                Settings.Elevator.kD_UP, //
+                                // tune Elevator PID DOWN
+                                this.m_PID.getElevator_kP(), this.m_PID.getElevator_kI(),
+                                this.m_PID.getElevator_kD())), //
+                CoralPositionFactory.L1(this.m_elevator, this.m_pivot), //
+                this.m_PID::isTuningMode));
+        OPERATOR.b().whileTrue(Commands.either(//
+                this.m_elevator.startEnd(
+                        () -> this.m_elevator.setReference(this.m_PID.getElevator_setpoint()),
+                        () -> this.m_elevator.stopElevator()),
+                CoralPositionFactory.L2(this.m_elevator, this.m_pivot), //
+                this.m_PID::isTuningMode));
+        OPERATOR.x().whileTrue(Commands.either(//
+                this.m_pivot.runOnce(//
+                        () -> this.m_pivot.configureMotors(// tune Pivot (done?)
                                 this.m_PID.getPivot_kP(), this.m_PID.getPivot_kI(),
                                 this.m_PID.getPivot_kD())), //
-                        CoralPositionFactory.L3(this.m_elevator, this.m_pivot), //
-                        this.m_PID::isTuningMode));
-        OPERATOR.y().whileTrue(//
-                Commands.either(//
-                        this.m_pivot.setReferenceRequest(() -> {
-                            return (double) this.m_PID.getPivot_setpoint();
-                        }, ControlType.kPosition),
-                        CoralPositionFactory.L4(this.m_elevator, this.m_pivot), //
-                        this.m_PID::isTuningMode).finallyDo(() -> this.m_pivot.stopPivotMotor()));
+                CoralPositionFactory.L3(this.m_elevator, this.m_pivot), //
+                this.m_PID::isTuningMode));
+        OPERATOR.y().whileTrue(Commands.either(//
+                this.m_pivot.startEnd(
+                        () -> this.m_pivot.setReference(this.m_PID.getPivot_setpoint()),
+                        () -> this.m_pivot.stopPivot()),
+                CoralPositionFactory.L4(this.m_elevator, this.m_pivot), //
+                this.m_PID::isTuningMode));
+
         // OPERATOR.a().onTrue(CoralPositionFactory.L1(this.m_elevator, this.m_pivot));
         // OPERATOR.b().onTrue(CoralPositionFactory.L2(this.m_elevator, this.m_pivot));
         // OPERATOR.x().onTrue(CoralPositionFactory.L3(this.m_elevator, this.m_pivot));
@@ -341,53 +347,15 @@ public class RobotContainer {
         OPERATOR.rightTrigger().onTrue(this.m_algaeHandler.rotateCCW())
                 .onFalse(this.m_algaeHandler.stop());
 
-        // Test buttons for elevator pid tuning, should remove in the future
-        OPERATOR.rightStick()
-                .whileTrue(this.m_elevator.runOnce(() -> this.m_elevator.resetElevatorPosition()));
-
-        OPERATOR.povUp().whileTrue(//
-                Commands.either(//
-                        this.m_elevator.runEnd(() -> {
-                            float ref = this.m_PID.getElevator_setpoint();
-                            System.out.printf("Setting Elevator reference to %f (current %f)\n",
-                                    ref, this.m_elevator.getPosition());
-                            // this.m_elevator.setPosition(90);
-                        }, () -> this.m_elevator.stopElevator()), //
-                        CoralPositionFactory.L4(this.m_elevator, this.m_pivot), //
-                        this.m_PID::isTuningMode));
-
-        OPERATOR.povLeft().whileTrue(//
-                Commands.either(//
-                        this.m_elevator.runEnd(() -> {
-                            float ref = this.m_PID.getElevator_setpoint();
-                            System.out.printf("Setting Elevator reference to %f (current %f)\n",
-                                    ref, this.m_elevator.getPosition());
-                            // this.m_elevator.setPosition(40);
-                        }, () -> this.m_elevator.stopElevator()), //
-                        CoralPositionFactory.L4(this.m_elevator, this.m_pivot), //
-                        this.m_PID::isTuningMode));
-
-        OPERATOR.povRight().whileTrue(//
-                Commands.either(//
-                        this.m_elevator.runEnd(() -> {
-                            float ref = this.m_PID.getElevator_setpoint();
-                            System.out.printf("Setting Elevator reference to %f (current %f)\n",
-                                    ref, this.m_elevator.getPosition());
-                            // this.m_elevator.setPosition(20);
-                        }, () -> this.m_elevator.stopElevator()), //
-                        CoralPositionFactory.L2(this.m_elevator, this.m_pivot), //
-                        this.m_PID::isTuningMode));
-
-        OPERATOR.povDown().whileTrue(//
-                Commands.either(//
-                        this.m_elevator.runEnd(() -> {
-                            float ref = this.m_PID.getElevator_setpoint();
-                            System.out.printf("Setting Elevator reference to %f (current %f)\n",
-                                    ref, this.m_elevator.getPosition());
-                            // this.m_elevator.setPosition(0);
-                        }, () -> this.m_elevator.stopElevator()), //
-                        CoralPositionFactory.L1(this.m_elevator, this.m_pivot), //
-                        this.m_PID::isTuningMode));
+        // on d-pad down, zero the current elevator position
+        OPERATOR.povDown().onTrue(//
+                this.m_elevator.runOnce(() -> this.m_elevator.resetElevatorPosition()));
+        // on d-pad up, tell the elevator and pivot to use _speed_ control
+        // with the joysticks, instead of PID position control
+        OPERATOR.povUp().onTrue(//
+                Commands.parallel(//
+                        this.m_elevator.runOnce(() -> this.m_elevator.useSpeed()), //
+                        this.m_pivot.runOnce(() -> this.m_pivot.useSpeed())));
     }
 
     public Command getAutonomousCommand() {

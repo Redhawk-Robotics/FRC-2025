@@ -4,70 +4,60 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import java.util.function.Supplier;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Settings;
 
 public class Pivot extends SubsystemBase {
     /** Creates a new CoralPivot. */
 
     // Declare Motors here
-    private final SparkMax leftMotor= new SparkMax(5, MotorType.kBrushless);
+    private final SparkMax leftMotor = new SparkMax(5, MotorType.kBrushless);
     private final SparkAbsoluteEncoder encoder = leftMotor.getAbsoluteEncoder();
     private final SparkClosedLoopController controller = leftMotor.getClosedLoopController();
 
-    private double setPoint;
-    private ControlType controlType;
-    private int slotIndex;
+    private double setPoint = 0;
+    private int slotIndex = -1;
+    // slotIndex < 0 means to use .set(this.speed)
+    // slotIndex 1 means to use PID for Pivot with this.setPoint
+    private double speed = 0;
 
     public Pivot() {
-
         this.configureMotors(//
-                0.1, 0, 0, //
-                0.025, 0, 0);
-
+                Settings.Pivot.kP, Settings.Pivot.kI, Settings.Pivot.kD);
     }
 
     // this is only public so we can tune PID
-    public void configureMotors(double kP0, double kI0, double kD0, double kP1, double kI1,
-            double kD1) {
-        System.out.printf("Configuring Pivot motors (kP:%f kI:%f kD:%f)(kP:%f kI:%f kD:%f)...\n",
-                kP0, kI0, kD0, kP1, kI1, kD1);
+    public void configureMotors(double kP1, double kI1, double kD1) {
+        System.out.printf("Configuring Pivot motor\n\t(kP:%f kI:%f kD:%f)...\n", kP1, kI1, kD1);
 
         SparkMaxConfig globalConfig = new SparkMaxConfig();
         globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
 
         SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
         leftMotorConfig.apply(globalConfig);
-        double zeroOffset = 0.8;
-        double conversionFactor = 100. / 0.5;
-        // double conversionFactor = Degrees.of(270).minus(Degrees.of(90)).magnitude();
         leftMotorConfig.absoluteEncoder//
                 .setSparkMaxDataPortConfig()//
                 .inverted(true)//
-                .zeroOffset(zeroOffset)//
-                .positionConversionFactor(conversionFactor)// 360deg/rev
-                .velocityConversionFactor(conversionFactor);
+                .zeroOffset(Settings.Pivot.ZERO_OFFSET)//
+                .positionConversionFactor(Settings.Pivot.CONVERSION_FACTOR)// 360deg/rev
+                .velocityConversionFactor(Settings.Pivot.CONVERSION_FACTOR);
         leftMotorConfig.closedLoop//
                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)//
-                .pid(kP0, kI0, kD0, ClosedLoopSlot.kSlot0)//
                 .pid(kP1, kI1, kD1, ClosedLoopSlot.kSlot1)//
         ;
+        // slot 1 == position control
         leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
@@ -78,24 +68,29 @@ public class Pivot extends SubsystemBase {
         return this.encoder.getPosition();
     }
 
-    public Command setReferenceRequest(Supplier<Double> reference, ControlType type) {
-        if (reference == null) {
-            DriverStation.reportError(
-                    "Pivot.setReferenceRequest received null reference supplier",
-                    Thread.currentThread().getStackTrace());
-            return Commands.none();
-        }
-        return this.runOnce(() -> {
-            this.setPoint = reference.get();
-            this.controlType = type;
-            // if velocity control, use slot 0
-            // otherwise use slot 1
-            this.slotIndex = type == ControlType.kVelocity ? 0 : 1;
-        });
+    public void setReference(double reference) {
+        System.out.printf("Setting Pivot reference to %f (current %f)\n", reference,
+                this.getPosition());
+        this.setPoint = reference;
+        this.slotIndex = 1;
     }
 
-    // just for a quick test, you can delete later
-    public void stopPivotMotor() {
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
+    public void useSpeed() {
+        this.slotIndex = -1;
+    }
+
+    private boolean shouldUsePIDControl() {
+        return this.slotIndex > 0 && this.slotIndex < ControlType.values().length;
+    }
+
+    public void stopPivot() {
+        this.useSpeed();
+        this.setSpeed(0);
+        // redundant
         this.leftMotor.set(0.0);
     }
 
@@ -103,12 +98,18 @@ public class Pivot extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
 
-        this.controller.setReference(this.setPoint, this.controlType,
-                ClosedLoopSlot.values()[slotIndex]);
+        if (this.shouldUsePIDControl()) {
+            this.controller.setReference(this.setPoint, ControlType.kPosition,
+                    ClosedLoopSlot.values()[slotIndex]);
+        } else {
+            this.leftMotor.set(speed);
+        }
 
-        SmartDashboard.putNumber("Pivot/set point", this.setPoint);
-        SmartDashboard.putString("Pivot/control type", this.controlType.name());
-        SmartDashboard.putNumber("Pivot/slot", this.slotIndex);
+        SmartDashboard.putBoolean("Pivot/use PID", this.shouldUsePIDControl());
+        SmartDashboard.putNumber("Pivot/PID setPoint", this.setPoint);
+        SmartDashboard.putNumber("Pivot/PID slot", this.slotIndex);
+        SmartDashboard.putBoolean("Pivot/use speed", !this.shouldUsePIDControl());
+        SmartDashboard.putNumber("Pivot/target speed", this.speed);
 
         SmartDashboard.putNumber("Pivot/Motor/speed", this.leftMotor.get());
         SmartDashboard.putNumber("Pivot/Motor/voltage", this.leftMotor.getBusVoltage());

@@ -5,16 +5,12 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-
 
 public class CoralHandler extends SubsystemBase {
     /** Creates a new CoralHandler. */
@@ -22,7 +18,7 @@ public class CoralHandler extends SubsystemBase {
 
     public CoralHandler() {
         // TODO
-        this.coralIntakeMotor = new SparkMax(Ports.CoralIntake.WHEEL_INTAKE, Settings.Pivot.CORAL_INTAKE_MOTORTYPE);
+        this.coralIntakeMotor = new SparkMax(Ports.CoralIntake.WHEEL_INTAKE, Settings.CoralHandler.CORAL_INTAKE_MOTORTYPE);
     }
 
     public Command intakeFromStation() {

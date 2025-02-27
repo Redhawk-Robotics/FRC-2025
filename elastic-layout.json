@@ -120,102 +120,25 @@
       "grid_layout": {
         "layouts": [
           {
-            "title": "Elevator",
-            "x": 0.0,
+            "title": "Motor1",
+            "x": 640.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 704.0,
+            "height": 384.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
             },
             "children": [
               {
-                "title": "kP",
+                "title": "speed",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/PID/Elevator/kP",
-                  "period": 0.06,
-                  "data_type": "float",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "kI",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/PID/Elevator/kI",
-                  "period": 0.06,
-                  "data_type": "float",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "kD",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/PID/Elevator/kD",
-                  "period": 0.06,
-                  "data_type": "float",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "setpoint",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Number Slider",
-                "properties": {
-                  "topic": "/SmartDashboard/PID/Elevator/setpoint",
-                  "period": 0.06,
-                  "data_type": "float",
-                  "min_value": 0.0,
-                  "max_value": 100.0,
-                  "divisions": 5,
-                  "update_continuously": true
-                }
-              },
-              {
-                "title": "Position",
-                "x": 128.0,
-                "y": 320.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Number Bar",
-                "properties": {
-                  "topic": "/SmartDashboard/Elevator/Position",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "min_value": 0.0,
-                  "max_value": 100.0,
-                  "divisions": 5,
-                  "inverted": false,
-                  "orientation": "horizontal"
-                }
-              },
-              {
-                "title": "Velocity",
-                "x": 0.0,
-                "y": 448.0,
-                "width": 256.0,
-                "height": 256.0,
                 "type": "Radial Gauge",
                 "properties": {
-                  "topic": "/SmartDashboard/Elevator/Velocity",
+                  "topic": "/SmartDashboard/Elevator/Motor1/speed",
                   "period": 0.06,
                   "data_type": "double",
                   "start_angle": -140.0,
@@ -227,6 +150,460 @@
                   "show_pointer": true,
                   "show_ticks": true
                 }
+              },
+              {
+                "title": "voltage",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Voltage View",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/Motor1/voltage",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 4.0,
+                  "max_value": 13.0,
+                  "divisions": 5,
+                  "inverted": false,
+                  "orientation": "horizontal"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Motor2",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Radial Gauge",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/Motor2/speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "start_angle": -140.0,
+                  "end_angle": 140.0,
+                  "min_value": 0.0,
+                  "max_value": 100.0,
+                  "number_of_labels": 8,
+                  "wrap_value": false,
+                  "show_pointer": true,
+                  "show_ticks": true
+                }
+              },
+              {
+                "title": "voltage",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Voltage View",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/Motor2/voltage",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 4.0,
+                  "max_value": 13.0,
+                  "divisions": 5,
+                  "inverted": false,
+                  "orientation": "horizontal"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Motor3",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Radial Gauge",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/Motor3/speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "start_angle": -140.0,
+                  "end_angle": 140.0,
+                  "min_value": 0.0,
+                  "max_value": 100.0,
+                  "number_of_labels": 8,
+                  "wrap_value": false,
+                  "show_pointer": true,
+                  "show_ticks": true
+                }
+              },
+              {
+                "title": "voltage",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Voltage View",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/Motor3/voltage",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 4.0,
+                  "max_value": 13.0,
+                  "divisions": 5,
+                  "inverted": false,
+                  "orientation": "horizontal"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Motor4",
+            "x": 384.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Radial Gauge",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/Motor4/speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "start_angle": -140.0,
+                  "end_angle": 140.0,
+                  "min_value": 0.0,
+                  "max_value": 100.0,
+                  "number_of_labels": 8,
+                  "wrap_value": false,
+                  "show_pointer": true,
+                  "show_ticks": true
+                }
+              },
+              {
+                "title": "voltage",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Voltage View",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/Motor4/voltage",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 4.0,
+                  "max_value": 13.0,
+                  "divisions": 5,
+                  "inverted": false,
+                  "orientation": "horizontal"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Motor",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Radial Gauge",
+                "properties": {
+                  "topic": "/SmartDashboard/Pivot/Motor/speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "start_angle": -140.0,
+                  "end_angle": 140.0,
+                  "min_value": 0.0,
+                  "max_value": 100.0,
+                  "number_of_labels": 8,
+                  "wrap_value": false,
+                  "show_pointer": true,
+                  "show_ticks": true
+                }
+              },
+              {
+                "title": "voltage",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Voltage View",
+                "properties": {
+                  "topic": "/SmartDashboard/Pivot/Motor/voltage",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": 4.0,
+                  "max_value": 13.0,
+                  "divisions": 5,
+                  "inverted": false,
+                  "orientation": "horizontal"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Elevator",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "kP-up",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/PID/Elevator/kP-up",
+                  "period": 0.06,
+                  "data_type": "float",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kI-up",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/PID/Elevator/kI-up",
+                  "period": 0.06,
+                  "data_type": "float",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kD-up",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/PID/Elevator/kD-up",
+                  "period": 0.06,
+                  "data_type": "float",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kP-down",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/PID/Elevator/kP-down",
+                  "period": 0.06,
+                  "data_type": "float",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kI-down",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/PID/Elevator/kI-down",
+                  "period": 0.06,
+                  "data_type": "float",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "kD-down",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/PID/Elevator/kD-down",
+                  "period": 0.06,
+                  "data_type": "float",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "setpoint",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/PID/Elevator/setpoint",
+                  "period": 0.06,
+                  "data_type": "float",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "Elevator",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 512.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "PID setPoint",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/PID setPoint",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "PID slot",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/PID slot",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Position",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/Position",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Velocity",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/Velocity",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "target speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/target speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "use PID",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/use PID",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "use speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/SmartDashboard/Elevator/use speed",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
               }
             ]
           },
@@ -235,7 +612,7 @@
             "x": 896.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 704.0,
+            "height": 320.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -289,15 +666,53 @@
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Number Slider",
+                "type": "Text Display",
                 "properties": {
                   "topic": "/SmartDashboard/PID/Pivot/setpoint",
                   "period": 0.06,
                   "data_type": "float",
-                  "min_value": 0.0,
-                  "max_value": 100.0,
-                  "divisions": 5,
-                  "update_continuously": true
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "Pivot",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 512.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "PID setPoint",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Pivot/PID setPoint",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "PID slot",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Pivot/PID slot",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
                 }
               },
               {
@@ -306,297 +721,74 @@
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Number Bar",
+                "type": "Text Display",
                 "properties": {
                   "topic": "/SmartDashboard/Pivot/Position",
                   "period": 0.06,
                   "data_type": "double",
-                  "min_value": 0.0,
-                  "max_value": 100.0,
-                  "divisions": 5,
-                  "inverted": false,
-                  "orientation": "horizontal"
+                  "show_submit_button": false
                 }
               },
               {
                 "title": "Velocity",
-                "x": 320.0,
-                "y": 448.0,
-                "width": 256.0,
-                "height": 256.0,
-                "type": "Radial Gauge",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
                 "properties": {
                   "topic": "/SmartDashboard/Pivot/Velocity",
                   "period": 0.06,
                   "data_type": "double",
-                  "start_angle": -140.0,
-                  "end_angle": 140.0,
-                  "min_value": 0.0,
-                  "max_value": 100.0,
-                  "number_of_labels": 8,
-                  "wrap_value": false,
-                  "show_pointer": true,
-                  "show_ticks": true
-                }
-              }
-            ]
-          },
-          {
-            "title": "Motor1",
-            "x": 512.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 384.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "speed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Radial Gauge",
-                "properties": {
-                  "topic": "/SmartDashboard/Elevator/Motor1/speed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "start_angle": -140.0,
-                  "end_angle": 140.0,
-                  "min_value": 0.0,
-                  "max_value": 100.0,
-                  "number_of_labels": 8,
-                  "wrap_value": false,
-                  "show_pointer": true,
-                  "show_ticks": true
+                  "show_submit_button": false
                 }
               },
               {
-                "title": "voltage",
+                "title": "target speed",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Voltage View",
+                "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/Elevator/Motor1/voltage",
+                  "topic": "/SmartDashboard/Pivot/target speed",
                   "period": 0.06,
                   "data_type": "double",
-                  "min_value": 4.0,
-                  "max_value": 13.0,
-                  "divisions": 5,
-                  "inverted": false,
-                  "orientation": "horizontal"
-                }
-              }
-            ]
-          },
-          {
-            "title": "Motor2",
-            "x": 512.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 384.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "speed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Radial Gauge",
-                "properties": {
-                  "topic": "/SmartDashboard/Elevator/Motor2/speed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "start_angle": -140.0,
-                  "end_angle": 140.0,
-                  "min_value": 0.0,
-                  "max_value": 100.0,
-                  "number_of_labels": 8,
-                  "wrap_value": false,
-                  "show_pointer": true,
-                  "show_ticks": true
+                  "show_submit_button": false
                 }
               },
               {
-                "title": "voltage",
+                "title": "use PID",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Voltage View",
+                "type": "Boolean Box",
                 "properties": {
-                  "topic": "/SmartDashboard/Elevator/Motor2/voltage",
+                  "topic": "/SmartDashboard/Pivot/use PID",
                   "period": 0.06,
-                  "data_type": "double",
-                  "min_value": 4.0,
-                  "max_value": 13.0,
-                  "divisions": 5,
-                  "inverted": false,
-                  "orientation": "horizontal"
-                }
-              }
-            ]
-          },
-          {
-            "title": "Motor3",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 384.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "speed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Radial Gauge",
-                "properties": {
-                  "topic": "/SmartDashboard/Elevator/Motor3/speed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "start_angle": -140.0,
-                  "end_angle": 140.0,
-                  "min_value": 0.0,
-                  "max_value": 100.0,
-                  "number_of_labels": 8,
-                  "wrap_value": false,
-                  "show_pointer": true,
-                  "show_ticks": true
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
                 }
               },
               {
-                "title": "voltage",
+                "title": "use speed",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
-                "type": "Voltage View",
+                "type": "Boolean Box",
                 "properties": {
-                  "topic": "/SmartDashboard/Elevator/Motor3/voltage",
+                  "topic": "/SmartDashboard/Pivot/use speed",
                   "period": 0.06,
-                  "data_type": "double",
-                  "min_value": 4.0,
-                  "max_value": 13.0,
-                  "divisions": 5,
-                  "inverted": false,
-                  "orientation": "horizontal"
-                }
-              }
-            ]
-          },
-          {
-            "title": "Motor4",
-            "x": 256.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 384.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "speed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Radial Gauge",
-                "properties": {
-                  "topic": "/SmartDashboard/Elevator/Motor4/speed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "start_angle": -140.0,
-                  "end_angle": 140.0,
-                  "min_value": 0.0,
-                  "max_value": 100.0,
-                  "number_of_labels": 8,
-                  "wrap_value": false,
-                  "show_pointer": true,
-                  "show_ticks": true
-                }
-              },
-              {
-                "title": "voltage",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Voltage View",
-                "properties": {
-                  "topic": "/SmartDashboard/Elevator/Motor4/voltage",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "min_value": 4.0,
-                  "max_value": 13.0,
-                  "divisions": 5,
-                  "inverted": false,
-                  "orientation": "horizontal"
-                }
-              }
-            ]
-          },
-          {
-            "title": "Motor",
-            "x": 1152.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 384.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "speed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Radial Gauge",
-                "properties": {
-                  "topic": "/SmartDashboard/Pivot/Motor/speed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "start_angle": -140.0,
-                  "end_angle": 140.0,
-                  "min_value": 0.0,
-                  "max_value": 100.0,
-                  "number_of_labels": 8,
-                  "wrap_value": false,
-                  "show_pointer": true,
-                  "show_ticks": true
-                }
-              },
-              {
-                "title": "voltage",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Voltage View",
-                "properties": {
-                  "topic": "/SmartDashboard/Pivot/Motor/voltage",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "min_value": 4.0,
-                  "max_value": 13.0,
-                  "divisions": 5,
-                  "inverted": false,
-                  "orientation": "horizontal"
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
                 }
               }
             ]
@@ -605,8 +797,8 @@
         "containers": [
           {
             "title": "Tuning Mode",
-            "x": 768.0,
-            "y": 256.0,
+            "x": 960.0,
+            "y": 448.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Toggle Switch",

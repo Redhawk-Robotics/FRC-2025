@@ -87,16 +87,20 @@ public class RobotContainer {
     private class SendablePID implements Sendable {
         private boolean isTuningMode = false;
         //
-        private float elevator_kP = 0.025f;
-        private float elevator_kI = 0;
-        private float elevator_kD = 0;
+        private float elevator_kP1 = (float) Settings.Elevator.kP_UP;
+        private float elevator_kI1 = (float) Settings.Elevator.kI_UP;
+        private float elevator_kD1 = (float) Settings.Elevator.kD_UP;
         //
-        private float pivot_kP = 0.025f;
-        private float pivot_kI = 0;
-        private float pivot_kD = 0;
+        private float elevator_kP2 = (float) Settings.Elevator.kP_DOWN;
+        private float elevator_kI2 = (float) Settings.Elevator.kI_DOWN;
+        private float elevator_kD2 = (float) Settings.Elevator.kD_DOWN;
+        //
+        private float pivot_kP = (float) Settings.Pivot.kP;
+        private float pivot_kI = (float) Settings.Pivot.kI;
+        private float pivot_kD = (float) Settings.Pivot.kD;
         //
         private float elevator_sp = 50;
-        private float pivot_sp = 50;
+        private float pivot_sp = 100;
 
         private static float clamp(float val, float low, float high) {
             if (val < low)
@@ -110,16 +114,28 @@ public class RobotContainer {
             return this.isTuningMode;
         }
 
-        public float getElevator_kP() {
-            return this.elevator_kP;
+        public float getElevator_kP1() {
+            return this.elevator_kP1;
         }
 
-        public float getElevator_kI() {
-            return this.elevator_kI;
+        public float getElevator_kI1() {
+            return this.elevator_kI1;
         }
 
-        public float getElevator_kD() {
-            return this.elevator_kD;
+        public float getElevator_kD1() {
+            return this.elevator_kD1;
+        }
+
+        public float getElevator_kP2() {
+            return elevator_kP2;
+        }
+
+        public float getElevator_kI2() {
+            return elevator_kI2;
+        }
+
+        public float getElevator_kD2() {
+            return elevator_kD2;
         }
 
         public float getElevator_setpoint() {
@@ -149,22 +165,32 @@ public class RobotContainer {
 
             builder.addBooleanProperty("Tuning Mode", () -> this.isTuningMode,
                     val -> this.isTuningMode = val);
-            builder.addFloatProperty("Elevator/kP", () -> this.elevator_kP,
-                    val -> this.elevator_kP = SendablePID.clamp(val, 0, 1000));
-            builder.addFloatProperty("Elevator/kI", () -> this.elevator_kI,
-                    val -> this.elevator_kI = SendablePID.clamp(val, 0, 1000));
-            builder.addFloatProperty("Elevator/kD", () -> this.elevator_kD,
-                    val -> this.elevator_kD = SendablePID.clamp(val, 0, 1000));
+            //
+            builder.addFloatProperty("Elevator/kP-up", () -> this.elevator_kP1,
+                    val -> this.elevator_kP1 = SendablePID.clamp(val, 0, 1000));
+            builder.addFloatProperty("Elevator/kI-up", () -> this.elevator_kI1,
+                    val -> this.elevator_kI1 = SendablePID.clamp(val, 0, 1000));
+            builder.addFloatProperty("Elevator/kD-up", () -> this.elevator_kD1,
+                    val -> this.elevator_kD1 = SendablePID.clamp(val, 0, 1000));
+            //
+            builder.addFloatProperty("Elevator/kP-down", () -> this.elevator_kP2,
+                    val -> this.elevator_kP1 = SendablePID.clamp(val, 0, 1000));
+            builder.addFloatProperty("Elevator/kI-down", () -> this.elevator_kI2,
+                    val -> this.elevator_kI1 = SendablePID.clamp(val, 0, 1000));
+            builder.addFloatProperty("Elevator/kD-down", () -> this.elevator_kD2,
+                    val -> this.elevator_kD1 = SendablePID.clamp(val, 0, 1000));
+            //
             builder.addFloatProperty("Pivot/kP", () -> this.pivot_kP,
                     val -> this.pivot_kP = SendablePID.clamp(val, 0, 1000));
             builder.addFloatProperty("Pivot/kI", () -> this.pivot_kI,
                     val -> this.pivot_kI = SendablePID.clamp(val, 0, 1000));
             builder.addFloatProperty("Pivot/kD", () -> this.pivot_kD,
                     val -> this.pivot_kD = SendablePID.clamp(val, 0, 1000));
+            //
             builder.addFloatProperty("Elevator/setpoint", () -> this.elevator_sp,
-                    val -> this.elevator_sp = SendablePID.clamp(val, 1, 99));
+                    val -> this.elevator_sp = val);
             builder.addFloatProperty("Pivot/setpoint", () -> this.pivot_sp,
-                    val -> this.pivot_sp = SendablePID.clamp(val, 1, 99));
+                    val -> this.pivot_sp = val);
         }
     }
 
@@ -303,11 +329,12 @@ public class RobotContainer {
         OPERATOR.a().whileTrue(Commands.either(//
                 this.m_elevator.runOnce(//
                         () -> this.m_elevator.configureMotors(//
-                                Settings.Elevator.kP_UP, Settings.Elevator.kI_UP,
-                                Settings.Elevator.kD_UP, //
+                                // tune Elevator PID UP
+                                this.m_PID.getElevator_kP1(), this.m_PID.getElevator_kI1(),
+                                this.m_PID.getElevator_kD1(), //
                                 // tune Elevator PID DOWN
-                                this.m_PID.getElevator_kP(), this.m_PID.getElevator_kI(),
-                                this.m_PID.getElevator_kD())), //
+                                this.m_PID.getElevator_kP2(), this.m_PID.getElevator_kI2(),
+                                this.m_PID.getElevator_kD2())), //
                 CoralPositionFactory.L1(this.m_elevator, this.m_pivot), //
                 this.m_PID::isTuningMode));
         OPERATOR.b().whileTrue(Commands.either(//

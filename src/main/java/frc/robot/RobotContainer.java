@@ -326,6 +326,11 @@ public class RobotContainer {
         // b == elevator go to setpoint
         // x == re-flash pivot motor (with new PID values)
         // y == pivot go to setpoint
+
+
+        //&& A BUTTON 
+        // *CONFIGURES THE MOTORS WITH PID VALUES FOR ELEVATOR ONLY IF TUNING MODE IS ON
+        // * IF TUNER MODE IS OFF IT RUNS TO L1
         OPERATOR.a().whileTrue(Commands.either(//
                 this.m_elevator.runOnce(//
                         () -> this.m_elevator.configureMotors(//
@@ -337,12 +342,21 @@ public class RobotContainer {
                                 this.m_PID.getElevator_kD2())), //
                 CoralPositionFactory.L1(this.m_elevator, this.m_pivot), //
                 this.m_PID::isTuningMode));
+
+        //&& OPERATOR B BUTTON 
+        // * IF TUNER MODE IS ON, IT SETS REFERENCE TO THE SETPOINT
+        // * IF TUNRE MODE IS OFF JUST RUNS TO L2 
+
         OPERATOR.b().whileTrue(Commands.either(//
                 this.m_elevator.startEnd(
                         () -> this.m_elevator.setReference(this.m_PID.getElevator_setpoint()),
                         () -> this.m_elevator.stopElevator()),
                 CoralPositionFactory.L2(this.m_elevator, this.m_pivot), //
                 this.m_PID::isTuningMode));
+
+        //&& OPERATOR X BUTTON
+        // * IF THIS IS IN TUNER MODE, THIS CHANGES THE PIVOT PID VALUES
+        // * OTHERWISE, IT RUNS TO L3 POSITION FOR BOTH PIVOT AND ELEVATOR
         OPERATOR.x().whileTrue(Commands.either(//
                 this.m_pivot.runOnce(//
                         () -> this.m_pivot.configureMotors(// tune Pivot (done?)
@@ -350,6 +364,10 @@ public class RobotContainer {
                                 this.m_PID.getPivot_kD())), //
                 CoralPositionFactory.L3(this.m_elevator, this.m_pivot), //
                 this.m_PID::isTuningMode));
+
+        // && OPERATOR Y 
+        // * BUTTON TO THE REFERENCE SET IN THE TUNER DASHBOARD
+        // * OTHERWISE, RUNS TO L4
         OPERATOR.y().whileTrue(Commands.either(//
                 this.m_pivot.startEnd(
                         () -> this.m_pivot.setReference(this.m_PID.getPivot_setpoint()),

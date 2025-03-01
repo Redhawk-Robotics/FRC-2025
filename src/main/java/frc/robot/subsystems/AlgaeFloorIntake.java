@@ -30,7 +30,6 @@ public class AlgaeFloorIntake extends SubsystemBase {
     private final SparkAbsoluteEncoder encoder = leftMotor.getAbsoluteEncoder();
     private final SparkClosedLoopController controller = leftMotor.getClosedLoopController();
     
-
     public enum positions {
         INSIDE(0),
         OUTSIDE(5);
@@ -46,7 +45,6 @@ public class AlgaeFloorIntake extends SubsystemBase {
 
   public AlgaeFloorIntake() {
     configureMotors();
-
   }
 
   public void configureMotors() {
@@ -60,10 +58,6 @@ public class AlgaeFloorIntake extends SubsystemBase {
 
     leftMotorConfig.apply(globalConfig).closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder); // NO PID YET
-  }
-
-  public void setReferencePosition(){
-
   }
 
   public double getPosition() {

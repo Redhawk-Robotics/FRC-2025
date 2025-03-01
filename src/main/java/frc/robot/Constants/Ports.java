@@ -18,8 +18,8 @@ public final class Ports {
     }
 
     public static final class CoralIntake {
-        public static int PIVOT_LEFT = 0;
-        public static int PIVOT_RIGHT = 0;
+        public static int PIVOT_LEFT = 5;
+        public static int PIVOT_RIGHT = 5;
         public static int WHEEL_INTAKE = 7;
 
         public static boolean PIVOT_INVERTED = false;

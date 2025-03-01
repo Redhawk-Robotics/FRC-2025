@@ -99,9 +99,9 @@ public class RobotContainer {
         private float pivot_kI = (float) Settings.Pivot.kI;
         private float pivot_kD = (float) Settings.Pivot.kD;
         //
-        private float elevator_sp = 50;
+        private float elevator_sp = 20;
         private float pivot_sp = 100;
-
+ 
         private static float clamp(float val, float low, float high) {
             if (val < low)
                 return low;
@@ -196,6 +196,7 @@ public class RobotContainer {
 
     private final SendablePID m_PID = new SendablePID();
 
+
     public RobotContainer() {
         configureBindings();
 
@@ -262,14 +263,29 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
+
+        // && DRIVER BACK AND Y 
+        // * Starts SYSID dynamic directions
         DRIVER.back().and(DRIVER.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+
+        // && DRIVER BACK AND X
+        // * Starts SYSID dynamic directions
         DRIVER.back().and(DRIVER.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+
+        // && START BACK AND Y 
+        // * Starts SYSID dynamic directions
         DRIVER.start().and(DRIVER.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+
+        // && START AND X 
+        // * TOGGLES REVERSE
         DRIVER.start().and(DRIVER.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
+        // && LEFT BUMPER
+        // * RESET FIELD CENTRIC DRIVE
         // reset the field-centric heading on left bumper press
         DRIVER.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
+        //& 
         // TODO -- if this is too cumbersome, we can move these to the OPERATOR
         // left center button
         DRIVER.back().onTrue(this.drivetrain.runOnce(() -> {
@@ -383,6 +399,7 @@ public class RobotContainer {
         /* Configure CoralHandler */
         OPERATOR.leftBumper().onTrue(this.m_coralHandler.intakeFromStation())
                 .onFalse(this.m_coralHandler.stop());
+
         OPERATOR.leftTrigger().onTrue(this.m_coralHandler.spitItOut())
                 .onFalse(this.m_coralHandler.stop());
 

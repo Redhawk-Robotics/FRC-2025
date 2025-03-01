@@ -115,5 +115,7 @@ public class Pivot extends SubsystemBase {
         SmartDashboard.putNumber("Pivot/Motor/voltage", this.leftMotor.getBusVoltage());
         SmartDashboard.putNumber("Pivot/Position", this.encoder.getPosition());
         SmartDashboard.putNumber("Pivot/Velocity", this.encoder.getVelocity());
+
+        SmartDashboard.putNumber("Pivot/Motor/Current", this.leftMotor.getOutputCurrent());
     }
 }

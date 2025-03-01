@@ -118,9 +118,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
 
     public enum speeds {
-        FAST(0.9), //
-        NORMAL(0.2), //
-        SLOW(0.005);
+        NINETY_PERCENT(0.9), //
+        EIGHTY_PERCENT(0.8),
+        SIXTY_PERCENT(0.6),
+        FOURTY_PERCENT(0.4),
+        TWENTY_PERCENT(0.2), //
+        MIN(0.1);
 
         private final double m;
 
@@ -134,19 +137,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         public String toString() {
             switch (this) {
-                case FAST:
-                    return "FAST";
-                case NORMAL:
-                    return "NORMAL";
-                case SLOW:
-                    return "SLOW";
+                case NINETY_PERCENT:
+                    return "90% SPEED";
+                case EIGHTY_PERCENT:
+                    return "80% SPEED";
+                case SIXTY_PERCENT:
+                    return "60% SPEED";
+                case FOURTY_PERCENT:
+                    return "40% SPEED";
+                case TWENTY_PERCENT:
+                    return "20% SPEED";
+                case MIN:
+                    return ".05% SPEED";
                 default:
                     return "<unk?>";
             }
         }
     }
 
-    private speeds m_speedMultiplier = speeds.NORMAL;
+    private speeds m_speedMultiplier = speeds.TWENTY_PERCENT;
 
 
     /**
@@ -290,28 +299,54 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public void increaseSpeedMultiplier() {
         switch (this.m_speedMultiplier) {
-            case SLOW:
-                this.m_speedMultiplier = speeds.NORMAL;
-                break;
-            case NORMAL:
-                this.m_speedMultiplier = speeds.FAST;
-                break;
+            case MIN:
+                this.m_speedMultiplier = speeds.TWENTY_PERCENT;
+            case TWENTY_PERCENT:
+                this.m_speedMultiplier = speeds.FOURTY_PERCENT;
+            case FOURTY_PERCENT:
+                this.m_speedMultiplier = speeds.SIXTY_PERCENT;
+            case SIXTY_PERCENT:
+                this.m_speedMultiplier = speeds.EIGHTY_PERCENT;
+            case EIGHTY_PERCENT:
+                this.m_speedMultiplier = speeds.NINETY_PERCENT;
             default:
                 break;
+            // case SLOW:
+            //     this.m_speedMultiplier = speeds.TWENTY_PERCENT;
+            //     break;
+            // case TWENTY_PERCENT:
+            //     this.m_speedMultiplier = speeds.FAST;
+            //     break;
+            // default:
+            //     break;
         }
         System.out.printf("Drive speed multiplier is now %f\n", this.speedMultiplier());
     }
 
     public void decreaseSpeedMultiplier() {
         switch (this.m_speedMultiplier) {
-            case FAST:
-                this.m_speedMultiplier = speeds.NORMAL;
-                break;
-            case NORMAL:
-                this.m_speedMultiplier = speeds.SLOW;
-                break;
+            // case MIN:
+            //     this.m_speedMultiplier = speeds.TWENTY_PERCENT;
+            case TWENTY_PERCENT:
+                this.m_speedMultiplier = speeds.MIN;
+            case FOURTY_PERCENT:
+                this.m_speedMultiplier = speeds.TWENTY_PERCENT;
+            case SIXTY_PERCENT:
+                this.m_speedMultiplier = speeds.FOURTY_PERCENT;
+            case EIGHTY_PERCENT:
+                this.m_speedMultiplier = speeds.SIXTY_PERCENT;
+            case NINETY_PERCENT:
+                this.m_speedMultiplier = speeds.EIGHTY_PERCENT;
             default:
                 break;
+            // case FAST:
+            //     this.m_speedMultiplier = speeds.TWENTY_PERCENT;
+            //     break;
+            // case TWENTY_PERCENT:
+            //     this.m_speedMultiplier = speeds.SLOW;
+            //     break;
+            // default:
+            //     break;
         }
         System.out.printf("Drive speed multiplier is now %f\n", this.speedMultiplier());
     }

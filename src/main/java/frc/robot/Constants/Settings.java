@@ -20,7 +20,7 @@ public final class Settings {
         public static final double kP_UP = 0.050;
         public static final double kI_UP = 0.;
         public static final double kD_UP = 0.;
-        public static final double kP_DOWN = 0.02; // TODO tune this
+        public static final double kP_DOWN = 0.0199; // TODO tune this
         public static final double kI_DOWN = 0.;
         public static final double kD_DOWN = 0.;
     }
@@ -40,7 +40,7 @@ public final class Settings {
         // these values change depending on the zeroOffset and conversionFactor
         public static final double ELEVATOR_MIN_BLOCKING_POSITION = 5.; // elevator blocks the pivot above this reference
         public static final double ELEVATOR_MAX_BLOCKING_POSITION = 55.; // elevator blocks the pivot below this reference
-        public static final double PIVOT_MIN_BLOCKING_POSITION = 0.; // for completeness
+        public static final double PIVOT_MIN_BLOCKING_POSITION = 120; // for completeness // TODO CHECK IF THIS NEEDS TO BE SWAPPED
         public static final double PIVOT_MAX_BLOCKING_POSITION = 65.; // elevator can move in the range above when pivot is here
         public static final double ELEVATOR_ALLOWED_ERROR = 1;
         public static final double PIVOT_ALLOWED_ERROR = 1;
@@ -49,15 +49,18 @@ public final class Settings {
         public static final double ELEVATOR_L2_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L3_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L4_POSITION = 106;
-        public static final double PIVOT_FEED_POSITION = 63;
+        public static final double PIVOT_FEED_POSITION = 65;
         public static final double PIVOT_L1_POSITION = 145;
-        public static final double PIVOT_L2_POSITION = 156;
-        public static final double PIVOT_L3_POSITION = PIVOT_L2_POSITION; // pivot L2=L3
+        public static final double PIVOT_L2_POSITION = 153;
+        public static final double PIVOT_L3_POSITION = 175; // pivot L2=L3
         public static final double PIVOT_L4_POSITION = 176;
     }
 
     public static final class CoralHandler {
         public static final MotorType CORAL_INTAKE_MOTORTYPE = MotorType.kBrushless;
+        public static final double CORAL_INTAKE_VOLTAGE = 10.8;
+        public static final double CORAL_OUTTAKE_VOLTAGE = 11.2;
+
     }
 
     public static final class AlgaeHandler {

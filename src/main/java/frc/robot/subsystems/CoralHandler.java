@@ -25,7 +25,7 @@ public class CoralHandler extends SubsystemBase {
         return this.runOnce(() -> {
             // TODO turn on the motor to intake
             coralIntakeMotor.set(1);
-            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
+            DriverStation.reportWarning("I am running!", Thread.currentThread().getStackTrace());
         });
     }
 
@@ -49,5 +49,6 @@ public class CoralHandler extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         SmartDashboard.putNumber("Coral intake motor current",coralIntakeMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Pivot/Motor Output Speed", coralIntakeMotor.get());
     }
 }

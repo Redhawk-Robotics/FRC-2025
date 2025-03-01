@@ -34,5 +34,11 @@ public final class Ports {
     public static final class AlgaeHandler {
         public static int ALGAEINTAKE_MOTOR = 6;
     }
+
+    public static final class AlgaeFloorIntake{
+        public static int kCAN_ID_ROLLER = 12;
+        public static int kCAN_ID_LEFT = 11;
+
+    }
 }
 

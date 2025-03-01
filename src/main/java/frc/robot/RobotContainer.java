@@ -19,6 +19,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 // import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,12 +32,14 @@ import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 import frc.robot.subsystems.Pivot;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.AlgaeFloorIntake;
 import frc.robot.subsystems.AlgaeHandler;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralHandler;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.AlgaeFloorIntake.positions;
 import edu.wpi.first.math.MathUtil;
 
 public class RobotContainer {
@@ -81,6 +84,7 @@ public class RobotContainer {
     private final Climber m_climber = new Climber();
     private final CoralHandler m_coralHandler = new CoralHandler();
     private final AlgaeHandler m_algaeHandler = new AlgaeHandler();
+    private final AlgaeFloorIntake m_algaeFloorIntake = new AlgaeFloorIntake();
 
     private final Orchestra m_orchestra = new Orchestra();
 
@@ -306,6 +310,20 @@ public class RobotContainer {
 
         /* Configure joing Elevator/Pivot positioning */
         DRIVER.x().onTrue(CoralPositionFactory.Feed(this.m_elevator, this.m_pivot));
+
+        // & DRIVER UP AND DOWN CONTRLLS THE ALGAE INTAKE
+        //TODO FLOOR INTAKE START END -- DPAD UP IS MOVE OUT AND ROLLER -- DPAD DOWN IS OUTAKE WITH NO ARM MOVEMENT
+        DRIVER.povUp().whileTrue(
+            this.m_algaeFloorIntake.startEnd(
+                () -> this.m_algaeFloorIntake.intakeAlgae(), 
+                () -> this.m_algaeFloorIntake.returnHome()
+            ));
+
+        DRIVER.povDown().whileTrue(
+            this.m_algaeFloorIntake.startEnd(
+            ()-> this.m_algaeFloorIntake.runRollerCCW(), 
+            () -> this.m_algaeFloorIntake.stopRoller())
+        );
     }
 
     public void zero() {
@@ -397,21 +415,31 @@ public class RobotContainer {
         // OPERATOR.y().onTrue(CoralPositionFactory.L4(this.m_elevator, this.m_pivot));
 
         /* Configure CoralHandler */
+
+        //  & OPERATOR LEFT BUMPER
+        // * Intakes coral
         OPERATOR.leftBumper().onTrue(this.m_coralHandler.intakeFromStation())
                 .onFalse(this.m_coralHandler.stop());
-
+        
+        //& OPERATOR LEFT TRIGGER
+        // * Spits out coral 
         OPERATOR.leftTrigger().onTrue(this.m_coralHandler.spitItOut())
                 .onFalse(this.m_coralHandler.stop());
 
+        //& RIGHT BUMPERS
+        //* ALGAE HANDLER, N/A */
         /* Configure AlgaeHandler */
         OPERATOR.rightBumper().onTrue(this.m_algaeHandler.rotateCW())
                 .onFalse(this.m_algaeHandler.stop());
         OPERATOR.rightTrigger().onTrue(this.m_algaeHandler.rotateCCW())
                 .onFalse(this.m_algaeHandler.stop());
 
+        /*  Algae Intake */
+
         // on d-pad down, zero the current elevator position
         OPERATOR.povDown().onTrue(//
                 this.m_elevator.runOnce(() -> this.m_elevator.resetElevatorPosition()));
+    
         // on d-pad up, tell the elevator and pivot to use _speed_ control
         // with the joysticks, instead of PID position control
         OPERATOR.povUp().onTrue(//

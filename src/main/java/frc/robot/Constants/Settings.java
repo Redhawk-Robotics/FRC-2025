@@ -58,12 +58,23 @@ public final class Settings {
 
     public static final class CoralHandler {
         public static final MotorType CORAL_INTAKE_MOTORTYPE = MotorType.kBrushless;
-        public static final double CORAL_INTAKE_VOLTAGE = 10.8;
-        public static final double CORAL_OUTTAKE_VOLTAGE = 11.2;
+        //TODO IDENTIFY THE RANGE
+        public static final double CORAL_INTAKE_VOLTAGE = 10.8; // If the voltage is less than this, triggered by  intaking
+        public static final double CORAL_OUTTAKE_VOLTAGE = 11.2; // IF the voltage is more than this, triggered by outtake
 
     }
 
     public static final class AlgaeHandler {
         public static final MotorType ALGAE_INTAKE_MOTORTYPE = MotorType.kBrushless;
+    }
+
+    public static final class AlgaeFloorIntake{
+        public static final MotorType ALGAE_FLOOR_INTAKE_MOTORTYPE = MotorType.kBrushless;
+        public static final double HOME_ENCODER_POSITION = 0;
+        public static final double SAFE_TO_TRAVEL_POSITION = 0;
+        public static final double FLOOR_INTAKING_POSITION = 0;
+        
+
+
     }
 }

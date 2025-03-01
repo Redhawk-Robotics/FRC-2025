@@ -18,6 +18,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -116,6 +117,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // default to no-op
     };
 
+    //field
+
+    final Field2d m_field = new Field2d();
+
 
     public enum speeds {
         NINETY_PERCENT(0.9), //
@@ -175,6 +180,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         configureAutoBuilder();
+        configureField();
     }
 
     /**
@@ -220,6 +226,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         configureAutoBuilder();
+        configureField();
     }
 
     private void configureAutoBuilder() {
@@ -379,6 +386,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 new Pair<Rotation2d, SwerveModulePosition[]>(//
                         this.getPigeon2().getRotation2d(), this.getState().ModulePositions));
 
+        // ** Field
+        m_field.setRobotPose(getPose());
+
         SmartDashboard.putString("Drive/speedMultiplier", this.m_speedMultiplier.toString());
         SmartDashboard.putNumber("Drive/speedMultiplierVal", this.m_speedMultiplier.mult());
     }
@@ -397,5 +407,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
 
+    }
+
+    public void configureField() {
+        
+        SmartDashboard.putData("Poses/ Field", m_field);
     }
 }

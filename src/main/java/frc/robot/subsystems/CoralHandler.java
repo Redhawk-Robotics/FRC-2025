@@ -16,6 +16,9 @@ public class CoralHandler extends SubsystemBase {
     /** Creates a new CoralHandler. */
     private final SparkMax coralIntakeMotor;
 
+    private Boolean triggeredByOutake;
+    private Boolean triggeredByIntake;
+
     public CoralHandler() {
         // TODO
         this.coralIntakeMotor = new SparkMax(Ports.CoralIntake.WHEEL_INTAKE, Settings.CoralHandler.CORAL_INTAKE_MOTORTYPE);
@@ -45,9 +48,36 @@ public class CoralHandler extends SubsystemBase {
         });
     }
 
+    //IT WILL BE ASSUMED THAT A CORAL IS INSIDE UNTIL TRIGGERDBYINTAKE IS FALSE
+    public void checkIntakeVoltDrop() {
+        // CONDITIONS 
+        // CORAL IN
+        // CORAL OUT 
+        if ( coralIntakeMotor.getBusVoltage() < Settings.CoralHandler.CORAL_INTAKE_VOLTAGE ) {
+            triggeredByIntake = true;
+            triggeredByOutake = false;
+        }
+    }
+
+    public void checkOuttakeVoltDrop() {
+        if ( coralIntakeMotor.getBusVoltage() < Settings.CoralHandler.CORAL_OUTTAKE_VOLTAGE) {
+            triggeredByIntake = false;
+            triggeredByOutake = true;
+        }
+    }
+
+    public Boolean wasIntakeTriggered() {
+        return triggeredByIntake;
+    }
+
+    public Boolean wasOuttakeTriggereD() {
+        return triggeredByOutake;
+    }
+
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
+        checkIntakeVoltDrop();
+        checkOuttakeVoltDrop();
         SmartDashboard.putNumber("Coral intake motor current",coralIntakeMotor.getOutputCurrent());
         SmartDashboard.putNumber("Pivot/Motor Output Speed", coralIntakeMotor.get());
     }

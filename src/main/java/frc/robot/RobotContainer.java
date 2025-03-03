@@ -12,6 +12,7 @@ import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.CoralPositionFactory;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
+import frc.robot.Constants.Settings.CoralPosition;
 import frc.robot.subsystems.Pivot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AlgaeFloorIntake;
@@ -238,6 +240,7 @@ public class RobotContainer {
     private void configureBindings() {
         this.configureDriverBindings();
         this.configureOperatorBindings();
+        this.configureNamedCommands();
     }
 
     private SwerveRequest.FieldCentric getFieldCentricDrive() {
@@ -260,7 +263,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 drivetrain.applyRequest(this::getFieldCentricDrive));
-
+        
         DRIVER.a().whileTrue(drivetrain.applyRequest(() -> brake));
         DRIVER.b().whileTrue(drivetrain.applyRequest(() -> point
                 .withModuleDirection(new Rotation2d(DRIVER.getLeftY(), DRIVER.getLeftX()))));
@@ -457,5 +460,12 @@ public class RobotContainer {
 
     public Pose2d getEstimatedPosition() {
         return this.m_poseEstimator.getEstimatedPosition();
+    }
+
+    public void configureNamedCommands() {
+        NamedCommands.registerCommand("L1 Position", CoralPositionFactory.L1(m_elevator, m_pivot));
+        NamedCommands.registerCommand("L4 Position", CoralPositionFactory.L2(m_elevator, m_pivot));
+        NamedCommands.registerCommand("L3 Position", CoralPositionFactory.L3(m_elevator, m_pivot));
+        NamedCommands.registerCommand("Feeder Position", CoralPositionFactory.Feed(m_elevator, m_pivot));
     }
 }

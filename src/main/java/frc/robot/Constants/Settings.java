@@ -40,8 +40,8 @@ public final class Settings {
         // these values change depending on the zeroOffset and conversionFactor
         public static final double ELEVATOR_MIN_BLOCKING_POSITION = 5.; // elevator blocks the pivot above this reference
         public static final double ELEVATOR_MAX_BLOCKING_POSITION = 55.; // elevator blocks the pivot below this reference
-        public static final double PIVOT_MIN_BLOCKING_POSITION = 120; // for completeness // TODO CHECK IF THIS NEEDS TO BE SWAPPED
-        public static final double PIVOT_MAX_BLOCKING_POSITION = 65.; // elevator can move in the range above when pivot is here
+        public static final double PIVOT_MIN_BLOCKING_POSITION = 65; // for completeness // ! SWAPPED TO TEST
+        public static final double PIVOT_MAX_BLOCKING_POSITION = 120.; // elevator can move in the range above when pivot is here
         public static final double ELEVATOR_ALLOWED_ERROR = 1;
         public static final double PIVOT_ALLOWED_ERROR = 1;
         public static final double ELEVATOR_FEED_POSITION = 0;

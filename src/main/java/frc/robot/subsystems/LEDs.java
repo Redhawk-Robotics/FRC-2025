@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // TODO -- set this up
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDs extends SubsystemBase {
     /** Creates a new LEDs Subsystem. */
+    AddressableLED m_Led = new AddressableLED(9);
     public LEDs() {}
 
     @Override

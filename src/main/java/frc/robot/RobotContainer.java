@@ -316,17 +316,17 @@ public class RobotContainer {
 
         // & DRIVER UP AND DOWN CONTRLLS THE ALGAE INTAKE
         //TODO FLOOR INTAKE START END -- DPAD UP IS MOVE OUT AND ROLLER -- DPAD DOWN IS OUTAKE WITH NO ARM MOVEMENT
-        DRIVER.povUp().whileTrue(
-            this.m_algaeFloorIntake.startEnd(
-                () -> this.m_algaeFloorIntake.intakeAlgae(), 
-                () -> this.m_algaeFloorIntake.returnHome()
-            ));
+        // DRIVER.povUp().whileTrue(
+        //     this.m_algaeFloorIntake.startEnd(
+        //         () -> this.m_algaeFloorIntake.intakeAlgae(), 
+        //         () -> this.m_algaeFloorIntake.returnHome()
+        //     ));
 
-        DRIVER.povDown().whileTrue(
-            this.m_algaeFloorIntake.startEnd(
-            ()-> this.m_algaeFloorIntake.runRollerCCW(), 
-            () -> this.m_algaeFloorIntake.stopRoller())
-        );
+        // DRIVER.povDown().whileTrue(
+        //     this.m_algaeFloorIntake.startEnd(
+        //     ()-> this.m_algaeFloorIntake.runRollerCCW(), 
+        //     () -> this.m_algaeFloorIntake.stopRoller())
+        // );
     }
 
     public void zero() {
@@ -463,9 +463,17 @@ public class RobotContainer {
     }
 
     public void configureNamedCommands() {
+
+        // && POSITIONS 
         NamedCommands.registerCommand("L1 Position", CoralPositionFactory.L1(m_elevator, m_pivot));
-        NamedCommands.registerCommand("L4 Position", CoralPositionFactory.L2(m_elevator, m_pivot));
+        NamedCommands.registerCommand("L2 Position", CoralPositionFactory.L2(m_elevator, m_pivot));
         NamedCommands.registerCommand("L3 Position", CoralPositionFactory.L3(m_elevator, m_pivot));
+        NamedCommands.registerCommand("L4 Position", CoralPositionFactory.L4(m_elevator, m_pivot));
         NamedCommands.registerCommand("Feeder Position", CoralPositionFactory.Feed(m_elevator, m_pivot));
+
+        // TODO THESE MUST BE TESTED
+        NamedCommands.registerCommand("Intake Coral", m_coralHandler.commandIntakeCoral());
+        NamedCommands.registerCommand("Intake Coral", m_coralHandler.commandOutTakeCoral());
+
     }
 }

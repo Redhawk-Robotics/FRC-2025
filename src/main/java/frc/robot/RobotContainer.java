@@ -263,7 +263,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 drivetrain.applyRequest(this::getFieldCentricDrive));
-
+        
         DRIVER.a().whileTrue(drivetrain.applyRequest(() -> brake));
         DRIVER.b().whileTrue(drivetrain.applyRequest(() -> point
                 .withModuleDirection(new Rotation2d(DRIVER.getLeftY(), DRIVER.getLeftX()))));

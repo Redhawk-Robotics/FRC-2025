@@ -32,11 +32,10 @@ public class Vision extends SubsystemBase {
     private final Supplier<Double> m_getRobotYawInDegrees;
     private final Consumer<Matrix<N3, N1>> m_setVisionMeasurementStdDevs;
     private final Consumer<Pair<Pose2d, Double>> m_addVisionMeasurement;
-
+    
     /** Creates a new Vision Subsystem. */
-    public Vision(Supplier<Double> getRobotYawInDegrees,
-            Consumer<Matrix<N3, N1>> setVisionMeasurementStdDevs,
-            Consumer<Pair<Pose2d, Double>> addVisionMeasurement) {
+    public Vision(Supplier<Double> getRobotYawInDegrees, Consumer<Matrix<N3, N1>> setVisionMeasurementStdDevs,
+        Consumer<Pair<Pose2d, Double>> addVisionMeasurement) {
         this.m_getRobotYawInDegrees = getRobotYawInDegrees;
         this.m_setVisionMeasurementStdDevs = setVisionMeasurementStdDevs;
         this.m_addVisionMeasurement = addVisionMeasurement;

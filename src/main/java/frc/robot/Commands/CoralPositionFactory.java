@@ -164,6 +164,7 @@ public final class CoralPositionFactory {
                     System.out.printf("Elevator %f->%f;\nPivot %f->%f\n", Ec, Ew, Pc, Pw);
                     return pivotWillBlock(Pc, Pw) || elevatorWilBlock(Ec, Ew);
                 });
+
         Command result = Commands.sequence(//
                 makePivotSafe,
                 Commands.parallel(

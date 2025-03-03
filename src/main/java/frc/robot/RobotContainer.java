@@ -463,9 +463,17 @@ public class RobotContainer {
     }
 
     public void configureNamedCommands() {
+
+        // && POSITIONS 
         NamedCommands.registerCommand("L1 Position", CoralPositionFactory.L1(m_elevator, m_pivot));
-        NamedCommands.registerCommand("L4 Position", CoralPositionFactory.L2(m_elevator, m_pivot));
+        NamedCommands.registerCommand("L2 Position", CoralPositionFactory.L2(m_elevator, m_pivot));
         NamedCommands.registerCommand("L3 Position", CoralPositionFactory.L3(m_elevator, m_pivot));
+        NamedCommands.registerCommand("L4 Position", CoralPositionFactory.L4(m_elevator, m_pivot));
         NamedCommands.registerCommand("Feeder Position", CoralPositionFactory.Feed(m_elevator, m_pivot));
+
+        // TODO THESE MUST BE TESTED
+        NamedCommands.registerCommand("Intake Coral", m_coralHandler.commandIntakeCoral());
+        NamedCommands.registerCommand("Intake Coral", m_coralHandler.commandOutTakeCoral());
+
     }
 }

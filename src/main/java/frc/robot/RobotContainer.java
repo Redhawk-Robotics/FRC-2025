@@ -316,17 +316,17 @@ public class RobotContainer {
 
         // & DRIVER UP AND DOWN CONTRLLS THE ALGAE INTAKE
         //TODO FLOOR INTAKE START END -- DPAD UP IS MOVE OUT AND ROLLER -- DPAD DOWN IS OUTAKE WITH NO ARM MOVEMENT
-        DRIVER.povUp().whileTrue(
-            this.m_algaeFloorIntake.startEnd(
-                () -> this.m_algaeFloorIntake.intakeAlgae(), 
-                () -> this.m_algaeFloorIntake.returnHome()
-            ));
+        // DRIVER.povUp().whileTrue(
+        //     this.m_algaeFloorIntake.startEnd(
+        //         () -> this.m_algaeFloorIntake.intakeAlgae(), 
+        //         () -> this.m_algaeFloorIntake.returnHome()
+        //     ));
 
-        DRIVER.povDown().whileTrue(
-            this.m_algaeFloorIntake.startEnd(
-            ()-> this.m_algaeFloorIntake.runRollerCCW(), 
-            () -> this.m_algaeFloorIntake.stopRoller())
-        );
+        // DRIVER.povDown().whileTrue(
+        //     this.m_algaeFloorIntake.startEnd(
+        //     ()-> this.m_algaeFloorIntake.runRollerCCW(), 
+        //     () -> this.m_algaeFloorIntake.stopRoller())
+        // );
     }
 
     public void zero() {

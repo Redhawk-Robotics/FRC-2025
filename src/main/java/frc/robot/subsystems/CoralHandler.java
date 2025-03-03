@@ -24,6 +24,9 @@ public class CoralHandler extends SubsystemBase {
     public CoralHandler() {
         // TODO
         this.coralIntakeMotor = new SparkMax(Ports.CoralIntake.WHEEL_INTAKE, Settings.CoralHandler.CORAL_INTAKE_MOTORTYPE);
+
+        triggeredByOutake = false;
+        triggeredByIntake = true;
     }
 
     public Command intakeFromStation() {

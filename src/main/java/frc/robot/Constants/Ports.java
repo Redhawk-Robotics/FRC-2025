@@ -40,5 +40,10 @@ public final class Ports {
         public static int kCAN_ID_LEFT = 11;
 
     }
+
+    public static final class Climber {
+        public static int kCAN_ID_CLIMBER = 10;
+    }
+
 }
 

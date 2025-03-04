@@ -473,7 +473,7 @@ public class RobotContainer {
 
         // TODO THESE MUST BE TESTED
         NamedCommands.registerCommand("Intake Coral", m_coralHandler.commandIntakeCoral());
-        NamedCommands.registerCommand("Intake Coral", m_coralHandler.commandOutTakeCoral());
+        NamedCommands.registerCommand("Outtake Coral", m_coralHandler.commandOutTakeCoral());
 
     }
 }

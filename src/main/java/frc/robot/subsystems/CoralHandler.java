@@ -70,7 +70,7 @@ public class CoralHandler extends SubsystemBase {
         return triggeredByIntake;
     }
 
-    public Boolean wasOuttakeTriggereD() {
+    public Boolean wasOuttakeTriggered() {
         return triggeredByOutake;
     }
 

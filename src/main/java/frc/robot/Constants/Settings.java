@@ -77,4 +77,13 @@ public final class Settings {
 
 
     }
+
+    public static final class LimeLight {
+        public static final int kCAMERAPOSE_YAW = 0;
+        public static final int kCAMERAPOSE_FORWARD = 0;
+        public static final int kCAMERAPOSE_SIDE = 0;
+        public static final int kCAMERAPOSE_UP = 0;
+    }
+
+
 }

@@ -39,6 +39,8 @@ public class Vision extends SubsystemBase {
         this.m_getRobotYawInDegrees = getRobotYawInDegrees;
         this.m_setVisionMeasurementStdDevs = setVisionMeasurementStdDevs;
         this.m_addVisionMeasurement = addVisionMeasurement;
+        //TODO SET THIS UP WHEN MOUNTED
+        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NUM_1, 0, 0, 0, 0, 0, 0);
     }
 
     @Override

@@ -73,17 +73,18 @@ public final class Settings {
         public static final double HOME_ENCODER_POSITION = 0;
         public static final double SAFE_TO_TRAVEL_POSITION = 0;
         public static final double FLOOR_INTAKING_POSITION = 0;
-        
-
-
     }
 
     public static final class LimeLight {
-        public static final int kCAMERAPOSE_YAW = 0;
-        public static final int kCAMERAPOSE_FORWARD = 0;
-        public static final int kCAMERAPOSE_SIDE = 0;
-        public static final int kCAMERAPOSE_UP = 0;
+        public static final double kCAMERAPOSE_YAW = 72.5;
+        public static final double kCAMERAPOSE_FORWARD = 0.24;
+        public static final double kCAMERAPOSE_SIDE = -0.28;
+        public static final double kCAMERAPOSE_UP = 0.32;
     }
+
+    //& APRIL TAGS TBD 
+
+
 
 
 }

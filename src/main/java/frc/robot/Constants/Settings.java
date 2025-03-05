@@ -2,6 +2,7 @@ package frc.robot.Constants;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import frc.robot.LimelightHelpers;
 
 public final class Settings {
 
@@ -77,4 +78,15 @@ public final class Settings {
 
 
     }
+
+    public static final class LimeLight {
+        public static final double kCAMERAPOSE_YAW = 72.5;
+        public static final double kCAMERAPOSE_FORWARD = 0.24;
+        public static final double kCAMERAPOSE_SIDE = -0.28;
+        public static final double kCAMERAPOSE_UP = 0.32;
+    }
+
+    //& APRIL TAGS TBD 
+
+
 }

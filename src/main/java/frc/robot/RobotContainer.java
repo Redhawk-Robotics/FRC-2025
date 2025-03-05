@@ -335,6 +335,8 @@ public class RobotContainer {
     }
 
     private void configureOperatorBindings() {
+
+        
         /* Configure Elevator */
         Command elevatorDefault = Commands.either(//
                 Commands.none(), //
@@ -377,9 +379,11 @@ public class RobotContainer {
                                 // tune Elevator PID DOWN
                                 this.m_PID.getElevator_kP2(), this.m_PID.getElevator_kI2(),
                                 this.m_PID.getElevator_kD2())), //
-                CoralPositionFactory.L1(this.m_elevator, this.m_pivot), //
+                CoralPositionFactory.L4(m_elevator, m_pivot).handleInterrupt(
+                     ()-> CoralPositionFactory.Feed(m_elevator, m_pivot)), //
                 this.m_PID::isTuningMode));
 
+        CoralPositionFactory.L4(m_elevator, m_pivot).handleInterrupt( ()-> CoralPositionFactory.Feed(m_elevator, m_pivot));
         //&& OPERATOR B BUTTON 
         // * IF TUNER MODE IS ON, IT SETS REFERENCE TO THE SETPOINT
         // * IF TUNRE MODE IS OFF JUST RUNS TO L2 
@@ -390,7 +394,7 @@ public class RobotContainer {
                         () -> this.m_elevator.stopElevator()),
                 CoralPositionFactory.L2(this.m_elevator, this.m_pivot), //
                 this.m_PID::isTuningMode));
-
+        
         //&& OPERATOR X BUTTON
         // * IF THIS IS IN TUNER MODE, THIS CHANGES THE PIVOT PID VALUES
         // * OTHERWISE, IT RUNS TO L3 POSITION FOR BOTH PIVOT AND ELEVATOR
@@ -401,7 +405,7 @@ public class RobotContainer {
                                 this.m_PID.getPivot_kD())), //
                 CoralPositionFactory.L3(this.m_elevator, this.m_pivot), //
                 this.m_PID::isTuningMode));
-
+        
         // && OPERATOR Y 
         // * BUTTON TO THE REFERENCE SET IN THE TUNER DASHBOARD
         // * OTHERWISE, RUNS TO L4

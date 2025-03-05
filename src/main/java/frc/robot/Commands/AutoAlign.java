@@ -4,6 +4,11 @@
 
 package frc.robot.Commands;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.controllers.PathFollowingController;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -18,12 +23,21 @@ public class AutoAlign extends Command {
   private CommandSwerveDrivetrain drivetrain;
   private Vision vision;
 
+  private final double Distance_w = 0;
+  private final double theta_w = 0;
+  private final double centered_w = 0;
+  
+
   public AutoAlign(CommandSwerveDrivetrain m_drivetrain, Vision m_vision) {
     this.drivetrain = m_drivetrain;
     this.vision = m_vision;
-
     addRequirements(drivetrain, vision);
   }
+
+  // REQUIREMENTS:
+  // NEED TO BE CENTERED ON THE TAG
+  // NEED TO BE X FEET AWAY 
+  //NEED TO BE PERPENDICULAR 
 
   // Called when the command is initially scheduled.
   @Override
@@ -31,9 +45,7 @@ public class AutoAlign extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override

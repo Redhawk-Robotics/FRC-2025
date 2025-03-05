@@ -413,4 +413,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public void configureField() {
         SmartDashboard.putData("Poses/ Field", m_field);
     }
+
+    //https://www.chiefdelphi.com/t/help-in-reef-alignment/492188/16
+    // public void buildPoseTranslation() {
+    //     //TODO DO SOMETIHNG WITH THIS!!!!!!!!
+    // }
 }

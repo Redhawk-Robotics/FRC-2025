@@ -2,9 +2,19 @@
   "robotWidth": 0.9,
   "robotLength": 0.9,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "L3 middle",
+    "L3 starting 1",
+    "L3 starting 1 2C,,,,3C",
+    "L3 starting 3",
+    "L3 starting 3 2C",
+    "Testing"
+  ],
   "autoFolders": [
-    "New Folder"
+    "L3 middle",
+    "L3 starting 1",
+    "L3 starting 3",
+    "Testing"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

@@ -315,6 +315,7 @@ public class RobotContainer {
         DRIVER.x().onTrue(CoralPositionFactory.Feed(this.m_elevator, this.m_pivot));
 
         // & DRIVER UP AND DOWN CONTRLLS THE ALGAE INTAKE
+        // ! ALGAE INTAKE NEEDS TO BE FIXED
         //TODO FLOOR INTAKE START END -- DPAD UP IS MOVE OUT AND ROLLER -- DPAD DOWN IS OUTAKE WITH NO ARM MOVEMENT
         // DRIVER.povUp().whileTrue(
         //     this.m_algaeFloorIntake.startEnd(
@@ -461,8 +462,8 @@ public class RobotContainer {
         /*  Algae Intake */
 
         // on d-pad down, zero the current elevator position
-        OPERATOR.povDown().onTrue(//
-                this.m_elevator.runOnce(() -> this.m_elevator.resetElevatorPosition()));
+        // OPERATOR.povDown().onTrue(//
+        //         this.m_elevator.runOnce(() -> this.m_elevator.resetElevatorPosition()));
     
         // on d-pad up, tell the elevator and pivot to use _speed_ control
         // with the joysticks, instead of PID position control

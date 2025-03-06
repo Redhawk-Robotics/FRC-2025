@@ -102,18 +102,15 @@ public class AlgaeFloorIntake extends SubsystemBase {
     controller.setReference(setpoint, ControlType.kPosition);
   }
 
-  public Command intakeAlgae() {
-    return Commands.parallel(
-        this.runOnce(() -> moveToSetPoint(positions.OUTSIDE.getpos())),
-        runRollerCCW()
-    );
+  public void intakeAlgae() {
+    moveToSetPoint(positions.INSIDE.getpos());
+    this.rollerMotor.set(0.7);
   }
 
-  public Command returnHome(){
-    return Commands.parallel(
-        this.runOnce( () -> { moveToSetPoint(positions.INSIDE.pos); }),
-        stopRoller()
-    );
+  //! DEBUG PARALELL CONMMAND GROUP, VIEW STACKTRACE 
+  public void returnHome(){
+    moveToSetPoint(positions.INSIDE.getpos());
+    this.rollerMotor.set(0);
   }
 
   public Command outtakeAlgae() {

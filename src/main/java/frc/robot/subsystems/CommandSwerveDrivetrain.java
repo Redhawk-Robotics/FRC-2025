@@ -161,7 +161,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
     }
 
-    private speeds m_speedMultiplier = speeds.TWENTY_PERCENT;
+    private speeds m_speedMultiplier = speeds.EIGHTY_PERCENT;
 
 
     /**
@@ -392,6 +392,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         SmartDashboard.putString("Drive/speedMultiplier", this.m_speedMultiplier.toString());
         SmartDashboard.putNumber("Drive/speedMultiplierVal", this.m_speedMultiplier.mult());
+        SmartDashboard.putNumber("Elastic/Match Time", DriverStation.getMatchTime());
     }
 
     private void startSimThread() {
@@ -413,4 +414,5 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public void configureField() {
         SmartDashboard.putData("Poses/ Field", m_field);
     }
+
 }

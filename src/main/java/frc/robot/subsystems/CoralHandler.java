@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -20,16 +21,18 @@ public class CoralHandler extends SubsystemBase {
 
     private Boolean triggeredByOutake;
     private Boolean triggeredByIntake;
+    private edu.wpi.first.wpilibj.Timer getTime = new Timer();
+
+    
 
     public CoralHandler() {
         // TODO
         this.coralIntakeMotor = new SparkMax(Ports.CoralIntake.WHEEL_INTAKE, Settings.CoralHandler.CORAL_INTAKE_MOTORTYPE);
-
         triggeredByOutake = false;
-        triggeredByIntake = true;
+        triggeredByIntake = false;
     }
 
-    public Command intakeFromStation() {
+    public Command intake() {
         return this.runOnce(() -> {
             // TODO turn on the motor to intake
             coralIntakeMotor.set(1);
@@ -60,7 +63,6 @@ public class CoralHandler extends SubsystemBase {
         // CORAL OUT 
         if ( coralIntakeMotor.getBusVoltage() < Settings.CoralHandler.CORAL_INTAKE_VOLTAGE ) {
             triggeredByIntake = true;
-            triggeredByOutake = false;
         }
     }
 
@@ -75,22 +77,47 @@ public class CoralHandler extends SubsystemBase {
         return triggeredByIntake;
     }
 
-    public Boolean wasOuttakeTriggereD() {
+    public Boolean wasOuttakeTriggered() {
         return triggeredByOutake;
+    }
+
+    public void backUpAutoIntakeMethod() {
+        //runs for three seconds to intake
+        getTime.reset();
+        getTime.start();
+
+        if (getTime.get() < 2) {
+            coralIntakeMotor.set(1);
+        } else if ( getTime.get() > 2) {
+            coralIntakeMotor.set(0);
+        }
+    }
+
+
+
+    public Command commandIntakeCoral() {
+
+        // ! NOT RUNNING IN PATHPLANNER, WHY?
+        return Commands.sequence(
+            this.intake(),
+            Commands.waitSeconds(2.5),
+            this.stop()
+        );
+    }
+
+    public Command commandOutTakeCoral() {
+        return Commands.sequence(
+            this.spitItOut(),
+            Commands.waitSeconds(2),
+            this.stop()
+        );
     }
 
     //TODO CONFIRM THIS
     //TODO MAKE A DEFAULT COMMAND FOR LEDS THAT TAKES CORAL AS A SUBSYTEM
     // RUN CORAL AND INTERRUPT WITH BOOLEAN 
     // * The lambda turns a primitive value into a supplier, good to keep in mind.... - Sevnen
-    public Command commandIntakeCoral() {
-        return this.runOnce( () -> intakeFromStation()).until( () -> triggeredByIntake);
-    }
 
-    //TODO TEST IF THIS WORKS WITH AUTONOMOUS
-    public Command commandOutTakeCoral() {
-        return this.runOnce( ()-> spitItOut()).until( () -> triggeredByOutake);
-    }
 
     @Override
     public void periodic() {
@@ -98,7 +125,10 @@ public class CoralHandler extends SubsystemBase {
         checkOuttakeVoltDrop();
         SmartDashboard.putNumber("Coral Handler/Intake motor current",coralIntakeMotor.getOutputCurrent());
         SmartDashboard.putNumber("Coral Handler/Motor Output Speed", coralIntakeMotor.get());
+        SmartDashboard.putNumber("Coral Handler/Bus Voltage", coralIntakeMotor.getBusVoltage());
+        SmartDashboard.putNumber("Coral Handler/Applied Output ", coralIntakeMotor.getAppliedOutput());
         SmartDashboard.putBoolean("Coral Handler/Intake Triggered", triggeredByIntake);
         SmartDashboard.putBoolean("Coral Handler/Outake Triggered", triggeredByOutake);
+        SmartDashboard.putNumber("Coral Handler/Timer Value", getTime.get());
     }
 }

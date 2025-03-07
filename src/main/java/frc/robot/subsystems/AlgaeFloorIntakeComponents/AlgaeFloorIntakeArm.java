@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.AlgaeFloorIntakeComponents;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 
-public class AlgaeFloorIntake extends SubsystemBase {
+public class AlgaeFloorIntakeArm extends SubsystemBase {
   /** Creates a new algaeFloorIntake. */
   
     private final SparkMax leftMotor = new SparkMax(Ports.AlgaeFloorIntake.kCAN_ID_LEFT, Settings.AlgaeFloorIntake.ALGAE_FLOOR_INTAKE_MOTORTYPE);
@@ -43,10 +43,10 @@ public class AlgaeFloorIntake extends SubsystemBase {
         }
     }
 
-  public AlgaeFloorIntake() {
+  public AlgaeFloorIntakeArm() {
     configureMotors();
   }
-
+  
   public void configureMotors() {
     SparkMaxConfig globalConfig = new SparkMaxConfig();
     SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
@@ -57,7 +57,7 @@ public class AlgaeFloorIntake extends SubsystemBase {
     rollerMotorConfig.apply(globalConfig).inverted(true);
 
     leftMotorConfig.apply(globalConfig).closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder); // NO PID YET
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder).maxOutput(.2); // NO PID YET
   }
 
   public double getPosition() {
@@ -68,56 +68,74 @@ public class AlgaeFloorIntake extends SubsystemBase {
     return this.encoder.getPosition();
   }
 
-  public Command armRotateCW() {
-    return this.runOnce(
-        () -> { this.leftMotor.set(0.2);}
-    );
+  public void armRotateCW() {
+     this.leftMotor.set(0.2);
   }
 
-  public Command armRotateCCW() {
-    return this.runOnce(
-        () -> { this.leftMotor.set(-0.2);}
-    );
+  public void armRotateCCW() {
+        this.leftMotor.set(-0.2);
   }
 
-  public Command runRollerCW() {
-    return this.runOnce(
+  public void runRollerCW() {
+    this.runOnce(
         () -> { this.rollerMotor.set(1);}
     );
   }
 
-  public Command runRollerCCW(){
-    return this.runOnce(
-        () -> { this.rollerMotor.set(-1); }
-    );
+  public void runRollerCCW() {
+    this.rollerMotor.set(-1);
   }
 
-  public Command stopRoller(){
-    return this.runOnce(
-        () -> { this.rollerMotor.set(0); }
-    );
+  public void stopRoller(){
+    this.rollerMotor.set(0); 
   }
 
-  public void moveToSetPoint( double setpoint) {
-    controller.setReference(setpoint, ControlType.kPosition);
+  public void voidIntakeMethod() {
+    moveToSetPoint(positions.OUTSIDE.getpos());
+    rollerMotor.set(0.5);
   }
 
-  public void intakeAlgae() {
+  public void voidMoveInsideMethod() {
     moveToSetPoint(positions.INSIDE.getpos());
-    this.rollerMotor.set(0.7);
+    stopRoller();
   }
 
-  //! DEBUG PARALELL CONMMAND GROUP, VIEW STACKTRACE 
-  public void returnHome(){
-    moveToSetPoint(positions.INSIDE.getpos());
-    this.rollerMotor.set(0);
-  }
-
-  public Command outtakeAlgae() {
+  public Command commandIntake() {
+    // return this.runOnce( ()-> {voidIntakeMethod();});
     return Commands.parallel(
-        this.runOnce( ()-> moveToSetPoint(positions.OUTSIDE.getpos())),
-        runRollerCW()
+        moveToSetPoint(3),
+        commandSetRollerSpeed(8)
     );
+  }
+
+  public Command commandMoveInside() {
+    return this.runOnce( ()-> {voidMoveInsideMethod();});
+  }
+
+  public Command commandOutake() { 
+    return this.runOnce( () -> { runRollerCW();});
+ 
+    }// TODO CHECK THIS ON PRACTICE FIELD
+
+  public Command commandStopRoller() { return this.runOnce( () -> { stopRoller();});}
+
+
+  public Command moveToSetPoint( double setpoint) {
+    return this.runOnce( () -> {controller.setReference(setpoint, ControlType.kPosition);});
+  }
+
+  public Command commandSetSpeed(double speed) {
+    return this.runOnce( 
+        () -> { leftMotor.set(speed); }
+    );
+    
+  }
+
+  public Command commandSetRollerSpeed(double speed) {
+    return this.runOnce( 
+        () -> { rollerMotor.set(speed); }
+    );
+    
   }
 
   // TODO MAKE A COMMAND THAT TAKES AN ENUM POSITION FOR AN INPUT, THIS CONTROLS THE OUTTAKE POSITION

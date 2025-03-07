@@ -27,6 +27,8 @@ public class Robot extends TimedRobot {
         Pose2d est = this.m_robotContainer.getEstimatedPosition();
         SmartDashboard.putNumber("estimatedPose.X", est.getX());
         SmartDashboard.putNumber("estimatedPose.Y", est.getY());
+
+        SmartDashboard.putData("Command Sched Instance", CommandScheduler.getInstance());
     }
 
     @Override

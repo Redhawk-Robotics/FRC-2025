@@ -7,31 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L3 starting 1(3)"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L3 Position"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outtake Coral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Feeder Position"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "L3 starting 1 2C.2"
+            "pathName": "Testing everything"
           }
         },
         {
@@ -41,9 +17,33 @@
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "L3 starting 1 2C.3"
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L1 Position"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L2 Position"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
           }
         },
         {
@@ -53,9 +53,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "Outtake Coral"
+            "waitTime": 5.0
           }
         },
         {
@@ -65,45 +65,21 @@
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "L3 starting 1 2C.(4)"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Coral"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "L3 starting 1 2C.(5)"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L3 Position"
+            "waitTime": 5.0
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Outtake Coral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Feeder Position"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Testing",
   "choreoAuto": false
 }

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9673611111111113,
-        "y": 5.3158459595959595
+        "x": 1.385669191919192,
+        "y": 7.104734848484849
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.296527777777779,
-        "y": 6.533666472416472
+        "x": 2.3557973970540065,
+        "y": 5.876593822842281
       },
       "isLocked": false,
-      "linkedName": "L4 starting 1(3)end"
+      "linkedName": "L3 starting 1 A.R (4) end"
     },
     {
       "anchor": {
-        "x": 1.4887179487179483,
-        "y": 6.997307692307693
+        "x": 3.4289743589809683,
+        "y": 5.449230769229228
       },
       "prevControl": {
-        "x": 1.9601022434245736,
-        "y": 6.794810677759544
+        "x": 3.1503205128271223,
+        "y": 5.696923076921535
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "L3 starting A.R (5) end"
     }
   ],
   "rotationTargets": [],
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 131.71075732150817
+    "rotation": 119.97695421401212
   },
   "reversed": false,
-  "folder": "L3 starting 1 2C,,,,3C",
+  "folder": " L3 starting 1 2C [Algee remove] (KEEP tbd)",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 119.93151184050777
+    "rotation": 131.71075732150817
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

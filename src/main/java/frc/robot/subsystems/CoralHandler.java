@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
@@ -52,7 +53,6 @@ public class CoralHandler extends SubsystemBase {
     public Command stop() {
         return this.runOnce(() -> {
             coralIntakeMotor.set(0);
-            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 
@@ -81,19 +81,6 @@ public class CoralHandler extends SubsystemBase {
         return triggeredByOutake;
     }
 
-    public void backUpAutoIntakeMethod() {
-        //runs for three seconds to intake
-        getTime.reset();
-        getTime.start();
-
-        if (getTime.get() < 2) {
-            coralIntakeMotor.set(1);
-        } else if ( getTime.get() > 2) {
-            coralIntakeMotor.set(0);
-        }
-    }
-
-
 
     public Command commandIntakeCoral() {
 
@@ -108,7 +95,7 @@ public class CoralHandler extends SubsystemBase {
     public Command commandOutTakeCoral() {
         return Commands.sequence(
             this.spitItOut(),
-            Commands.waitSeconds(2),
+            Commands.waitSeconds(1),
             this.stop()
         );
     }

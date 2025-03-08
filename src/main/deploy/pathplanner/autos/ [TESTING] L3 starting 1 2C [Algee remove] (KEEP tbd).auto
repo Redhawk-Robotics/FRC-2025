@@ -7,13 +7,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Testing everything"
+            "pathName": "L3 starting 1 A.R (1)"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Run Coral Intake"
+            "name": "L3 Position"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L3 starting 1 A.R (2)"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L3 starting 1 A.R (3)"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Coral Outake"
           }
         },
         {
@@ -29,45 +53,58 @@
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.3
+            "pathName": "L3 starting 1 A.R (4)"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.0
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "L1 Position"
+            "name": "Run Coral Intake"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.3
+            "waitTime": 0.2
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Feed"
+            "name": "Stop Coral Intake"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.3
+            "pathName": "L3 starting 1 A.R (5)"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "L2 Position"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
+            "pathName": "L3 starting 1 A.R (6)"
           }
         },
         {
@@ -77,27 +114,27 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.3
+            "name": "Run Coral Intake"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.3
+            "waitTime": 0.2
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Outtake Coral"
+            "name": "Stop Coral Intake"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Testing",
+  "folder": null,
   "choreoAuto": false
 }

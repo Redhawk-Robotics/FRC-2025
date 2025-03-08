@@ -508,13 +508,13 @@ public class RobotContainer {
         NamedCommands.registerCommand("Feed", CoralPositionFactory.Feed(m_elevator, m_pivot).asProxy());
 
         // TODO THESE MUST BE TESTED
-        NamedCommands.registerCommand("Run Coral Intake", m_coralHandler.intake().asProxy());
-        NamedCommands.registerCommand("Run Coral Outake", m_coralHandler.spitItOut().asProxy());
-        NamedCommands.registerCommand("Stop Coral Intake", m_coralHandler.stop().asProxy());
+        NamedCommands.registerCommand("Run Coral Intake", m_coralHandler.intake());
+        NamedCommands.registerCommand("Run Coral Outake", m_coralHandler.spitItOut());
+        NamedCommands.registerCommand("Stop Coral Intake", m_coralHandler.stop());
 
-        NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1).asProxy());
-        NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1).asProxy());
-        NamedCommands.registerCommand("Stop Climbter", m_climber.commandSetClimbSpeed(1).asProxy());
+        NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1));
+        NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1));
+        NamedCommands.registerCommand("Stop Climbter", m_climber.commandSetClimbSpeed(1));
 
     }
 

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,13 +17,24 @@ import com.revrobotics.spark.SparkMax;
 public class CoralHandler extends SubsystemBase {
     /** Creates a new CoralHandler. */
     private final SparkMax coralIntakeMotor;
-
+    /*//sensor can reliably detect gamepiece when it is fully inside the intake. 
+    End of intake path/critical transfer point*/
+    private final DigitalInput entranceSensor;
     private Boolean triggeredByOutake;
     private Boolean triggeredByIntake;
 
     public CoralHandler() {
         // TODO
         this.coralIntakeMotor = new SparkMax(Ports.CoralIntake.WHEEL_INTAKE, Settings.CoralHandler.CORAL_INTAKE_MOTORTYPE);
+        //The valid Analog ports are 0-3
+        this.entranceSensor = new DigitalInput(0);
+    }
+
+    
+    public void intakeSensor() {
+        if (this.entranceSensor.get()){
+            coralIntakeMotor.set(0);
+        }
     }
 
     public Command intakeFromStation() {
@@ -34,7 +47,6 @@ public class CoralHandler extends SubsystemBase {
 
     public Command spitItOut() {
         return this.runOnce(() -> {
-            
             // TODO turn on the motor to outtake     
             coralIntakeMotor.set(-.7);
             DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());

@@ -18,6 +18,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -28,6 +29,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import frc.robot.LimelightHelpers;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -116,11 +118,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // default to no-op
     };
 
+    //field
+
+    final Field2d m_field = new Field2d();
+
 
     public enum speeds {
-        FAST(0.9), //
-        NORMAL(0.2), //
-        SLOW(0.005);
+        NINETY_PERCENT(0.9), //
+        EIGHTY_PERCENT(0.8),
+        SIXTY_PERCENT(0.6),
+        FOURTY_PERCENT(0.4),
+        TWENTY_PERCENT(0.2), //
+        MIN(0.1);
 
         private final double m;
 
@@ -134,19 +143,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         public String toString() {
             switch (this) {
-                case FAST:
-                    return "FAST";
-                case NORMAL:
-                    return "NORMAL";
-                case SLOW:
-                    return "SLOW";
+                case NINETY_PERCENT:
+                    return "90% SPEED";
+                case EIGHTY_PERCENT:
+                    return "80% SPEED";
+                case SIXTY_PERCENT:
+                    return "60% SPEED";
+                case FOURTY_PERCENT:
+                    return "40% SPEED";
+                case TWENTY_PERCENT:
+                    return "20% SPEED";
+                case MIN:
+                    return ".05% SPEED";
                 default:
                     return "<unk?>";
             }
         }
     }
 
-    private speeds m_speedMultiplier = speeds.NORMAL;
+    private speeds m_speedMultiplier = speeds.EIGHTY_PERCENT;
 
 
     /**
@@ -166,6 +181,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         configureAutoBuilder();
+        configureField();
     }
 
     /**
@@ -211,6 +227,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         configureAutoBuilder();
+        configureField();
     }
 
     private void configureAutoBuilder() {
@@ -290,28 +307,54 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public void increaseSpeedMultiplier() {
         switch (this.m_speedMultiplier) {
-            case SLOW:
-                this.m_speedMultiplier = speeds.NORMAL;
-                break;
-            case NORMAL:
-                this.m_speedMultiplier = speeds.FAST;
-                break;
+            case MIN:
+                this.m_speedMultiplier = speeds.TWENTY_PERCENT;
+            case TWENTY_PERCENT:
+                this.m_speedMultiplier = speeds.FOURTY_PERCENT;
+            case FOURTY_PERCENT:
+                this.m_speedMultiplier = speeds.SIXTY_PERCENT;
+            case SIXTY_PERCENT:
+                this.m_speedMultiplier = speeds.EIGHTY_PERCENT;
+            case EIGHTY_PERCENT:
+                this.m_speedMultiplier = speeds.NINETY_PERCENT;
             default:
                 break;
+            // case SLOW:
+            //     this.m_speedMultiplier = speeds.TWENTY_PERCENT;
+            //     break;
+            // case TWENTY_PERCENT:
+            //     this.m_speedMultiplier = speeds.FAST;
+            //     break;
+            // default:
+            //     break;
         }
         System.out.printf("Drive speed multiplier is now %f\n", this.speedMultiplier());
     }
 
     public void decreaseSpeedMultiplier() {
         switch (this.m_speedMultiplier) {
-            case FAST:
-                this.m_speedMultiplier = speeds.NORMAL;
-                break;
-            case NORMAL:
-                this.m_speedMultiplier = speeds.SLOW;
-                break;
+            // case MIN:
+            //     this.m_speedMultiplier = speeds.TWENTY_PERCENT;
+            case TWENTY_PERCENT:
+                this.m_speedMultiplier = speeds.MIN;
+            case FOURTY_PERCENT:
+                this.m_speedMultiplier = speeds.TWENTY_PERCENT;
+            case SIXTY_PERCENT:
+                this.m_speedMultiplier = speeds.FOURTY_PERCENT;
+            case EIGHTY_PERCENT:
+                this.m_speedMultiplier = speeds.SIXTY_PERCENT;
+            case NINETY_PERCENT:
+                this.m_speedMultiplier = speeds.EIGHTY_PERCENT;
             default:
                 break;
+            // case FAST:
+            //     this.m_speedMultiplier = speeds.TWENTY_PERCENT;
+            //     break;
+            // case TWENTY_PERCENT:
+            //     this.m_speedMultiplier = speeds.SLOW;
+            //     break;
+            // default:
+            //     break;
         }
         System.out.printf("Drive speed multiplier is now %f\n", this.speedMultiplier());
     }
@@ -344,8 +387,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 new Pair<Rotation2d, SwerveModulePosition[]>(//
                         this.getPigeon2().getRotation2d(), this.getState().ModulePositions));
 
+        // ** Field
+        m_field.setRobotPose(getPose());
+
         SmartDashboard.putString("Drive/speedMultiplier", this.m_speedMultiplier.toString());
         SmartDashboard.putNumber("Drive/speedMultiplierVal", this.m_speedMultiplier.mult());
+        SmartDashboard.putNumber("Elastic/Match Time", DriverStation.getMatchTime());
     }
 
     private void startSimThread() {
@@ -363,4 +410,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         m_simNotifier.startPeriodic(kSimLoopPeriod);
 
     }
+
+    public void configureField() {
+        SmartDashboard.putData("Poses/ Field", m_field);
+    }
+
 }

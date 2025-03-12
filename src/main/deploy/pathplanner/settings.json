@@ -1,17 +1,32 @@
 {
-  "robotWidth": 0.9,
-  "robotLength": 0.9,
+  "robotWidth": 0.86995,
+  "robotLength": 0.85725,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "L3 middle",
+    "L3 starting 1",
+    "L3 starting 1 2C,,,,3C",
+    "L3 starting 3",
+    "L3 starting 3 2C",
+    "L4 startings",
+    "Leaves",
+    " L3 starting 1 2C [Algee remove] (KEEP tbd)",
+    "Testing"
+  ],
   "autoFolders": [
-    "New Folder"
+    "L3 middle",
+    "L3 starting 1",
+    "L3 starting 3",
+    "L4 starting",
+    "Leaves",
+    "Testing"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
-  "robotMass": 24.95,
+  "robotMass": 45.0,
   "robotMOI": 6.883,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.051,
@@ -31,6 +46,6 @@
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
   "robotFeatures": [
-    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.0,\"y\":0.0},\"size\":{\"width\":0.9,\"length\":0.2},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
+    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.0,\"y\":0.0},\"size\":{\"width\":0.2,\"length\":0.9},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
   ]
 }

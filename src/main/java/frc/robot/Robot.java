@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,6 +18,7 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         m_robotContainer = new RobotContainer();
+        CameraServer.startAutomaticCapture();
     }
 
     @Override
@@ -27,6 +29,8 @@ public class Robot extends TimedRobot {
         Pose2d est = this.m_robotContainer.getEstimatedPosition();
         SmartDashboard.putNumber("estimatedPose.X", est.getX());
         SmartDashboard.putNumber("estimatedPose.Y", est.getY());
+
+        SmartDashboard.putData("Command Sched Instance", CommandScheduler.getInstance());
     }
 
     @Override
@@ -62,6 +66,7 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+        this.m_robotContainer.zero();
     }
 
     @Override

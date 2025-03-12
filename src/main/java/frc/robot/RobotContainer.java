@@ -30,8 +30,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.CoralPositionFactory;
-import frc.robot.Commands.CoralPositionFactory2;
-import frc.robot.Commands.CoralPositionFactory2.position;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 import frc.robot.Constants.Settings.CoralPosition;

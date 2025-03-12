@@ -5,48 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Testing everything"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Run Coral Intake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop Coral Intake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L1 Position"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Feed"
@@ -59,9 +17,15 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Testing everything"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "L2 Position"
+            "name": "Feed"
           }
         },
         {
@@ -80,6 +44,12 @@
           "type": "wait",
           "data": {
             "waitTime": 0.3
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L3 Position"
           }
         },
         {

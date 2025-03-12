@@ -59,22 +59,27 @@
           }
         },
         {
-          "type": "race",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Feed"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.3
-                }
-              }
-            ]
+            "name": "Feed"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Coral Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Coral Intake"
           }
         },
         {
@@ -98,7 +103,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Run Coral Intake"
+            "name": "Outtake Coral"
           }
         },
         {

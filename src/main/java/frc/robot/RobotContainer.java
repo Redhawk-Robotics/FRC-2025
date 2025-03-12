@@ -30,6 +30,8 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.CoralPositionFactory;
+import frc.robot.Commands.CoralPositionFactory2;
+import frc.robot.Commands.CoralPositionFactory2.position;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 import frc.robot.Constants.Settings.CoralPosition;
@@ -487,6 +489,14 @@ public class RobotContainer {
         // // return the autoChooser's selected Auto
         return this.autoChooser.getSelected();
 
+        // ! DEBUG FEEDER LATER
+        // return Commands.sequence(
+        //     CoralPositionFactory.L1(m_elevator, m_pivot),
+        //     Commands.waitSeconds(0.2),
+        //     CoralPositionFactory.Feed(m_elevator, m_pivot),
+        //     Commands.waitSeconds(0.2),
+        //     CoralPositionFactory.L1(m_elevator, m_pivot)
+        // );
         // return Commands.sequence(
         //     CoralPositionFactory.Feed(m_elevator, m_pivot),
         //     m_coralHandler.commandIntakeCoral()
@@ -500,12 +510,12 @@ public class RobotContainer {
 
     public void configureNamedCommands() {
 
-        // && POSITIONS 
+        // && POSITIONS
         NamedCommands.registerCommand("L1 Position", coralPositionFactoryL1);
         NamedCommands.registerCommand("L2 Position", coralPositionFactoryL2);
         NamedCommands.registerCommand("L3 Position", coralPositionFactoryL3);
         NamedCommands.registerCommand("L4 Position", coralPositionFactoryL4);
-        NamedCommands.registerCommand("Feed", CoralPositionFactory.Feed(m_elevator, m_pivot).asProxy());
+        NamedCommands.registerCommand("Feed", CoralPositionFactory.Feed(m_elevator, m_pivot));
 
         // TODO THESE MUST BE TESTED
         NamedCommands.registerCommand("Run Coral Intake", m_coralHandler.intake());

@@ -50,10 +50,10 @@ public final class Settings {
         public static final double ELEVATOR_L3_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L4_POSITION = 106;
         public static final double PIVOT_FEED_POSITION = 65;
-        public static final double PIVOT_L1_POSITION = 145;
+        public static final double PIVOT_L1_POSITION = 161;
         public static final double PIVOT_L2_POSITION = 153;
         public static final double PIVOT_L3_POSITION = 175; // pivot L2=L3
-        public static final double PIVOT_L4_POSITION = 176;
+        public static final double PIVOT_L4_POSITION = 171;
     }
 
     public static final class CoralHandler {

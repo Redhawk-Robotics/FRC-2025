@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,8 +19,10 @@ public class CoralHandler extends SubsystemBase {
     /*//sensor can reliably detect gamepiece when it is fully inside the intake. 
     End of intake path/critical transfer point*/
     private final DigitalInput entranceSensor;
-    private Boolean triggeredByOutake;
+    //serve as flags that remember whether or not the sensor was triggered
+    private Boolean isEmpty;
     private Boolean triggeredByIntake;
+
 
     public CoralHandler() {
         // TODO
@@ -30,12 +31,34 @@ public class CoralHandler extends SubsystemBase {
         this.entranceSensor = new DigitalInput(0);
     }
 
-    
-    public void intakeSensor() {
-        if (this.entranceSensor.get()){
-            coralIntakeMotor.set(0);
+    //Please check over this entire block of sensor code
+    public boolean intakeSensor() {
+        return ! entranceSensor.get();
+        }
+
+    public boolean outtakeSensor() {
+        return entranceSensor.get();
+        }
+
+    public void triggeredSensor(){
+        if (entranceSensor.get() == false){
+             triggeredByIntake = true;
+             /*We may have to reset this boolean at some point in our code, 
+             so that it can detect the next time a game piece passes through the sensor. I think...*/
+        } 
+
+        if (triggeredByIntake == true) {
+            stop();
         }
     }
+
+    public void isEmpty(){
+        if (entranceSensor.get() == true){
+            triggeredByIntake = false;
+            isEmpty = true;
+        }
+    }
+    
 
     public Command intakeFromStation() {
         return this.runOnce(() -> {
@@ -61,36 +84,22 @@ public class CoralHandler extends SubsystemBase {
     }
 
     //IT WILL BE ASSUMED THAT A CORAL IS INSIDE UNTIL TRIGGERDBYINTAKE IS FALSE
-    public void checkIntakeVoltDrop() {
-        // CONDITIONS 
-        // CORAL IN
-        // CORAL OUT 
-        if ( coralIntakeMotor.getBusVoltage() < Settings.CoralHandler.CORAL_INTAKE_VOLTAGE ) {
-            triggeredByIntake = true;
-            triggeredByOutake = false;
-        }
-    }
-
-    public void checkOuttakeVoltDrop() {
-        if ( coralIntakeMotor.getBusVoltage() < Settings.CoralHandler.CORAL_OUTTAKE_VOLTAGE) {
-            triggeredByIntake = false;
-            triggeredByOutake = true;
-        }
-    }
+  
 
     public Boolean wasIntakeTriggered() {
         return triggeredByIntake;
     }
 
     public Boolean wasOuttakeTriggered() {
-        return triggeredByOutake;
+        return isEmpty;
     }
 
     @Override
     public void periodic() {
-        checkIntakeVoltDrop();
-        checkOuttakeVoltDrop();
         SmartDashboard.putNumber("Coral intake motor current",coralIntakeMotor.getOutputCurrent());
         SmartDashboard.putNumber("Pivot/Motor Output Speed", coralIntakeMotor.get());
+        SmartDashboard.putBoolean("Intake Sensor", intakeSensor());
+        SmartDashboard.putBoolean("Intake is Empty", outtakeSensor());
     }
+
 }

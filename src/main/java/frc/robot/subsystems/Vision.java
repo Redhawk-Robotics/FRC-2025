@@ -47,8 +47,10 @@ public class Vision extends SubsystemBase {
         // This method will be called once per scheduler run
         LimelightHelpers.SetRobotOrientation(this.LIMELIGHT_NUM_1,
                 this.m_getRobotYawInDegrees.get(), 0.0, 0.0, 0.0, 0.0, 0.0);
+        // TODO set the yawRate if measurements are bad; we don't pitch or roll :)
         LimelightHelpers.PoseEstimate limelightMeasurement =
-                LimelightHelpers.getBotPoseEstimate_wpiBlue(this.LIMELIGHT_NUM_1);
+                LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(this.LIMELIGHT_NUM_1);
+        // TODO consider printing out various values in this periodic() func
         if (limelightMeasurement == null)
             return;
         if (limelightMeasurement.tagCount >= 2) { // Only trust measurement if we see multiple tags

@@ -4,20 +4,31 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Ports;
 
 public class Climber extends SubsystemBase {
     /** Creates a new Climber. */
+
+    private final SparkMax climberMotor;
+
     public Climber() {
-        // TODO construct and configure the winch motor
+        this.climberMotor = new SparkMax(Ports.Climber.kCAN_ID_CLIMBER, MotorType.kBrushless);
+        
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+    }
+
+    public Command commandSetClimbSpeed( double speed) {
+        return this.runOnce( () -> { this.climberMotor.set(speed);} );
     }
 
     private boolean canWinch() {
@@ -37,64 +48,24 @@ public class Climber extends SubsystemBase {
      * releaseClimbWinch releases the climbing winch to allow for climbing
      */
     public Command releaseClimbWinch() {
-        Command c = Commands.either(//
-                this.runOnce(() -> { // canWinch == TRUE
-                    // TODO
-                    // Then, apply power to the motor such that the
-                    // winch is released.
-                    DriverStation.reportWarning("Please implement me!",
-                            Thread.currentThread().getStackTrace());
-                }).andThen(Commands.waitSeconds(0.5)).andThen(this.stopWinch()), //
-                this.runOnce(() -> { // canWinch == FALSE
-                    DriverStation.reportWarning(
-                            "tried to release climber winch, but cannot do that yet",
-                            Thread.currentThread().getStackTrace());
-                }), //
-                this::canWinch);
-        c.addRequirements(this);
-        return c;
+        return Commands.none();
     }
 
     /**
      * winchUp has the effect of making the robot "climb" the cage
      */
     public Command winchUp() {
-        return this.runOnce(() -> {
-            if (!this.canWinch()) {
-                DriverStation.reportWarning("tried to 'climb', but cannot do that yet",
-                        Thread.currentThread().getStackTrace());
-                return;
-            }
-            // TODO
-            // make the robot "climb"
-            DriverStation.reportWarning("Please implement me!",
-                    Thread.currentThread().getStackTrace());
-        });
+        return Commands.none();
     }
 
     /**
      * winchDown has the effect of making the robot "UN-climb" (release from) the cage
      */
     public Command winchDown() {
-        return this.runOnce(() -> {
-            if (!this.canWinch()) {
-                DriverStation.reportWarning("tried to 'un-climb', but cannot do that yet",
-                        Thread.currentThread().getStackTrace());
-                return;
-            }
-            // TODO
-            // make the robot "un-climb"
-            DriverStation.reportWarning("Please implement me!",
-                    Thread.currentThread().getStackTrace());
-        });
+       return  Commands.none();
     }
 
     public Command stopWinch() {
-        return this.runOnce(() -> {
-            // TODO
-            // turn off power from the winch motor
-            DriverStation.reportWarning("Please implement me!",
-                    Thread.currentThread().getStackTrace());
-        });
+        return Commands.none();
     }
 }

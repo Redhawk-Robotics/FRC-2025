@@ -16,6 +16,8 @@ import frc.robot.Constants.Settings;
 public class AlgaeHandler extends SubsystemBase {
     /** Creates a new AlgaeHandler. */
     private final SparkMax algaeHandlerMotor;
+  
+
     public AlgaeHandler() {
         this.algaeHandlerMotor = new SparkMax(Ports.AlgaeHandler.ALGAEINTAKE_MOTOR, Settings.AlgaeHandler.ALGAE_INTAKE_MOTORTYPE);
         // TODO
@@ -44,6 +46,8 @@ public class AlgaeHandler extends SubsystemBase {
             DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
+
+
 
     @Override
     public void periodic() {

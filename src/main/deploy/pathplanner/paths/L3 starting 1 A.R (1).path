@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.585795454545455,
+        "y": 7.25719696969697
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.030681818181819,
+        "y": 7.602777777777777
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.8453914141414147,
+        "y": 5.163383838383838
+      },
+      "prevControl": {
+        "x": 4.02834595959596,
+        "y": 6.423737373737373
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "L3 starting 1 A.R (1) end"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 118.17859010843831
+  },
+  "reversed": false,
+  "folder": " L3 starting 1 2C [Algee remove] (KEEP tbd)",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": false
+}

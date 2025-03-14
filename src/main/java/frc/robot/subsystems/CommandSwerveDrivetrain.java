@@ -118,16 +118,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // default to no-op
     };
 
-    //field
-
-    final Field2d m_field = new Field2d();
-
+    private final Field2d m_field = new Field2d();
 
     public enum speeds {
         NINETY_PERCENT(0.9), //
-        EIGHTY_PERCENT(0.8),
-        SIXTY_PERCENT(0.6),
-        FOURTY_PERCENT(0.4),
+        EIGHTY_PERCENT(0.8),//
+        SIXTY_PERCENT(0.6),//
+        FOURTY_PERCENT(0.4),//
         TWENTY_PERCENT(0.2), //
         MIN(0.1);
 
@@ -412,7 +409,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public void configureField() {
-        SmartDashboard.putData("Poses/ Field", m_field);
+        SmartDashboard.putData("Drive/swerve field pose", m_field);
     }
 
 }

@@ -91,11 +91,6 @@ public class RobotContainer {
     // private final AlgaeFloorIntakeArm m_algaeFloorIntakeArm = new AlgaeFloorIntakeArm();
     // private final AlgaeFloorIntakeRoller m_algaeFLoorIntakeRoller = new AlgaeFloorIntakeRoller();
 
-    private final Command coralPositionFactoryL1 = CoralPositionFactory.L1(m_elevator, m_pivot);
-    private final Command coralPositionFactoryL2 = CoralPositionFactory.L1(m_elevator, m_pivot);
-    private final Command coralPositionFactoryL3 = CoralPositionFactory.L1(m_elevator, m_pivot);
-    private final Command coralPositionFactoryL4 = CoralPositionFactory.L1(m_elevator, m_pivot);
-
     private final Orchestra m_orchestra = new Orchestra();
 
     private class SendablePID implements Sendable {
@@ -115,7 +110,7 @@ public class RobotContainer {
         //
         private float elevator_sp = 20;
         private float pivot_sp = 100;
- 
+
         private static float clamp(float val, float low, float high) {
             if (val < low)
                 return low;
@@ -212,10 +207,10 @@ public class RobotContainer {
 
 
     public RobotContainer() {
-        
-        configureBindings();
-        autoChooser = AutoBuilder.buildAutoChooser("Tests");
 
+        this.configureBindings();
+        this.configureNamedCommands();
+        this.autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
 
         this.drivetrain.setPoseUpdater(//
@@ -225,7 +220,7 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // TODO remove once tuned
-        SmartDashboard.putData("PID", this.m_PID);
+        // SmartDashboard.putData("PID", this.m_PID);
 
         if (false) { // todo ignore
             configureMusic();
@@ -250,7 +245,6 @@ public class RobotContainer {
     private void configureBindings() {
         this.configureDriverBindings();
         this.configureOperatorBindings();
-        this.configureNamedCommands();
     }
 
     private SwerveRequest.FieldCentric getFieldCentricDrive() {
@@ -273,7 +267,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 drivetrain.applyRequest(this::getFieldCentricDrive));
-        
+
         DRIVER.a().whileTrue(drivetrain.applyRequest(() -> brake));
         DRIVER.b().whileTrue(drivetrain.applyRequest(() -> point
                 .withModuleDirection(new Rotation2d(DRIVER.getLeftY(), DRIVER.getLeftX()))));
@@ -281,21 +275,21 @@ public class RobotContainer {
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
 
-        // && DRIVER BACK AND Y 
-        // * Starts SYSID dynamic directions
-        DRIVER.back().and(DRIVER.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // // && DRIVER BACK AND Y 
+        // // * Starts SYSID dynamic directions
+        // DRIVER.back().and(DRIVER.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
 
-        // && DRIVER BACK AND X
-        // * Starts SYSID dynamic directions
-        DRIVER.back().and(DRIVER.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // // && DRIVER BACK AND X
+        // // * Starts SYSID dynamic directions
+        // DRIVER.back().and(DRIVER.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
 
-        // && START BACK AND Y 
-        // * Starts SYSID dynamic directions
-        DRIVER.start().and(DRIVER.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // // && START BACK AND Y 
+        // // * Starts SYSID dynamic directions
+        // DRIVER.start().and(DRIVER.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
 
-        // && START AND X 
-        // * TOGGLES REVERSE
-        DRIVER.start().and(DRIVER.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // // && START AND X 
+        // // * TOGGLES REVERSE
+        // DRIVER.start().and(DRIVER.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // && LEFT BUMPER
         // * RESET FIELD CENTRIC DRIVE
@@ -315,6 +309,7 @@ public class RobotContainer {
         // TODO -- furthermore, we can implement "zoned" speeds using the pose estimator
 
         /* Configure Climb */
+        // TODO let's look at the new mechanism and see what changes we need to make
         // DRIVER.a().onTrue(this.m_climber.releaseClimbWinch());
         DRIVER.rightBumper().whileTrue(this.m_climber.commandSetClimbSpeed(-1))
                 .onFalse(this.m_climber.commandSetClimbSpeed(0));
@@ -335,22 +330,22 @@ public class RobotContainer {
         //         m_algaeFloorIntakeArm.moveToSetPoint(0),
         //         m_algaeFLoorIntakeRoller.setSpeeds(0))
         // );
+        // TODO create a new AlgaeFloorIntake() and use its setStuff() here
+        // this.DRIVER.povDown().whileTrue() // ...
 
 
         // DRIVER.povUp().whileTrue(m_algaeFLoorIntakeRoller.setSpeeds(1)).toggleOnFalse(m_algaeFLoorIntakeRoller.setSpeeds(0));
-        
-
 
     }
 
     public void zero() {
         this.m_elevator.stopElevator();
         this.m_pivot.stopPivot();
-    }   
+    }
 
     private void configureOperatorBindings() {
 
-        
+
         /* Configure Elevator */
         Command elevatorDefault = Commands.either(//
                 Commands.none(), //
@@ -389,55 +384,56 @@ public class RobotContainer {
         // OPERATOR.y().whileTrue( CoralPositionFactory.L4(m_elevator, m_pivot));
 
 
-        //TODO DEPRECATED, PID CONTROL
-        //&& A BUTTON 
-        // *CONFIGURES THE MOTORS WITH PID VALUES FOR ELEVATOR ONLY IF TUNING MODE IS ON
-        // * IF TUNER MODE IS OFF IT RUNS TO L1
-        OPERATOR.a().whileTrue(Commands.either(//
-                this.m_elevator.runOnce(//
-                        () -> this.m_elevator.configureMotors(//
-                                // tune Elevator PID UP
-                                this.m_PID.getElevator_kP1(), this.m_PID.getElevator_kI1(),
-                                this.m_PID.getElevator_kD1(), //
-                                // tune Elevator PID DOWN
-                                this.m_PID.getElevator_kP2(), this.m_PID.getElevator_kI2(),
-                                this.m_PID.getElevator_kD2())), //
-                CoralPositionFactory.L1(m_elevator, m_pivot).handleInterrupt(
-                     ()-> CoralPositionFactory.Feed(m_elevator, m_pivot)), //
-                this.m_PID::isTuningMode));
-        
-        CoralPositionFactory.L4(m_elevator, m_pivot).handleInterrupt( ()-> CoralPositionFactory.Feed(m_elevator, m_pivot));
-        //&& OPERATOR B BUTTON 
-        // * IF TUNER MODE IS ON, IT SETS REFERENCE TO THE SETPOINT
-        // * IF TUNRE MODE IS OFF JUST RUNS TO L2 
+        // //TODO DEPRECATED, PID CONTROL
+        // //&& A BUTTON 
+        // // *CONFIGURES THE MOTORS WITH PID VALUES FOR ELEVATOR ONLY IF TUNING MODE IS ON
+        // // * IF TUNER MODE IS OFF IT RUNS TO L1
+        // OPERATOR.a().whileTrue(Commands.either(//
+        //         this.m_elevator.runOnce(//
+        //                 () -> this.m_elevator.configureMotors(//
+        //                         // tune Elevator PID UP
+        //                         this.m_PID.getElevator_kP1(), this.m_PID.getElevator_kI1(),
+        //                         this.m_PID.getElevator_kD1(), //
+        //                         // tune Elevator PID DOWN
+        //                         this.m_PID.getElevator_kP2(), this.m_PID.getElevator_kI2(),
+        //                         this.m_PID.getElevator_kD2())), //
+        //         CoralPositionFactory.L1(m_elevator, m_pivot)
+        //                 .handleInterrupt(() -> CoralPositionFactory.Feed(m_elevator, m_pivot)), //
+        //         this.m_PID::isTuningMode));
 
-        OPERATOR.b().whileTrue(Commands.either(//
-                this.m_elevator.startEnd(
-                        () -> this.m_elevator.setReference(this.m_PID.getElevator_setpoint()),
-                        () -> this.m_elevator.stopElevator()),
-                CoralPositionFactory.L2(this.m_elevator, this.m_pivot), //
-                this.m_PID::isTuningMode));
-        
-        //&& OPERATOR X BUTTON
-        // * IF THIS IS IN TUNER MODE, THIS CHANGES THE PIVOT PID VALUES
-        // * OTHERWISE, IT RUNS TO L3 POSITION FOR BOTH PIVOT AND ELEVATOR
-        OPERATOR.x().whileTrue(Commands.either(//
-                this.m_pivot.runOnce(//
-                        () -> this.m_pivot.configureMotors(// tune Pivot (done?)
-                                this.m_PID.getPivot_kP(), this.m_PID.getPivot_kI(),
-                                this.m_PID.getPivot_kD())), //
-                CoralPositionFactory.L3(this.m_elevator, this.m_pivot), //
-                this.m_PID::isTuningMode));
-        
-        // && OPERATOR Y 
-        // * BUTTON TO THE REFERENCE SET IN THE TUNER DASHBOARD
-        // * OTHERWISE, RUNS TO L4
-        OPERATOR.y().whileTrue(Commands.either(//
-                this.m_pivot.startEnd(
-                        () -> this.m_pivot.setReference(this.m_PID.getPivot_setpoint()),
-                        () -> this.m_pivot.stopPivot()),
-                CoralPositionFactory.L4(this.m_elevator, this.m_pivot), //
-                this.m_PID::isTuningMode));
+        // CoralPositionFactory.L4(m_elevator, m_pivot)
+        //         .handleInterrupt(() -> CoralPositionFactory.Feed(m_elevator, m_pivot));
+        // //&& OPERATOR B BUTTON 
+        // // * IF TUNER MODE IS ON, IT SETS REFERENCE TO THE SETPOINT
+        // // * IF TUNRE MODE IS OFF JUST RUNS TO L2 
+
+        // OPERATOR.b().whileTrue(Commands.either(//
+        //         this.m_elevator.startEnd(
+        //                 () -> this.m_elevator.setReference(this.m_PID.getElevator_setpoint()),
+        //                 () -> this.m_elevator.stopElevator()),
+        //         CoralPositionFactory.L2(this.m_elevator, this.m_pivot), //
+        //         this.m_PID::isTuningMode));
+
+        // //&& OPERATOR X BUTTON
+        // // * IF THIS IS IN TUNER MODE, THIS CHANGES THE PIVOT PID VALUES
+        // // * OTHERWISE, IT RUNS TO L3 POSITION FOR BOTH PIVOT AND ELEVATOR
+        // OPERATOR.x().whileTrue(Commands.either(//
+        //         this.m_pivot.runOnce(//
+        //                 () -> this.m_pivot.configureMotors(// tune Pivot (done?)
+        //                         this.m_PID.getPivot_kP(), this.m_PID.getPivot_kI(),
+        //                         this.m_PID.getPivot_kD())), //
+        //         CoralPositionFactory.L3(this.m_elevator, this.m_pivot), //
+        //         this.m_PID::isTuningMode));
+
+        // // && OPERATOR Y 
+        // // * BUTTON TO THE REFERENCE SET IN THE TUNER DASHBOARD
+        // // * OTHERWISE, RUNS TO L4
+        // OPERATOR.y().whileTrue(Commands.either(//
+        //         this.m_pivot.startEnd(
+        //                 () -> this.m_pivot.setReference(this.m_PID.getPivot_setpoint()),
+        //                 () -> this.m_pivot.stopPivot()),
+        //         CoralPositionFactory.L4(this.m_elevator, this.m_pivot), //
+        //         this.m_PID::isTuningMode));
 
         OPERATOR.a().onTrue(CoralPositionFactory.L1(this.m_elevator, this.m_pivot));
         OPERATOR.b().onTrue(CoralPositionFactory.L2(this.m_elevator, this.m_pivot));
@@ -451,7 +447,7 @@ public class RobotContainer {
         // * Intakes coral
         OPERATOR.leftBumper().onTrue(this.m_coralHandler.intake())
                 .onFalse(this.m_coralHandler.stop());
-        
+
         //& OPERATOR LEFT TRIGGER
         // * Spits out coral 
         OPERATOR.leftTrigger().onTrue(this.m_coralHandler.spitItOut())
@@ -465,12 +461,12 @@ public class RobotContainer {
         OPERATOR.rightTrigger().onTrue(this.m_algaeHandler.rotateCCW())
                 .onFalse(this.m_algaeHandler.stop());
 
-        /*  Algae Intake */
+        /* Algae Intake */
 
         // on d-pad down, zero the current elevator position
         // OPERATOR.povDown().onTrue(//
         //         this.m_elevator.runOnce(() -> this.m_elevator.resetElevatorPosition()));
-    
+
         // on d-pad up, tell the elevator and pivot to use _speed_ control
         // with the joysticks, instead of PID position control
         OPERATOR.povUp().onTrue(//
@@ -478,12 +474,12 @@ public class RobotContainer {
                         this.m_elevator.runOnce(() -> this.m_elevator.useSpeed()), //
                         this.m_pivot.runOnce(() -> this.m_pivot.useSpeed())));
         OPERATOR.povDown().onTrue(CoralPositionFactory.Feed(m_elevator, m_pivot));
-        
+
     }
 
     public Command getAutonomousCommand() {
         // reset the poseEstimator's initialPoseMeters to the AutoBuilder's pose // TODO verify
-        this.m_poseEstimator.resetPose(AutoBuilder.getCurrentPose()); 
+        this.m_poseEstimator.resetPose(AutoBuilder.getCurrentPose());
         // // return the autoChooser's selected Auto
         return this.autoChooser.getSelected();
 
@@ -509,10 +505,10 @@ public class RobotContainer {
     public void configureNamedCommands() {
 
         // && POSITIONS
-        NamedCommands.registerCommand("L1 Position", coralPositionFactoryL1);
-        NamedCommands.registerCommand("L2 Position", coralPositionFactoryL2);
-        NamedCommands.registerCommand("L3 Position", coralPositionFactoryL3);
-        NamedCommands.registerCommand("L4 Position", coralPositionFactoryL4);
+        NamedCommands.registerCommand("L1 Position", CoralPositionFactory.L1(m_elevator, m_pivot));
+        NamedCommands.registerCommand("L2 Position", CoralPositionFactory.L2(m_elevator, m_pivot));
+        NamedCommands.registerCommand("L3 Position", CoralPositionFactory.L3(m_elevator, m_pivot));
+        NamedCommands.registerCommand("L4 Position", CoralPositionFactory.L4(m_elevator, m_pivot));
         NamedCommands.registerCommand("Feed", CoralPositionFactory.Feed(m_elevator, m_pivot));
 
         // TODO THESE MUST BE TESTED

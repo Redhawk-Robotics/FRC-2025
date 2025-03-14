@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 
-public class AlgaeFloorIntakeRoller extends SubsystemBase {
+public class AlgaeFloorIntakeRoller extends SubsystemBase { // TODO do not extend SubsystemBase
   /** Creates a new AlgaeFloorIntakeRoller. */
 
    private final SparkMax rollerMotor = new SparkMax(Ports.AlgaeFloorIntake.kCAN_ID_ROLLER, Settings.AlgaeFloorIntake.ALGAE_FLOOR_INTAKE_MOTORTYPE);
@@ -27,6 +27,9 @@ public class AlgaeFloorIntakeRoller extends SubsystemBase {
     
     rollerMotorConfig.apply(globalConfig).inverted(true);
   
+  }
+  public void setSpeed(double speed) {
+    this.rollerMotor.set(speed);
   }
 
   public Command setSpeeds(double speed) {

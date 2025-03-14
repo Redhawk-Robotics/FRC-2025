@@ -59,22 +59,9 @@
           }
         },
         {
-          "type": "race",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Feed"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              }
-            ]
+            "name": "Feed"
           }
         },
         {
@@ -116,7 +103,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Run Coral Intake"
+            "name": "Outtake Coral"
           }
         },
         {

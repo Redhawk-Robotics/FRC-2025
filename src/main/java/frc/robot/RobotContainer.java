@@ -487,6 +487,14 @@ public class RobotContainer {
         // // return the autoChooser's selected Auto
         return this.autoChooser.getSelected();
 
+        // ! DEBUG FEEDER LATER
+        // return Commands.sequence(
+        //     CoralPositionFactory.L1(m_elevator, m_pivot),
+        //     Commands.waitSeconds(0.2),
+        //     CoralPositionFactory.Feed(m_elevator, m_pivot),
+        //     Commands.waitSeconds(0.2),
+        //     CoralPositionFactory.L1(m_elevator, m_pivot)
+        // );
         // return Commands.sequence(
         //     CoralPositionFactory.Feed(m_elevator, m_pivot),
         //     m_coralHandler.commandIntakeCoral()
@@ -500,21 +508,21 @@ public class RobotContainer {
 
     public void configureNamedCommands() {
 
-        // && POSITIONS 
+        // && POSITIONS
         NamedCommands.registerCommand("L1 Position", coralPositionFactoryL1);
         NamedCommands.registerCommand("L2 Position", coralPositionFactoryL2);
         NamedCommands.registerCommand("L3 Position", coralPositionFactoryL3);
         NamedCommands.registerCommand("L4 Position", coralPositionFactoryL4);
-        NamedCommands.registerCommand("Feed", CoralPositionFactory.Feed(m_elevator, m_pivot).asProxy());
+        NamedCommands.registerCommand("Feed", CoralPositionFactory.Feed(m_elevator, m_pivot));
 
         // TODO THESE MUST BE TESTED
-        NamedCommands.registerCommand("Run Coral Intake", m_coralHandler.intake().asProxy());
-        NamedCommands.registerCommand("Run Coral Outake", m_coralHandler.spitItOut().asProxy());
-        NamedCommands.registerCommand("Stop Coral Intake", m_coralHandler.stop().asProxy());
+        NamedCommands.registerCommand("Run Coral Intake", m_coralHandler.intake());
+        NamedCommands.registerCommand("Run Coral Outake", m_coralHandler.spitItOut());
+        NamedCommands.registerCommand("Stop Coral Intake", m_coralHandler.stop());
 
-        NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1).asProxy());
-        NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1).asProxy());
-        NamedCommands.registerCommand("Stop Climbter", m_climber.commandSetClimbSpeed(1).asProxy());
+        NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1));
+        NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1));
+        NamedCommands.registerCommand("Stop Climbter", m_climber.commandSetClimbSpeed(1));
 
     }
 

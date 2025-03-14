@@ -122,9 +122,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public enum speeds {
         NINETY_PERCENT(0.9), //
-        EIGHTY_PERCENT(0.8),//
-        SIXTY_PERCENT(0.6),//
-        FOURTY_PERCENT(0.4),//
+        EIGHTY_PERCENT(0.8), //
+        SIXTY_PERCENT(0.6), //
+        FOURTY_PERCENT(0.4), //
         TWENTY_PERCENT(0.2), //
         MIN(0.1);
 

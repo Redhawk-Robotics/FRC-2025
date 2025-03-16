@@ -14,6 +14,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.Settings;
 
 // TODO set this up
 // https://docs.limelightvision.io/docs/docs-limelight/getting-started/FRC/programming
@@ -40,6 +41,15 @@ public class Vision extends SubsystemBase {
         this.m_getRobotYawInDegrees = getRobotYawInDegrees;
         this.m_setVisionMeasurementStdDevs = setVisionMeasurementStdDevs;
         this.m_addVisionMeasurement = addVisionMeasurement;
+
+        LimelightHelpers.setCameraPose_RobotSpace(
+            LIMELIGHT_NUM_1, 
+            Settings.LimeLight.kCAMERAPOSE_FORWARD, 
+            Settings.LimeLight.kCAMERAPOSE_SIDE, 
+            Settings.LimeLight.kCAMERAPOSE_UP, 
+            0, 0, 
+            Settings.LimeLight.kCAMERAPOSE_YAW
+            );
     }
 
     @Override

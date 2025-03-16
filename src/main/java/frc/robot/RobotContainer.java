@@ -73,16 +73,17 @@ public class RobotContainer {
 
     private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
             drivetrain.getKinematics(), drivetrain.getPigeon2().getRotation2d(),
-            drivetrain.getState().ModulePositions, new Pose2d()//
+            drivetrain.getState().ModulePositions, new Pose2d()//*  merged with vision 
     ); // TODO we set initialPoseMeters from the selected Auto
 
     private final Vision m_vision = new Vision(//
             () -> drivetrain.getPigeon2().getRotation2d().getDegrees(),
             matrix -> m_poseEstimator.setVisionMeasurementStdDevs(matrix),
-            poseAndTime -> m_poseEstimator.addVisionMeasurement(//
+            poseAndTime -> m_poseEstimator.addVisionMeasurement(//* vision overwritten here
                     poseAndTime.getFirst(), poseAndTime.getSecond())//
     );
 
+    //& SUBSYSTEM DECLARATION
     private final Elevator m_elevator = new Elevator();
     private final Pivot m_pivot = new Pivot();
     private final Climber m_climber = new Climber();

@@ -5,27 +5,39 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "L2 Position"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "L3 middle"
+            "pathName": "L2 middle"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "L3 Position"
+            "name": "Run Coral Outake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Outtake Coral"
+            "name": "Stop Coral Intake"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Feeder Position"
+            "name": "Feed"
           }
         }
       ]

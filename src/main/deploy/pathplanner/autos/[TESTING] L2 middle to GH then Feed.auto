@@ -7,13 +7,25 @@
         {
           "type": "named",
           "data": {
-            "name": "Run Coral Intake"
+            "name": "L2 Position"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L2 middle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Coral Outake"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 0.2
           }
         },
         {
@@ -23,69 +35,33 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Feed"
+            "pathName": "L2 middle.3"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.3
+            "name": "Feed"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Testing everything"
+            "pathName": "L2 middle.2"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Feed"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L3 Position"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L3 Position"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Run Coral Outake"
+            "name": "Run Coral Intake"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Testing",
+  "folder": "L3 middle",
   "choreoAuto": false
 }

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.5684375,
-        "y": 4.025
+        "x": 6.401761363636364,
+        "y": 4.134687499999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.220974648820536,
-        "y": 4.143577892535557
+        "x": 7.7479261363636365,
+        "y": 2.6289772727272727
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "End L2 middle 2"
     },
     {
       "anchor": {
-        "x": 5.893210227272728,
-        "y": 4.025
+        "x": 1.3062784090909094,
+        "y": 1.003607954545454
       },
       "prevControl": {
-        "x": 6.348691724941725,
-        "y": 3.8897865675990673
+        "x": 2.841903409090909,
+        "y": 0.5249715909041015
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "L3 Position",
+      "name": "Run Coral Intake",
       "waypointRelativePos": 1.0,
       "endWaypointRelativePos": null,
       "command": null
@@ -49,13 +49,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.5909278360399375
+    "rotation": -125.72739822279975
   },
   "reversed": false,
   "folder": "L3 middle",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 0.5909278360399375
   },
   "useDefaultConstraints": true
 }

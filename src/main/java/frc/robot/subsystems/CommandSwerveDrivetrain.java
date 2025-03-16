@@ -121,8 +121,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final Field2d m_field = new Field2d();
 
     public enum speeds {
-        NINETY_PERCENT(0.9), //
-        EIGHTY_PERCENT(0.8), //
+        NINETY_PERCENT(1), //
+        EIGHTY_PERCENT(1), //
         SIXTY_PERCENT(0.6), //
         FOURTY_PERCENT(0.4), //
         TWENTY_PERCENT(0.2), //

@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Circle"
+            "pathName": "New New Path"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Testing",
+  "folder": null,
   "choreoAuto": false
 }

@@ -279,19 +279,21 @@ public class RobotContainer {
         //&& DYNAMIC TEST WITH SYSID
         // // && DRIVER BACK AND Y 
         // // * Starts SYSID dynamic directions
-        DRIVER.back().and(DRIVER.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+
+        // ! CHANGE AFTER TESTING CHANGE AFTER CHANGE CHANGE CHANGE
+        DRIVER.povDown().and(DRIVER.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
 
         // // && DRIVER BACK AND X
         // // * Starts SYSID dynamic directions
-        DRIVER.back().and(DRIVER.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        DRIVER.povDown().and(DRIVER.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
 
         // // && START BACK AND Y 
         // // * Starts SYSID dynamic directions
-        DRIVER.start().and(DRIVER.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        DRIVER.povDown().and(DRIVER.a()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
 
         // // && START AND X 
         // // * TOGGLES REVERSE
-        DRIVER.start().and(DRIVER.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        DRIVER.povDown().and(DRIVER.b()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // && LEFT BUMPER
         // * RESET FIELD CENTRIC DRIVE

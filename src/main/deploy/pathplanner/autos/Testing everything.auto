@@ -7,6 +7,24 @@
         {
           "type": "named",
           "data": {
+            "name": "Run Coral Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Coral Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Feed"
           }
         },
@@ -61,7 +79,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Outtake Coral"
+            "name": "Run Coral Outake"
           }
         }
       ]

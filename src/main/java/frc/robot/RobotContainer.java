@@ -253,13 +253,13 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         return drive//
                 .withVelocityX( // Drive forward with positive Y (forward)
-                        Math.pow(MathUtil.applyDeadband(DRIVER.getLeftY(), 0.1), 1)//
+                        MathUtil.applyDeadband(DRIVER.getLeftY(), 0.1)//
                                 * MaxSpeed * drivetrain.speedMultiplier())
                 .withVelocityY( // Drive left with positive X (left)
-                        Math.pow(MathUtil.applyDeadband(DRIVER.getLeftX(), 0.1), 1)//
+                        MathUtil.applyDeadband(DRIVER.getLeftX(), 0.1)//
                                 * MaxSpeed * drivetrain.speedMultiplier())
                 .withRotationalRate( // Drive counterclockwise with negative X (left)
-                        Math.pow(MathUtil.applyDeadband(-DRIVER.getRightX(), 0.1), 1)//
+                        MathUtil.applyDeadband(-DRIVER.getRightX(), 0.1)//
                                 * MaxAngularRate * drivetrain.speedMultiplier());
     }
 

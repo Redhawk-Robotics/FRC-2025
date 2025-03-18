@@ -73,8 +73,8 @@ public final class Settings {
         public static final double HOME_ENCODER_POSITION = 0;
         public static final double SAFE_TO_TRAVEL_POSITION = 0;
         public static final double FLOOR_INTAKING_POSITION = 0;
-        
-
-
+    }
+    public static final class LEDs {
+        public static final int LED_COUNT = 300;
     }
 }

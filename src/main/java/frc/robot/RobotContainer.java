@@ -446,7 +446,7 @@ public class RobotContainer {
         //  & OPERATOR LEFT BUMPER
         // * Intakes coral
         OPERATOR.leftBumper().onTrue(this.m_coralHandler.intake())
-                .onFalse(this.m_coralHandler.stop());
+                .onFalse(this.m_coralHandler.contain());
 
         //& OPERATOR LEFT TRIGGER
         // * Spits out coral 

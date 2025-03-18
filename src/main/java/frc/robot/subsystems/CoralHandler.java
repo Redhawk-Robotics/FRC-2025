@@ -28,7 +28,7 @@ public class CoralHandler extends SubsystemBase {
         // TODO
         this.coralIntakeMotor = new SparkMax(Ports.CoralIntake.WHEEL_INTAKE, Settings.CoralHandler.CORAL_INTAKE_MOTORTYPE);
         //The valid Analog ports are 0-3
-        this.entranceSensor = new DigitalInput(0);
+        this.entranceSensor = new DigitalInput(1);
     }
 
     //Please check over this entire block of sensor code
@@ -43,11 +43,13 @@ public class CoralHandler extends SubsystemBase {
     public void triggeredSensor(){
         if (entranceSensor.get() == false){
              triggeredByIntake = true;
+             isEmpty = false;
              /*We may have to reset this boolean at some point in our code, 
              so that it can detect the next time a game piece passes through the sensor. I think...*/
         } 
 
-        if (triggeredByIntake == true) {
+        if (triggeredByIntake == true||isEmpty ==false) {
+            System.out.println("Intake is full");
             stop();
         }
     }
@@ -57,7 +59,12 @@ public class CoralHandler extends SubsystemBase {
             triggeredByIntake = false;
             isEmpty = true;
         }
+        
+        if (isEmpty == true||triggeredByIntake==false) {
+            System.out.println("Intake is empty");
+        }
     }
+
     
 
     public Command intakeFromStation() {

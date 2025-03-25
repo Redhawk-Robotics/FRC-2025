@@ -121,8 +121,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final Field2d m_field = new Field2d();
 
     public enum speeds {
-        NINETY_PERCENT(0.9), //
-        EIGHTY_PERCENT(0.8), //
+        NINETY_PERCENT(1), //
+        EIGHTY_PERCENT(1), //
         SIXTY_PERCENT(0.6), //
         FOURTY_PERCENT(0.4), //
         TWENTY_PERCENT(0.2), //
@@ -240,7 +240,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                             .withWheelForceFeedforwardsY(
                                     feedforwards.robotRelativeForcesYNewtons())),
                     new PPHolonomicDriveController( // TODO tune this! These are _okay_ for now
-                            new PIDConstants(1.5, 0, 0), // PID constants for translation
+                            new PIDConstants(1.5, .5, 0.25), // PID constants for translation
                             new PIDConstants(1.25, 0, 0)), // PID constants for rotation
                     config,
                     // Flip the path if Alliance is Red

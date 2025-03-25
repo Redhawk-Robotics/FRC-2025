@@ -39,7 +39,7 @@ public final class Settings {
     public static final class CoralPosition {
         // TODO ALL OF THESE NEED TO BE TUNED ALONGSIDE PID
         // these values change depending on the zeroOffset and conversionFactor
-        public static final double ELEVATOR_MIN_BLOCKING_POSITION = 0.; // elevator blocks the pivot above this reference
+        public static final double ELEVATOR_MIN_BLOCKING_POSITION = 5.; // elevator blocks the pivot above this reference
         public static final double ELEVATOR_MAX_BLOCKING_POSITION = 55.; // elevator blocks the pivot below this reference
         public static final double PIVOT_MIN_BLOCKING_POSITION = 65; // for completeness // ! TO BE TESTED, ASSGIN TO FEEDER POSITION
         public static final double PIVOT_MAX_BLOCKING_POSITION = 120.; // elevator can move in the range above when pivot is here
@@ -80,10 +80,10 @@ public final class Settings {
     }
 
     public static final class LimeLight {
-        public static final double kCAMERAPOSE_YAW = 72.5;
-        public static final double kCAMERAPOSE_FORWARD = 0.24;
-        public static final double kCAMERAPOSE_SIDE = -0.28;
-        public static final double kCAMERAPOSE_UP = 0.32;
+        public static final double kCAMERAPOSE_YAW = 72.5; // DOUBLE CHECK  MIGHT BE EIGHT DEGREES, NEW MOUNT IS CLOSER TO 0
+        public static final double kCAMERAPOSE_FORWARD =  .1905;//0.24;
+        public static final double kCAMERAPOSE_SIDE = -0.2286; //-0.28;
+        public static final double kCAMERAPOSE_UP = 0.4953; //0.32;
     }
 
     //& APRIL TAGS TBD 

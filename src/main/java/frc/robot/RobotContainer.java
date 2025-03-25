@@ -73,21 +73,22 @@ public class RobotContainer {
 
     private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
             drivetrain.getKinematics(), drivetrain.getPigeon2().getRotation2d(),
-            drivetrain.getState().ModulePositions, new Pose2d()//
+            drivetrain.getState().ModulePositions, new Pose2d()//*  merged with vision 
     ); // TODO we set initialPoseMeters from the selected Auto
 
     private final Vision m_vision = new Vision(//
             () -> drivetrain.getPigeon2().getRotation2d().getDegrees(),
             matrix -> m_poseEstimator.setVisionMeasurementStdDevs(matrix),
-            poseAndTime -> m_poseEstimator.addVisionMeasurement(//
+            poseAndTime -> m_poseEstimator.addVisionMeasurement(//* vision overwritten here
                     poseAndTime.getFirst(), poseAndTime.getSecond())//
     );
 
+    //& SUBSYSTEM DECLARATION
     private final Elevator m_elevator = new Elevator();
     private final Pivot m_pivot = new Pivot();
-    private final Climber m_climber = new Climber();
+    // private final Climber m_climber = new Climber();
     private final CoralHandler m_coralHandler = new CoralHandler();
-    private final AlgaeHandler m_algaeHandler = new AlgaeHandler();
+    // private final AlgaeHandler m_algaeHandler = new AlgaeHandler();
     // private final AlgaeFloorIntakeArm m_algaeFloorIntakeArm = new AlgaeFloorIntakeArm();
     // private final AlgaeFloorIntakeRoller m_algaeFLoorIntakeRoller = new AlgaeFloorIntakeRoller();
 
@@ -252,13 +253,13 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         return drive//
                 .withVelocityX( // Drive forward with positive Y (forward)
-                        Math.pow(MathUtil.applyDeadband(DRIVER.getLeftY(), 0.1), 5)//
+                        MathUtil.applyDeadband(DRIVER.getLeftY(), 0.1)//
                                 * MaxSpeed * drivetrain.speedMultiplier())
                 .withVelocityY( // Drive left with positive X (left)
-                        Math.pow(MathUtil.applyDeadband(DRIVER.getLeftX(), 0.1), 5)//
+                        MathUtil.applyDeadband(DRIVER.getLeftX(), 0.1)//
                                 * MaxSpeed * drivetrain.speedMultiplier())
                 .withRotationalRate( // Drive counterclockwise with negative X (left)
-                        Math.pow(MathUtil.applyDeadband(-DRIVER.getRightX(), 0.1), 5)//
+                        MathUtil.applyDeadband(-DRIVER.getRightX(), 0.1)//
                                 * MaxAngularRate * drivetrain.speedMultiplier());
     }
 
@@ -275,21 +276,24 @@ public class RobotContainer {
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
 
+        //&& DYNAMIC TEST WITH SYSID
         // // && DRIVER BACK AND Y 
         // // * Starts SYSID dynamic directions
-        // DRIVER.back().and(DRIVER.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
 
-        // // && DRIVER BACK AND X
-        // // * Starts SYSID dynamic directions
-        // DRIVER.back().and(DRIVER.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // ! CHANGE AFTER TESTING CHANGE AFTER CHANGE CHANGE CHANGE
+        // DRIVER.povDown().and(DRIVER.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
 
-        // // && START BACK AND Y 
-        // // * Starts SYSID dynamic directions
-        // DRIVER.start().and(DRIVER.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // // // && DRIVER BACK AND X
+        // // // * Starts SYSID dynamic directions
+        // DRIVER.povDown().and(DRIVER.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
 
-        // // && START AND X 
-        // // * TOGGLES REVERSE
-        // DRIVER.start().and(DRIVER.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // // // && START BACK AND Y 
+        // // // * Starts SYSID dynamic directions
+        // DRIVER.povDown().and(DRIVER.a()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+
+        // // // && START AND X 
+        // // // * TOGGLES REVERSE
+        // DRIVER.povDown().and(DRIVER.b()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // && LEFT BUMPER
         // * RESET FIELD CENTRIC DRIVE
@@ -311,11 +315,11 @@ public class RobotContainer {
         /* Configure Climb */
         // TODO let's look at the new mechanism and see what changes we need to make
         // DRIVER.a().onTrue(this.m_climber.releaseClimbWinch());
-        DRIVER.rightBumper().whileTrue(this.m_climber.commandSetClimbSpeed(-1))
-                .onFalse(this.m_climber.commandSetClimbSpeed(0));
+        // DRIVER.rightBumper().whileTrue(this.m_climber.commandSetClimbSpeed(-1))
+        //         .onFalse(this.m_climber.commandSetClimbSpeed(0));
 
-        DRIVER.rightTrigger().whileTrue(this.m_climber.commandSetClimbSpeed(0.5))
-                .onFalse(this.m_climber.commandSetClimbSpeed(0));
+        // DRIVER.rightTrigger().whileTrue(this.m_climber.commandSetClimbSpeed(0.5))
+        //         .onFalse(this.m_climber.commandSetClimbSpeed(0));
 
         // & INTAKING FOR ALGAE FLOOR
         // TODO THIS WORKS
@@ -456,10 +460,10 @@ public class RobotContainer {
         //& RIGHT BUMPERS
         //* ALGAE HANDLER, N/A */
         /* Configure AlgaeHandler */
-        OPERATOR.rightBumper().onTrue(this.m_algaeHandler.rotateCW())
-                .onFalse(this.m_algaeHandler.stop());
-        OPERATOR.rightTrigger().onTrue(this.m_algaeHandler.rotateCCW())
-                .onFalse(this.m_algaeHandler.stop());
+        // OPERATOR.rightBumper().onTrue(this.m_algaeHandler.rotateCW())
+        //         .onFalse(this.m_algaeHandler.stop());
+        // OPERATOR.rightTrigger().onTrue(this.m_algaeHandler.rotateCCW())
+        //         .onFalse(this.m_algaeHandler.stop());
 
         /* Algae Intake */
 
@@ -516,9 +520,9 @@ public class RobotContainer {
         NamedCommands.registerCommand("Run Coral Outake", m_coralHandler.spitItOut());
         NamedCommands.registerCommand("Stop Coral Intake", m_coralHandler.stop());
 
-        NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1));
-        NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1));
-        NamedCommands.registerCommand("Stop Climbter", m_climber.commandSetClimbSpeed(1));
+        // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1));
+        // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1));
+        // NamedCommands.registerCommand("Stop Climbter", m_climber.commandSetClimbSpeed(1));
 
     }
 

@@ -44,13 +44,10 @@ public class CoralHandler extends SubsystemBase {
         if (entranceSensor.get() == false){
              triggeredByIntake = true;
              isEmpty = false;
+             //System.out.println("Intake is full");
+             //stop();
              /*We may have to reset this boolean at some point in our code, 
              so that it can detect the next time a game piece passes through the sensor. I think...*/
-        } 
-
-        if (triggeredByIntake == true||isEmpty ==false) {
-            System.out.println("Intake is full");
-            stop();
         }
     }
 
@@ -58,10 +55,7 @@ public class CoralHandler extends SubsystemBase {
         if (entranceSensor.get() == true){
             triggeredByIntake = false;
             isEmpty = true;
-        }
-        
-        if (isEmpty == true||triggeredByIntake==false) {
-            System.out.println("Intake is empty");
+            //System.out.println("Intake is empty");
         }
     }
 

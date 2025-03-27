@@ -80,9 +80,9 @@ public final class Settings {
     }
 
     public static final class LimeLight {
-        public static final double kCAMERAPOSE_YAW = 72.5; // DOUBLE CHECK  MIGHT BE EIGHT DEGREES, NEW MOUNT IS CLOSER TO 0
-        public static final double kCAMERAPOSE_FORWARD =  .1905;//0.24;
-        public static final double kCAMERAPOSE_SIDE = -0.2286; //-0.28;
+        public static final double kCAMERAPOSE_YAW = 167; // DOUBLE CHECK  MIGHT BE EIGHT DEGREES, NEW MOUNT IS CLOSER TO 0
+        public static final double kCAMERAPOSE_FORWARD =  -0.1178;//0.24;
+        public static final double kCAMERAPOSE_SIDE = 0.2667; //-0.28;
         public static final double kCAMERAPOSE_UP = 0.4953; //0.32;
     }
 

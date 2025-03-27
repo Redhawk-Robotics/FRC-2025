@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Settings;
+import frc.robot.Constants.*;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
@@ -13,28 +14,50 @@ import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 
 
+
+
 public class LEDs extends SubsystemBase {
     private final CANdle m_candle;
     private final int m_LEDCount;
-
+    private final RainbowAnimation rainbowAnim;
     private Animation m_toAnimate;
     private CANdleConfiguration m_configAll;
-    private AnimationTypes m_toChange;
+    
+
+    public enum LEDColors {
+        RED(255,0,4),
+        YELLOW(255, 227, 28),
+        GREEN(0, 218, 30),
+        PINK(255, 28, 159),
+        PURPLE(190, 69, 255);
+
+        public final int red;
+        public final int green;
+        public final int blue;
+        
+        private LEDColors(int red, int green, int blue){
+            this.red = red;
+            this.green = green;
+            this.blue = blue;
+        }
+
+    }
 
     /** Creates a new LEDs. */
     public LEDs() {
         this.m_candle = new CANdle(0);
-        this.m_toAnimate = null;
         this.m_LEDCount = Settings.LEDs.LED_COUNT;
+        this.rainbowAnim = new RainbowAnimation(1, 0.5, 64);
         this.m_configAll = new CANdleConfiguration();
         this.m_configAll = new CANdleConfiguration();
         this.m_configAll.statusLedOffWhenActive = true;
         this.m_configAll.disableWhenLOS = false;
         this.m_configAll.stripType = LEDStripType.RGB;
-        this.m_configAll.brightnessScalar = 0.1;
         this.m_configAll.vBatOutputMode = VBatOutputMode.Modulated;
         this.m_candle.configAllSettings(m_configAll, 100);
     }
+
+
 
     //Wrapers: allows us to access LEDS from subsystems
     public double getVbat() { return m_candle.getBusVoltage(); }
@@ -46,28 +69,8 @@ public class LEDs extends SubsystemBase {
     public void configLedType(LEDStripType type) { m_candle.configLEDType(type, 0); }
     public void configStatusLedBehavior(boolean offWhenActive) { m_candle.configStatusLedState(offWhenActive, 0); }
 
-    enum AnimationTypes {
-        RedScroll,
-        Yellow,
-        Green,
-        Blue,
-        Pink,
-        Rainbow,
-        SetAll
-    }
-
-    
-
-    public void setColors() {
-    }
-    
     public void AnimationState() {
-
     }
-
-    
-
-        
     @Override
     public void periodic() {
 

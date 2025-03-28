@@ -207,6 +207,26 @@ public final class CoralPositionFactory {
         return orchestrate(elevator, pivot, position.L4);
     }
 
+
+    //test moving from feeder to L1
+    public static Command reworkedStateTestL2(Elevator elevator, Pivot pivot) {
+        return Commands.either(
+            Commands.sequence( //set the position to safe position
+                pivot.runOnce( () -> pivot.setReference(Settings.CoralPosition.PIVOT_MAX_BLOCKING_POSITION)),
+                elevator.runOnce( () -> pivot.setReference(Settings.CoralPosition.ELEVATOR_L2_POSITION)),
+                pivot.runOnce( () -> pivot.setReference( Settings.CoralPosition.PIVOT_L2_POSITION))
+            ),
+            pivot.runOnce(() -> pivot.setReference(Settings.CoralPosition.PIVOT_L2_POSITION)),
+            () -> elevatorWilBlock(elevator.getPosition(), position.L2.elevPos));
+            //lambda changed this boolean to Booleansupplier...?
+    }
+
+    public static Command reworkedStateTestL3(Elevator elevator, Pivot pivot) {
+        return Commands.either(null,
+         null,
+          null);
+    }
+
     // this might be useful?
     // public static Command Stop(Elevator elevator, Pivot pivot) {
     //     Command result = Commands.parallel(//

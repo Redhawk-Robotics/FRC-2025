@@ -233,13 +233,14 @@ public class RobotContainer {
             m_orchestra.addInstrument(module.getDriveMotor());
             m_orchestra.addInstrument(module.getSteerMotor());
         }
-        var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory() + "/chrp/wii-shop.chrp");
+        var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory() + "/chrp/c-maj-test.chrp");
         if (!status.isOK()) {
             // log error
             DriverStation.reportError(status.toString(), Thread.currentThread().getStackTrace());
         } else {
             System.out.println(m_orchestra.play());
         }
+        System.out.println("###############################");
         System.out.println(m_orchestra.isPlaying());
     }
 

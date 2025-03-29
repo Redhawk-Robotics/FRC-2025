@@ -18,8 +18,6 @@ public final class Ports {
     }
 
     public static final class CoralIntake {
-        public static int PIVOT_LEFT = 5;
-        public static int PIVOT_RIGHT = 5;
         public static int WHEEL_INTAKE = 7;
 
         public static boolean PIVOT_INVERTED = false;
@@ -39,8 +37,8 @@ public final class Ports {
         public static int kCAN_ID_CLIMBER = 10;
     }
     public static final class AlgaeFloorIntake{
+        public static int kCAN_ID_ARM = 11;
         public static int kCAN_ID_ROLLER = 12;
-        public static int kCAN_ID_LEFT = 11;
 
     }
 }

@@ -22,131 +22,143 @@ import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 
 public class AlgaeFloorIntakeArm extends SubsystemBase { // TODO do not extend SubsystemBase
-  /** Creates a new algaeFloorIntake. */
-  
-    private final SparkMax leftMotor = new SparkMax(Ports.AlgaeFloorIntake.kCAN_ID_LEFT, Settings.AlgaeFloorIntake.ALGAE_FLOOR_INTAKE_MOTORTYPE);
-    private final SparkMax rollerMotor = new SparkMax(Ports.AlgaeFloorIntake.kCAN_ID_ROLLER, Settings.AlgaeFloorIntake.ALGAE_FLOOR_INTAKE_MOTORTYPE);
-    
+    /** Creates a new algaeFloorIntake. */
+
+    private final SparkMax leftMotor = new SparkMax(Ports.AlgaeFloorIntake.kCAN_ID_ARM,
+            Settings.AlgaeFloorIntake.ALGAE_FLOOR_INTAKE_MOTORTYPE);
+    // private final SparkMax rollerMotor = new SparkMax(Ports.AlgaeFloorIntake.kCAN_ID_ROLLER, Settings.AlgaeFloorIntake.ALGAE_FLOOR_INTAKE_MOTORTYPE);
+
     private final SparkAbsoluteEncoder encoder = leftMotor.getAbsoluteEncoder();
     private final SparkClosedLoopController controller = leftMotor.getClosedLoopController();
-    
+
     public enum positions {
-        INSIDE(0),
-        OUTSIDE(5);
+        INSIDE(0), OUTSIDE(5);
 
         private final double pos;
+
         private positions(double p) {
             this.pos = p;
         }
+
         public double getpos() {
             return this.pos;
         }
     }
 
-  public AlgaeFloorIntakeArm() {
-    configureMotors();
-  }
-  
-  public void configureMotors() {
-    SparkMaxConfig globalConfig = new SparkMaxConfig();
-    SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
-    SparkMaxConfig rollerMotorConfig = new SparkMaxConfig();
-    
-    globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
-    
-    rollerMotorConfig.apply(globalConfig).inverted(true);
+    public AlgaeFloorIntakeArm() {
+        configureMotors();
+    }
 
-    leftMotorConfig.apply(globalConfig).closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder).maxOutput(.2); // NO PID YET
-  }
+    public void configureMotors() {
+        SparkMaxConfig globalConfig = new SparkMaxConfig();
+        SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
+        // SparkMaxConfig rollerMotorConfig = new SparkMaxConfig();
 
-  public double getPosition() {
-    return this.encoder.getPosition();
-  }
+        globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
 
-  public double getVelocity() {
-    return this.encoder.getPosition();
-  }
+        // rollerMotorConfig.apply(globalConfig).inverted(true);
 
-  public void armRotateCW() {
-     this.leftMotor.set(0.2);
-  }
+        leftMotorConfig.apply(globalConfig).closedLoop
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder).maxOutput(.2); // NO PID YET
+    }
 
-  public void armRotateCCW() {
+    public double getPosition() {
+        return this.encoder.getPosition();
+    }
+
+    public double getVelocity() {
+        return this.encoder.getPosition();
+    }
+
+    public void armRotateCW() {
+        this.leftMotor.set(0.2);
+    }
+
+    public void armRotateCCW() {
         this.leftMotor.set(-0.2);
-  }
+    }
 
-  public void runRollerCW() {
-    this.runOnce(
-        () -> { this.rollerMotor.set(1);}
-    );
-  }
+    //   public void runRollerCW() {
+    //     this.runOnce(
+    //         () -> { this.rollerMotor.set(1);}
+    //     );
+    //   }
 
-  public void runRollerCCW() {
-    this.rollerMotor.set(-1);
-  }
+    public void runRollerCCW() {
+        // this.rollerMotor.set(-1);
+    }
 
-  public void stopRoller(){
-    this.rollerMotor.set(0); 
-  }
+    public void stopRoller() {
+        // this.rollerMotor.set(0); 
+    }
 
-  public void voidIntakeMethod() {
-    moveToSetPoint(positions.OUTSIDE.getpos());
-    rollerMotor.set(0.5);
-  }
+    public void voidIntakeMethod() {
+        moveToSetPoint(positions.OUTSIDE.getpos());
+        // rollerMotor.set(0.5);
+    }
 
-  public void voidMoveInsideMethod() {
-    moveToSetPoint(positions.INSIDE.getpos());
-    stopRoller();
-  }
+    public void voidMoveInsideMethod() {
+        moveToSetPoint(positions.INSIDE.getpos());
+        stopRoller();
+    }
 
   public Command commandIntake() {
     // return this.runOnce( ()-> {voidIntakeMethod();});
     return Commands.parallel(
-        moveToSetPoint(3),
-        commandSetRollerSpeed(8)
+        moveToSetPoint(3)
+        // commandSetRollerSpeed(8)
     );
   }
 
-  public void setRef(double setpoint) {
-    this.controller.setReference(setpoint, ControlType.kPosition);
-  }
+    public void setRef(double setpoint) {
+        this.controller.setReference(setpoint, ControlType.kPosition);
+    }
 
-  public Command commandMoveInside() {
-    return this.runOnce( ()-> {voidMoveInsideMethod();});
-  }
+    public Command commandMoveInside() {
+        return this.runOnce(() -> {
+            voidMoveInsideMethod();
+        });
+    }
 
-  public Command commandOutake() { 
-    return this.runOnce( () -> { runRollerCW();});
- 
-    }// TODO CHECK THIS ON PRACTICE FIELD
+    // public Command commandOutake() {
+    //     return this.runOnce(() -> {
+    //         runRollerCW();
+    //     });
+    // }
+    // TODO CHECK THIS ON PRACTICE FIELD
 
-  public Command commandStopRoller() { return this.runOnce( () -> { stopRoller();});}
+    public Command commandStopRoller() {
+        return this.runOnce(() -> {
+            stopRoller();
+        });
+    }
 
 
-  public Command moveToSetPoint( double setpoint) {
-    return this.runOnce( () -> {controller.setReference(setpoint, ControlType.kPosition);});
-  }
+    public Command moveToSetPoint(double setpoint) {
+        return this.runOnce(() -> {
+            controller.setReference(setpoint, ControlType.kPosition);
+        });
+    }
 
-  public Command commandSetSpeed(double speed) {
-    return this.runOnce( 
-        () -> { leftMotor.set(speed); }
-    );
-    
-  }
+    public Command commandSetSpeed(double speed) {
+        return this.runOnce(() -> {
+            leftMotor.set(speed);
+        });
 
-  public Command commandSetRollerSpeed(double speed) {
-    return this.runOnce( 
-        () -> { rollerMotor.set(speed); }
-    );
-    
-  }
+    }
 
-  // TODO MAKE A COMMAND THAT TAKES AN ENUM POSITION FOR AN INPUT, THIS CONTROLS THE OUTTAKE POSITION
+    // public Command commandSetRollerSpeed(double speed) {
+    //     return this.runOnce(() -> {
+    //         rollerMotor.set(speed);
+    //     });
 
-  @Override
-  public void periodic() {
-    SmartDashboard.putNumber("Floor Algae Intkae/ Encoder", getPosition());
-    SmartDashboard.putNumber("Intake Voltage", rollerMotor.getBusVoltage());
-  }
+    // }
+
+    // TODO MAKE A COMMAND THAT TAKES AN ENUM POSITION FOR AN INPUT, THIS CONTROLS THE OUTTAKE POSITION
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Floor Algae Intkae/ Encoder", getPosition());
+        // SmartDashboard.putNumber("Intake Voltage", rollerMotor.getBusVoltage());
+    }
 }

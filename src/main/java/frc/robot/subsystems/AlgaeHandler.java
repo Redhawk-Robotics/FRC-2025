@@ -27,7 +27,6 @@ public class AlgaeHandler extends SubsystemBase {
         return this.runOnce(() -> {
             // TODO turn the motor CW
             algaeHandlerMotor.set(1);
-            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 
@@ -35,7 +34,6 @@ public class AlgaeHandler extends SubsystemBase {
         return this.runOnce(() -> {
             // TODO turn the motor CCW
             algaeHandlerMotor.set(-1);
-            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 
@@ -43,7 +41,6 @@ public class AlgaeHandler extends SubsystemBase {
         return this.runOnce(() -> {
             // TODO stop the motor
             algaeHandlerMotor.set(0);
-            DriverStation.reportWarning("Please implement me!", Thread.currentThread().getStackTrace());
         });
     }
 

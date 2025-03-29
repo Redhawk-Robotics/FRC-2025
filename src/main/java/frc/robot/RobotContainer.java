@@ -35,6 +35,7 @@ import frc.robot.Constants.Settings;
 import frc.robot.Constants.Settings.CoralPosition;
 import frc.robot.subsystems.Pivot;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.AlgaeFloorIntake;
 import frc.robot.subsystems.AlgaeHandler;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -88,9 +89,11 @@ public class RobotContainer {
     private final Pivot m_pivot = new Pivot();
     // private final Climber m_climber = new Climber();
     private final CoralHandler m_coralHandler = new CoralHandler();
-    // private final AlgaeHandler m_algaeHandler = new AlgaeHandler();
+    private final AlgaeHandler m_algaeHandler = new AlgaeHandler();
     // private final AlgaeFloorIntakeArm m_algaeFloorIntakeArm = new AlgaeFloorIntakeArm();
     // private final AlgaeFloorIntakeRoller m_algaeFLoorIntakeRoller = new AlgaeFloorIntakeRoller();
+    private final AlgaeFloorIntake m_algaeFloor =
+            new AlgaeFloorIntake(new AlgaeFloorIntakeArm(), new AlgaeFloorIntakeRoller());
 
     private final Orchestra m_orchestra = new Orchestra();
 
@@ -223,7 +226,7 @@ public class RobotContainer {
         // TODO remove once tuned
         // SmartDashboard.putData("PID", this.m_PID);
 
-        if (false) { // todo ignore
+        if (true) { // todo ignore
             configureMusic();
         }
     }
@@ -233,7 +236,7 @@ public class RobotContainer {
             m_orchestra.addInstrument(module.getDriveMotor());
             m_orchestra.addInstrument(module.getSteerMotor());
         }
-        var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory() + "/chrp/c-maj-test.chrp");
+        var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory() + "/chrp/output.chrp");
         if (!status.isOK()) {
             // log error
             DriverStation.reportError(status.toString(), Thread.currentThread().getStackTrace());
@@ -440,10 +443,10 @@ public class RobotContainer {
         //         CoralPositionFactory.L4(this.m_elevator, this.m_pivot), //
         //         this.m_PID::isTuningMode));
 
-        OPERATOR.a().onTrue(CoralPositionFactory.L1(this.m_elevator, this.m_pivot));
-        OPERATOR.b().onTrue(CoralPositionFactory.L2(this.m_elevator, this.m_pivot));
-        OPERATOR.x().onTrue(CoralPositionFactory.L3(this.m_elevator, this.m_pivot));
-        OPERATOR.y().onTrue(CoralPositionFactory.L4(this.m_elevator, this.m_pivot));
+        // OPERATOR.a().onTrue(CoralPositionFactory.L1(this.m_elevator, this.m_pivot));
+        // OPERATOR.b().onTrue(CoralPositionFactory.L2(this.m_elevator, this.m_pivot));
+        // OPERATOR.x().onTrue(CoralPositionFactory.L3(this.m_elevator, this.m_pivot));
+        // OPERATOR.y().onTrue(CoralPositionFactory.L4(this.m_elevator, this.m_pivot));
 
 
         /* Configure CoralHandler */
@@ -461,10 +464,10 @@ public class RobotContainer {
         //& RIGHT BUMPERS
         //* ALGAE HANDLER, N/A */
         /* Configure AlgaeHandler */
-        // OPERATOR.rightBumper().onTrue(this.m_algaeHandler.rotateCW())
-        //         .onFalse(this.m_algaeHandler.stop());
-        // OPERATOR.rightTrigger().onTrue(this.m_algaeHandler.rotateCCW())
-        //         .onFalse(this.m_algaeHandler.stop());
+        OPERATOR.rightBumper().onTrue(this.m_algaeHandler.rotateCW())
+                .onFalse(this.m_algaeHandler.stop());
+        OPERATOR.rightTrigger().onTrue(this.m_algaeHandler.rotateCCW())
+                .onFalse(this.m_algaeHandler.stop());
 
         /* Algae Intake */
 
@@ -478,8 +481,11 @@ public class RobotContainer {
                 Commands.parallel(//
                         this.m_elevator.runOnce(() -> this.m_elevator.useSpeed()), //
                         this.m_pivot.runOnce(() -> this.m_pivot.useSpeed())));
-        OPERATOR.povDown().onTrue(CoralPositionFactory.Feed(m_elevator, m_pivot));
+        // OPERATOR.povDown().onTrue(CoralPositionFactory.Feed(m_elevator, m_pivot));
 
+        OPERATOR.povLeft().onTrue(this.m_algaeFloor.setStuff(1, 0)).onFalse(this.m_algaeFloor.setStuff(0,0));
+        OPERATOR.povRight().onTrue(this.m_algaeFloor.setStuff(-1, 0)).onFalse(this.m_algaeFloor.setStuff(0,0));
+        OPERATOR.povDown().onTrue(this.m_algaeFloor.setStuff(0, 1)).onFalse(this.m_algaeFloor.setStuff(0,0));
     }
 
     public Command getAutonomousCommand() {

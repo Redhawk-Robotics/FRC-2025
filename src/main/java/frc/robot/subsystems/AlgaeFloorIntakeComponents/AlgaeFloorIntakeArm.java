@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 
-public class AlgaeFloorIntakeArm extends SubsystemBase { // TODO do not extend SubsystemBase
+public class AlgaeFloorIntakeArm { // TODO do not extend SubsystemBase
     /** Creates a new algaeFloorIntake. */
 
     private final SparkMax leftMotor = new SparkMax(Ports.AlgaeFloorIntake.kCAN_ID_ARM,
@@ -58,8 +58,9 @@ public class AlgaeFloorIntakeArm extends SubsystemBase { // TODO do not extend S
 
         // rollerMotorConfig.apply(globalConfig).inverted(true);
 
-        leftMotorConfig.apply(globalConfig).closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder).maxOutput(.2); // NO PID YET
+        leftMotorConfig.apply(globalConfig);
+        // leftMotorConfig.apply(globalConfig).closedLoop
+        //         .feedbackSensor(FeedbackSensor.kPrimaryEncoder).maxOutput(.2); // NO PID YET
     }
 
     public double getPosition() {
@@ -92,33 +93,38 @@ public class AlgaeFloorIntakeArm extends SubsystemBase { // TODO do not extend S
         // this.rollerMotor.set(0); 
     }
 
-    public void voidIntakeMethod() {
-        moveToSetPoint(positions.OUTSIDE.getpos());
-        // rollerMotor.set(0.5);
-    }
+//     public void voidIntakeMethod() {
+//         moveToSetPoint(positions.OUTSIDE.getpos());
+//         // rollerMotor.set(0.5);
+//     }
 
-    public void voidMoveInsideMethod() {
-        moveToSetPoint(positions.INSIDE.getpos());
-        stopRoller();
-    }
+//     public void voidMoveInsideMethod() {
+//         moveToSetPoint(positions.INSIDE.getpos());
+//         stopRoller();
+//     }
 
-  public Command commandIntake() {
-    // return this.runOnce( ()-> {voidIntakeMethod();});
-    return Commands.parallel(
-        moveToSetPoint(3)
-        // commandSetRollerSpeed(8)
-    );
-  }
+//   public Command commandIntake() {
+//     // return this.runOnce( ()-> {voidIntakeMethod();});
+//     return Commands.parallel(
+//         moveToSetPoint(3)
+//         // commandSetRollerSpeed(8)
+//     );
+//   }
 
     public void setRef(double setpoint) {
         this.controller.setReference(setpoint, ControlType.kPosition);
     }
 
-    public Command commandMoveInside() {
-        return this.runOnce(() -> {
-            voidMoveInsideMethod();
-        });
+    public void setSpeed(double setpoint) {
+        this.leftMotor.set(setpoint);
+        // this.controller.setReference(setpoint, ControlType.kDutyCycle);
     }
+
+    // public Command commandMoveInside() {
+    //     return this.runOnce(() -> {
+    //         voidMoveInsideMethod();
+    //     });
+    // }
 
     // public Command commandOutake() {
     //     return this.runOnce(() -> {
@@ -127,25 +133,25 @@ public class AlgaeFloorIntakeArm extends SubsystemBase { // TODO do not extend S
     // }
     // TODO CHECK THIS ON PRACTICE FIELD
 
-    public Command commandStopRoller() {
-        return this.runOnce(() -> {
-            stopRoller();
-        });
-    }
+    // public Command commandStopRoller() {
+    //     return this.runOnce(() -> {
+    //         stopRoller();
+    //     });
+    // }
 
 
-    public Command moveToSetPoint(double setpoint) {
-        return this.runOnce(() -> {
-            controller.setReference(setpoint, ControlType.kPosition);
-        });
-    }
+    // public Command moveToSetPoint(double setpoint) {
+    //     return this.runOnce(() -> {
+    //         controller.setReference(setpoint, ControlType.kPosition);
+    //     });
+    // }
 
-    public Command commandSetSpeed(double speed) {
-        return this.runOnce(() -> {
-            leftMotor.set(speed);
-        });
+    // public Command commandSetSpeed(double speed) {
+    //     return this.runOnce(() -> {
+    //         leftMotor.set(speed);
+    //     });
 
-    }
+    // }
 
     // public Command commandSetRollerSpeed(double speed) {
     //     return this.runOnce(() -> {
@@ -156,9 +162,9 @@ public class AlgaeFloorIntakeArm extends SubsystemBase { // TODO do not extend S
 
     // TODO MAKE A COMMAND THAT TAKES AN ENUM POSITION FOR AN INPUT, THIS CONTROLS THE OUTTAKE POSITION
 
-    @Override
-    public void periodic() {
-        SmartDashboard.putNumber("Floor Algae Intkae/ Encoder", getPosition());
-        // SmartDashboard.putNumber("Intake Voltage", rollerMotor.getBusVoltage());
-    }
+    // @Override
+    // public void periodic() {
+    //     SmartDashboard.putNumber("Floor Algae Intkae/ Encoder", getPosition());
+    //     // SmartDashboard.putNumber("Intake Voltage", rollerMotor.getBusVoltage());
+    // }
 }

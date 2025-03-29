@@ -13,33 +13,27 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 
-public class AlgaeFloorIntakeRoller extends SubsystemBase { // TODO do not extend SubsystemBase
-  /** Creates a new AlgaeFloorIntakeRoller. */
+public class AlgaeFloorIntakeRoller { // TODO do not extend SubsystemBase
+    /** Creates a new AlgaeFloorIntakeRoller. */
 
-   private final SparkMax rollerMotor = new SparkMax(Ports.AlgaeFloorIntake.kCAN_ID_ROLLER, Settings.AlgaeFloorIntake.ALGAE_FLOOR_INTAKE_MOTORTYPE);
+    private final SparkMax rollerMotor = new SparkMax(Ports.AlgaeFloorIntake.kCAN_ID_ROLLER,
+            Settings.AlgaeFloorIntake.ALGAE_FLOOR_INTAKE_MOTORTYPE);
 
-  public AlgaeFloorIntakeRoller() {
+    public AlgaeFloorIntakeRoller() {
 
-    SparkMaxConfig rollerMotorConfig = new SparkMaxConfig();
-    SparkMaxConfig globalConfig = new SparkMaxConfig();
-    
-    globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
-    
-    rollerMotorConfig.apply(globalConfig).inverted(true);
-  
-  }
-  public void setSpeed(double speed) {
-    this.rollerMotor.set(speed);
-  }
+        SparkMaxConfig rollerMotorConfig = new SparkMaxConfig();
+        SparkMaxConfig globalConfig = new SparkMaxConfig();
 
-  public Command setSpeeds(double speed) {
-    return this.runOnce( () -> { this.rollerMotor.set(1);});
-  }
+        globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
+
+        rollerMotorConfig.apply(globalConfig).inverted(true);
+
+    }
+
+    public void setSpeed(double speed) {
+        this.rollerMotor.set(speed/2.);
+    }
 
 
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
 }

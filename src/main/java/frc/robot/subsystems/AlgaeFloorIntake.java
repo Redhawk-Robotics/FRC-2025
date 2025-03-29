@@ -21,7 +21,9 @@ public class AlgaeFloorIntake extends SubsystemBase {
 
     public Command setStuff(double armSP, double rollerS) {
         return this.runOnce(() -> {
-            this.m_arm.setRef(armSP);
+            System.out.printf("@@@@@@@@@@@@@@@ setting stuff %f %f\n", armSP, rollerS);
+            // this.m_arm.setRef(armSP); // TODO revert
+            this.m_arm.setSpeed(armSP);
             this.m_roller.setSpeed(rollerS);
         });
     }

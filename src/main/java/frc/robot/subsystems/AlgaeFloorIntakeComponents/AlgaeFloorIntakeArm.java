@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 
-public class AlgaeFloorIntakeArm extends SubsystemBase {
+public class AlgaeFloorIntakeArm extends SubsystemBase { // TODO do not extend SubsystemBase
   /** Creates a new algaeFloorIntake. */
   
     private final SparkMax leftMotor = new SparkMax(Ports.AlgaeFloorIntake.kCAN_ID_LEFT, Settings.AlgaeFloorIntake.ALGAE_FLOOR_INTAKE_MOTORTYPE);
@@ -106,6 +106,10 @@ public class AlgaeFloorIntakeArm extends SubsystemBase {
         moveToSetPoint(3),
         commandSetRollerSpeed(8)
     );
+  }
+
+  public void setRef(double setpoint) {
+    this.controller.setReference(setpoint, ControlType.kPosition);
   }
 
   public Command commandMoveInside() {

@@ -4,9 +4,7 @@
 
 package frc.robot.Commands;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
-import com.revrobotics.spark.SparkBase.ControlType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.Settings;
@@ -182,7 +180,7 @@ public final class CoralPositionFactory {
 
     public static Command Feed(Elevator elevator, Pivot pivot) {
         // also default position w/o Coral
-        return orchestrate(elevator, pivot, position.F0);
+        return orchestrate(elevator, pivot, position.F0).withName("Feed");
     }
 
     public static Command L1(Elevator elevator, Pivot pivot) {
@@ -192,7 +190,10 @@ public final class CoralPositionFactory {
         //                 pivot.setReferenceRequest(position.L1::pivotPosition));
         // result.addRequirements(pivot, elevator);
         // return result;
-        return orchestrate(elevator, pivot, position.L1);
+
+        // should  .handleInterrupt()  in here?
+
+        return orchestrate(elevator, pivot, position.L1).withName("L1");
     }
 
     public static Command L2(Elevator elevator, Pivot pivot) {
@@ -207,12 +208,11 @@ public final class CoralPositionFactory {
         return orchestrate(elevator, pivot, position.L4);
     }
 
-    // this might be useful?
-    // public static Command Stop(Elevator elevator, Pivot pivot) {
-    //     Command result = Commands.parallel(//
-    //             elevator.runOnce(() -> elevator.stopElevator()),
-    //             pivot.runOnce(() -> pivot.stopPivot()));
-    //     result.addRequirements(pivot, elevator);
-    //     return result;
-    // }
+    public static Command Stop(Elevator elevator, Pivot pivot) {
+        Command result = Commands.parallel(//
+                elevator.runOnce(() -> elevator.stopElevator()),
+                pivot.runOnce(() -> pivot.stopPivot()));
+        result.addRequirements(pivot, elevator);
+        return result;
+    }
 }

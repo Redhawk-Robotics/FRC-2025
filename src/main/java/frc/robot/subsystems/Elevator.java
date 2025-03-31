@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -31,9 +30,9 @@ public class Elevator extends SubsystemBase {
     private final SparkMax bottomRightMotor = new SparkMax(//
             Settings.Elevator.CAN.ID_BOTTOM_RIGHT, Settings.Elevator.BOTTOM_RIGHT_MOTORTYPE);
     private final SparkMax topLeftMotor = new SparkMax(//
-            Ports.Elevator.kCAN_ID_TOP_LEFT, Settings.Elevator.TOP_LEFT_MOTORTYPE);
+            Settings.Elevator.CAN.ID_TOP_LEFT, Settings.Elevator.TOP_LEFT_MOTORTYPE);
     private final SparkMax bottomLeftMotor = new SparkMax(//
-            Ports.Elevator.kCAN_ID_BOTTOM_LEFT, Settings.Elevator.BOTTOM_LEFT_MOTORTYPE);
+            Settings.Elevator.CAN.ID_BOTTOM_LEFT, Settings.Elevator.BOTTOM_LEFT_MOTORTYPE);
 
     private final RelativeEncoder encoder = topRightMotor.getEncoder();
     private final SparkClosedLoopController controller = topRightMotor.getClosedLoopController();
@@ -69,7 +68,8 @@ public class Elevator extends SubsystemBase {
     // this is only public so we can tune PID
     public void configureMotors(double kP1, double kI1, double kD1, double kP2, double kI2,
             double kD2) {
-        System.out.printf("Configuring Elevator motors\n\t(kP:%f kI:%f kD:%f)(up)\n\t(kP:%f kI:%f kD:%f)(down)...\n",
+        System.out.printf(
+                "Configuring Elevator motors\n\t(kP:%f kI:%f kD:%f)(up)\n\t(kP:%f kI:%f kD:%f)(down)...\n",
                 kP1, kI1, kD1, kP2, kI2, kD2);
 
         SparkMaxConfig globalConfig = new SparkMaxConfig();

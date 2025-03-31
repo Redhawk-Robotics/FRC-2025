@@ -4,26 +4,24 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 import com.revrobotics.spark.SparkMax;
 
 public class CoralHandler extends SubsystemBase {
 
     private final SparkMax coralIntakeMotor;
-    private Timer getTime = new Timer();
 
     /** Creates a new CoralHandler. */
     public CoralHandler() {
-        this.coralIntakeMotor = new SparkMax(Ports.CoralIntake.WHEEL_INTAKE,
+        this.coralIntakeMotor = new SparkMax(Settings.CoralHandler.CAN.ID_WHEEL_INTAKE,
                 Settings.CoralHandler.CORAL_INTAKE_MOTORTYPE);
+        // TODO set smart current limit
     }
 
-    // TODO -- if this isn't enough, here's a "smarter" way
+    // If this isn't enough, here's a "smarter" way
     // 
     // bool wantCoral
     // bool haveCoral
@@ -82,6 +80,5 @@ public class CoralHandler extends SubsystemBase {
         SmartDashboard.putNumber("Coral Handler/Bus Voltage", coralIntakeMotor.getBusVoltage());
         SmartDashboard.putNumber("Coral Handler/Applied Output ",
                 coralIntakeMotor.getAppliedOutput());
-        SmartDashboard.putNumber("Coral Handler/Timer Value", getTime.get());
     }
 }

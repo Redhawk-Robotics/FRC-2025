@@ -6,11 +6,10 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Ports;
+import frc.robot.Constants.Settings;
 
 public class Climber extends SubsystemBase {
     /** Creates a new Climber. */
@@ -18,7 +17,7 @@ public class Climber extends SubsystemBase {
     private final SparkMax climberMotor;
 
     public Climber() {
-        this.climberMotor = new SparkMax(Ports.Climber.kCAN_ID_CLIMBER, MotorType.kBrushless);
+        this.climberMotor = new SparkMax(Settings.Climber.CAN.ID_CLIMBER, MotorType.kBrushless);
     }
 
     @Override

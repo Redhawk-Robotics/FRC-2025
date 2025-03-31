@@ -5,18 +5,13 @@
 package frc.robot.subsystems.AlgaeFloorIntakeComponents;
 
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 
-public class AlgaeFloorIntakeRoller { // TODO do not extend SubsystemBase
-    /** Creates a new AlgaeFloorIntakeRoller. */
+public class AlgaeFloorIntakeRoller {
 
-    private final SparkMax rollerMotor = new SparkMax(Ports.AlgaeFloorIntake.kCAN_ID_ROLLER,
+    private final SparkMax rollerMotor = new SparkMax(Settings.AlgaeFloorIntake.CAN.ID_ROLLER,
             Settings.AlgaeFloorIntake.ALGAE_FLOOR_INTAKE_MOTORTYPE);
 
     public AlgaeFloorIntakeRoller() {
@@ -31,9 +26,6 @@ public class AlgaeFloorIntakeRoller { // TODO do not extend SubsystemBase
     }
 
     public void setSpeed(double speed) {
-        this.rollerMotor.set(speed/2.);
+        this.rollerMotor.set(speed / 2.);
     }
-
-
-
 }

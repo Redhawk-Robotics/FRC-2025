@@ -5,22 +5,20 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 
 public class AlgaeHandler extends SubsystemBase {
     /** Creates a new AlgaeHandler. */
     private final SparkMax algaeHandlerMotor;
-  
+
 
     public AlgaeHandler() {
-        this.algaeHandlerMotor = new SparkMax(Ports.AlgaeHandler.ALGAEINTAKE_MOTOR, Settings.AlgaeHandler.ALGAE_INTAKE_MOTORTYPE);
-        // TODO
+        this.algaeHandlerMotor = new SparkMax(Settings.AlgaeHandler.CAN.ID_MOTOR,
+                Settings.AlgaeHandler.ALGAE_INTAKE_MOTORTYPE);
+        // TODO configure motor
     }
 
     public Command rotateCW() {
@@ -44,12 +42,9 @@ public class AlgaeHandler extends SubsystemBase {
         });
     }
 
-
-
     @Override
     public void periodic() {
-         SmartDashboard.putNumber("Algae handler motor current",algaeHandlerMotor.getOutputCurrent());
-
-         
+        SmartDashboard.putNumber("Algae Handler/motor current",
+                algaeHandlerMotor.getOutputCurrent());
     }
 }

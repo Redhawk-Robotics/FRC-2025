@@ -4,7 +4,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 public final class Settings {
-    public static class Gamepad {
+    public static final class Gamepad {
         public static final int DRIVER = 0;
         public static final int OPERATOR = 1;
     }
@@ -54,13 +54,44 @@ public final class Settings {
         public static final double kD = 0.;
     }
 
-    public static final class CoralIntake {
+    public static final class AlgaeHandler {
+        public static final class CAN {
+            public static final int ID_MOTOR = 6;
+        }
+
+        public static final MotorType ALGAE_INTAKE_MOTORTYPE = MotorType.kBrushless;
+    }
+
+    public static final class CoralHandler {
         public static final class CAN {
             public static final int ID_WHEEL_INTAKE = 7;
         }
 
-        public static boolean PIVOT_INVERTED = false; // TODO used?
-        public static boolean WHEEL_INTAKE_INVERTED = false; // TODO used?
+        public static final MotorType CORAL_INTAKE_MOTORTYPE = MotorType.kBrushless;
+        //TODO IDENTIFY THE RANGE
+        public static final double CORAL_INTAKE_VOLTAGE = 10.8; // If the voltage is less than this, triggered by  intaking
+        public static final double CORAL_OUTTAKE_VOLTAGE = 11.2; // IF the voltage is more than this, triggered by outtake
+
+        public static final boolean PIVOT_INVERTED = false; // TODO used?
+        public static final boolean WHEEL_INTAKE_INVERTED = false; // TODO used?
+    }
+
+    public static final class Climber {
+        public static final class CAN {
+            public static final int ID_CLIMBER = 10;
+        }
+    }
+
+    public static final class AlgaeFloorIntake {
+        public static final class CAN {
+            public static final int ID_ARM = 11;
+            public static final int ID_ROLLER = 12;
+        }
+
+        public static final MotorType ALGAE_FLOOR_INTAKE_MOTORTYPE = MotorType.kBrushless;
+        public static final double HOME_ENCODER_POSITION = 0;
+        public static final double SAFE_TO_TRAVEL_POSITION = 0;
+        public static final double FLOOR_INTAKING_POSITION = 0;
     }
 
     public static final class CoralPosition {
@@ -84,36 +115,10 @@ public final class Settings {
         public static final double PIVOT_L4_POSITION = 166;
     }
 
-    public static final class CoralHandler {
-        public static final MotorType CORAL_INTAKE_MOTORTYPE = MotorType.kBrushless;
-        //TODO IDENTIFY THE RANGE
-        public static final double CORAL_INTAKE_VOLTAGE = 10.8; // If the voltage is less than this, triggered by  intaking
-        public static final double CORAL_OUTTAKE_VOLTAGE = 11.2; // IF the voltage is more than this, triggered by outtake
-
-    }
-
-    public static final class AlgaeHandler {
-        public static final MotorType ALGAE_INTAKE_MOTORTYPE = MotorType.kBrushless;
-    }
-
-    public static final class AlgaeFloorIntake {
-        public static final MotorType ALGAE_FLOOR_INTAKE_MOTORTYPE = MotorType.kBrushless;
-        public static final double HOME_ENCODER_POSITION = 0;
-        public static final double SAFE_TO_TRAVEL_POSITION = 0;
-        public static final double FLOOR_INTAKING_POSITION = 0;
-
-
-
-    }
-
     public static final class LimeLight {
         public static final double kCAMERAPOSE_YAW = 72.5; // DOUBLE CHECK  MIGHT BE EIGHT DEGREES, NEW MOUNT IS CLOSER TO 0
         public static final double kCAMERAPOSE_FORWARD = .1905;//0.24;
         public static final double kCAMERAPOSE_SIDE = -0.2286; //-0.28;
         public static final double kCAMERAPOSE_UP = 0.4953; //0.32;
     }
-
-    //& APRIL TAGS TBD 
-
-
 }

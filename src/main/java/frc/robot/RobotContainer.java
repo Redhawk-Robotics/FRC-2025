@@ -5,7 +5,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import java.lang.reflect.Field;
 import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -17,8 +16,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -30,10 +27,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 // import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.CoralPositionFactory;
-import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
 import frc.robot.subsystems.Pivot;
 import frc.robot.generated.TunerConstants;
+import frc.robot.sendables.ControlBoard;
+import frc.robot.sendables.SendablePID;
 import frc.robot.subsystems.AlgaeFloorIntake;
 import frc.robot.subsystems.AlgaeHandler;
 // import frc.robot.subsystems.Climber;
@@ -62,9 +60,9 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final CommandXboxController DRIVER = new CommandXboxController(Ports.Gamepad.DRIVER);
+    private final CommandXboxController DRIVER = new CommandXboxController(Settings.Gamepad.DRIVER);
     private final CommandXboxController OPERATOR =
-            new CommandXboxController(Ports.Gamepad.OPERATOR);
+            new CommandXboxController(Settings.Gamepad.OPERATOR);
 
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final SendableChooser<Command> autoChooser;
@@ -89,120 +87,20 @@ public class RobotContainer {
     private final AlgaeFloorIntake sysAlgaeFloorIntake =
             new AlgaeFloorIntake(new AlgaeFloorIntakeArm(), new AlgaeFloorIntakeRoller());
 
+    private final ControlBoard LAPTOP = new ControlBoard(sysElevator, sysPivot);
+
     // other stuff
     private final Orchestra orchestra = new Orchestra();
 
-    private class SendablePID implements Sendable {
-        private boolean isTuningMode = false;
-        //
-        private float elevator_kP1 = (float) Settings.Elevator.kP_UP;
-        private float elevator_kI1 = (float) Settings.Elevator.kI_UP;
-        private float elevator_kD1 = (float) Settings.Elevator.kD_UP;
-        //
-        private float elevator_kP2 = (float) Settings.Elevator.kP_DOWN;
-        private float elevator_kI2 = (float) Settings.Elevator.kI_DOWN;
-        private float elevator_kD2 = (float) Settings.Elevator.kD_DOWN;
-        //
-        private float pivot_kP = (float) Settings.Pivot.kP;
-        private float pivot_kI = (float) Settings.Pivot.kI;
-        private float pivot_kD = (float) Settings.Pivot.kD;
-        //
-        private float elevator_sp = 20;
-        private float pivot_sp = 100;
-
-        private static float clamp(float val, float low, float high) {
-            if (val < low)
-                return low;
-            if (val > high)
-                return high;
-            return val;
-        }
-
-        public boolean isTuningMode() {
-            return this.isTuningMode;
-        }
-
-        public float getElevator_kP1() {
-            return this.elevator_kP1;
-        }
-
-        public float getElevator_kI1() {
-            return this.elevator_kI1;
-        }
-
-        public float getElevator_kD1() {
-            return this.elevator_kD1;
-        }
-
-        public float getElevator_kP2() {
-            return elevator_kP2;
-        }
-
-        public float getElevator_kI2() {
-            return elevator_kI2;
-        }
-
-        public float getElevator_kD2() {
-            return elevator_kD2;
-        }
-
-        public float getElevator_setpoint() {
-            return this.elevator_sp;
-        }
-
-        public float getPivot_kP() {
-            return this.pivot_kP;
-        }
-
-        public float getPivot_kI() {
-            return this.pivot_kI;
-        }
-
-        public float getPivot_kD() {
-            return this.pivot_kD;
-        }
-
-        public float getPivot_setpoint() {
-            return this.pivot_sp;
-        }
-
-        @Override
-        public void initSendable(SendableBuilder builder) {
-            // setter = SmartDashboard is giving the Robot a value
-            // getter = SmartDashboard is requesting the current value
-
-            builder.addBooleanProperty("Tuning Mode", () -> this.isTuningMode,
-                    val -> this.isTuningMode = val);
-            //
-            builder.addFloatProperty("Elevator/kP-up", () -> this.elevator_kP1,
-                    val -> this.elevator_kP1 = SendablePID.clamp(val, 0, 1000));
-            builder.addFloatProperty("Elevator/kI-up", () -> this.elevator_kI1,
-                    val -> this.elevator_kI1 = SendablePID.clamp(val, 0, 1000));
-            builder.addFloatProperty("Elevator/kD-up", () -> this.elevator_kD1,
-                    val -> this.elevator_kD1 = SendablePID.clamp(val, 0, 1000));
-            //
-            builder.addFloatProperty("Elevator/kP-down", () -> this.elevator_kP2,
-                    val -> this.elevator_kP1 = SendablePID.clamp(val, 0, 1000));
-            builder.addFloatProperty("Elevator/kI-down", () -> this.elevator_kI2,
-                    val -> this.elevator_kI1 = SendablePID.clamp(val, 0, 1000));
-            builder.addFloatProperty("Elevator/kD-down", () -> this.elevator_kD2,
-                    val -> this.elevator_kD1 = SendablePID.clamp(val, 0, 1000));
-            //
-            builder.addFloatProperty("Pivot/kP", () -> this.pivot_kP,
-                    val -> this.pivot_kP = SendablePID.clamp(val, 0, 1000));
-            builder.addFloatProperty("Pivot/kI", () -> this.pivot_kI,
-                    val -> this.pivot_kI = SendablePID.clamp(val, 0, 1000));
-            builder.addFloatProperty("Pivot/kD", () -> this.pivot_kD,
-                    val -> this.pivot_kD = SendablePID.clamp(val, 0, 1000));
-            //
-            builder.addFloatProperty("Elevator/setpoint", () -> this.elevator_sp,
-                    val -> this.elevator_sp = val);
-            builder.addFloatProperty("Pivot/setpoint", () -> this.pivot_sp,
-                    val -> this.pivot_sp = val);
-        }
-    }
-
-    private final SendablePID m_PID = new SendablePID();
+    private final boolean turnOffTuning = false;
+    private final SendablePID elevatorUpPID =
+            new SendablePID("Elevator.Up", (float) Settings.Elevator.kP_UP,
+                    (float) Settings.Elevator.kI_UP, (float) Settings.Elevator.kD_UP, 20);
+    private final SendablePID elevatorDownPID =
+            new SendablePID("Elevator.Down", (float) Settings.Elevator.kP_DOWN,
+                    (float) Settings.Elevator.kI_DOWN, (float) Settings.Elevator.kD_DOWN, 20);
+    private final SendablePID pivotPID = new SendablePID("Pivot", (float) Settings.Pivot.kP,
+            (float) Settings.Pivot.kI, (float) Settings.Pivot.kD, 100);
 
     public RobotContainer() {
         // auto
@@ -233,7 +131,7 @@ public class RobotContainer {
         var status = orchestra.loadMusic(Filesystem.getDeployDirectory() + "/chrp/output.chrp");
         if (!status.isOK()) {
             // log error
-            DriverStation.reportError(status.toString(), Thread.currentThread().getStackTrace());
+            DriverStation.reportError(status.toString(), true);
         } else {
             System.out.println(orchestra.play());
         }
@@ -266,7 +164,7 @@ public class RobotContainer {
         /* Configure Drive */
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(this::getFieldCentricDrive));
+                drivetrain.applyRequest(this::getFieldCentricDrive).withName("drivetrainDefault"));
 
         DRIVER.a().whileTrue(drivetrain.applyRequest(() -> brake));
         DRIVER.b().whileTrue(drivetrain.applyRequest(() -> point
@@ -276,6 +174,7 @@ public class RobotContainer {
         // Note that each routine should be run exactly once in a single log.
 
         //&& DYNAMIC TEST WITH SYSID
+
         // && DRIVER BACK AND Y 
         // * Starts SYSID dynamic directions
 
@@ -330,8 +229,9 @@ public class RobotContainer {
                 this.sysElevator.runOnce(//
                         () -> this.sysElevator.setSpeed(
                                 MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1) / 2.25)), //
-                this.m_PID::isTuningMode);
+                this::isTuningMode);
         elevatorDefault.addRequirements(sysElevator);
+        elevatorDefault.setName("elevatorDefault");
         this.sysElevator.setDefaultCommand(elevatorDefault);
         // on the controller: up == -1, down == 1
 
@@ -341,95 +241,71 @@ public class RobotContainer {
                 this.sysPivot.runOnce(//
                         () -> this.sysPivot.setSpeed(
                                 MathUtil.applyDeadband((-1. * OPERATOR.getRightY()), 0.1) / 2.25)), //
-                this.m_PID::isTuningMode);
+                this::isTuningMode);
         pivotDefault.addRequirements(sysPivot);
+        pivotDefault.setName("pivotDefault");
         this.sysPivot.setDefaultCommand(pivotDefault);
-        // // on the controller: up == -1, down == 1
+        // on the controller: up == -1, down == 1
 
         /* Configure joint Elevator/Pivot positioning */
-        // tuning mode:
-        // a == re-flash elevator motors (with new PID values)
-        // b == elevator go to setpoint
-        // x == re-flash pivot motor (with new PID values)
-        // y == pivot go to setpoint
+        if (this.turnOffTuning) {
+            this.OPERATOR.a().onTrue(CoralPositionFactory.L1(this.sysElevator, this.sysPivot))
+                    .onFalse(CoralPositionFactory.Stop(this.sysElevator, this.sysPivot));
+            this.OPERATOR.b().onTrue(CoralPositionFactory.L2(this.sysElevator, this.sysPivot))
+                    .onFalse(CoralPositionFactory.Stop(this.sysElevator, this.sysPivot));
+            this.OPERATOR.x().onTrue(CoralPositionFactory.L3(this.sysElevator, this.sysPivot))
+                    .onFalse(CoralPositionFactory.Stop(this.sysElevator, this.sysPivot));
+            this.OPERATOR.y().onTrue(CoralPositionFactory.L4(this.sysElevator, this.sysPivot))
+                    .onFalse(CoralPositionFactory.Stop(this.sysElevator, this.sysPivot));
+        } else {
+            // tuning mode:
+            // a == re-flash elevator motors (UP and DOWN) and go to UP setpoint
+            // b == re-flash pivot motor and go to setpoint
+            // todo other subsystems
+            this.OPERATOR.a().onTrue(//
+                    Commands.either(//
+                            this.sysElevator.runOnce(() -> {
+                                this.sysElevator.configureMotors(this.elevatorUpPID.P(),
+                                        this.elevatorUpPID.I(), this.elevatorUpPID.D(),
+                                        this.elevatorDownPID.P(), this.elevatorDownPID.I(),
+                                        this.elevatorDownPID.D());
+                            }).andThen(this.sysElevator.startEnd(
+                                    () -> this.sysElevator
+                                            .setReference(this.elevatorUpPID.SetPoint()),
+                                    () -> this.sysElevator.stopElevator())), //
+                            CoralPositionFactory.L1(this.sysElevator, this.sysPivot), //
+                            this::isTuningMode).withName("OPERATOR.a().onTrue"))
+                    .onFalse(CoralPositionFactory.Stop(this.sysElevator, this.sysPivot));
 
-        // OPERATOR.a().whileTrue(CoralPositionFactory.L1(m_elevator, m_pivot));
-        // OPERATOR.b().whileTrue(CoralPositionFactory.L2(m_elevator, m_pivot));
-        // OPERATOR.x().whileTrue(CoralPositionFactory.L3(m_elevator, m_pivot));
-        // OPERATOR.y().whileTrue(CoralPositionFactory.L4(m_elevator, m_pivot));
-
-        // //TODO DEPRECATED, PID CONTROL
-        // //&& A BUTTON 
-        // // *CONFIGURES THE MOTORS WITH PID VALUES FOR ELEVATOR ONLY IF TUNING MODE IS ON
-        // // * IF TUNER MODE IS OFF IT RUNS TO L1
-        // OPERATOR.a().whileTrue(Commands.either(//
-        //         this.m_elevator.runOnce(//
-        //                 () -> this.m_elevator.configureMotors(//
-        //                         // tune Elevator PID UP
-        //                         this.m_PID.getElevator_kP1(), this.m_PID.getElevator_kI1(),
-        //                         this.m_PID.getElevator_kD1(), //
-        //                         // tune Elevator PID DOWN
-        //                         this.m_PID.getElevator_kP2(), this.m_PID.getElevator_kI2(),
-        //                         this.m_PID.getElevator_kD2())), //
-        //         CoralPositionFactory.L1(m_elevator, m_pivot)
-        //                 .handleInterrupt(() -> CoralPositionFactory.Feed(m_elevator, m_pivot)), //
-        //         this.m_PID::isTuningMode));
-
-        // CoralPositionFactory.L4(m_elevator, m_pivot)
-        //         .handleInterrupt(() -> CoralPositionFactory.Feed(m_elevator, m_pivot));
-        // //&& OPERATOR B BUTTON 
-        // // * IF TUNER MODE IS ON, IT SETS REFERENCE TO THE SETPOINT
-        // // * IF TUNRE MODE IS OFF JUST RUNS TO L2 
-
-        // OPERATOR.b().whileTrue(Commands.either(//
-        //         this.m_elevator.startEnd(
-        //                 () -> this.m_elevator.setReference(this.m_PID.getElevator_setpoint()),
-        //                 () -> this.m_elevator.stopElevator()),
-        //         CoralPositionFactory.L2(this.m_elevator, this.m_pivot), //
-        //         this.m_PID::isTuningMode));
-
-        // //&& OPERATOR X BUTTON
-        // // * IF THIS IS IN TUNER MODE, THIS CHANGES THE PIVOT PID VALUES
-        // // * OTHERWISE, IT RUNS TO L3 POSITION FOR BOTH PIVOT AND ELEVATOR
-        // OPERATOR.x().whileTrue(Commands.either(//
-        //         this.m_pivot.runOnce(//
-        //                 () -> this.m_pivot.configureMotors(// tune Pivot (done?)
-        //                         this.m_PID.getPivot_kP(), this.m_PID.getPivot_kI(),
-        //                         this.m_PID.getPivot_kD())), //
-        //         CoralPositionFactory.L3(this.m_elevator, this.m_pivot), //
-        //         this.m_PID::isTuningMode));
-
-        // // && OPERATOR Y 
-        // // * BUTTON TO THE REFERENCE SET IN THE TUNER DASHBOARD
-        // // * OTHERWISE, RUNS TO L4
-        // OPERATOR.y().whileTrue(Commands.either(//
-        //         this.m_pivot.startEnd(
-        //                 () -> this.m_pivot.setReference(this.m_PID.getPivot_setpoint()),
-        //                 () -> this.m_pivot.stopPivot()),
-        //         CoralPositionFactory.L4(this.m_elevator, this.m_pivot), //
-        //         this.m_PID::isTuningMode));
-
-        // OPERATOR.a().onTrue(CoralPositionFactory.L1(this.m_elevator, this.m_pivot));
-        // OPERATOR.b().onTrue(CoralPositionFactory.L2(this.m_elevator, this.m_pivot));
-        // OPERATOR.x().onTrue(CoralPositionFactory.L3(this.m_elevator, this.m_pivot));
-        // OPERATOR.y().onTrue(CoralPositionFactory.L4(this.m_elevator, this.m_pivot));
-
+            this.OPERATOR.b().onTrue(//
+                    Commands.either(//
+                            this.sysPivot.runOnce(() -> {
+                                this.sysPivot.configureMotors(this.pivotPID.P(), this.pivotPID.I(),
+                                        this.pivotPID.D());
+                            }).andThen(this.sysPivot.startEnd(
+                                    () -> this.sysPivot.setReference(this.pivotPID.SetPoint()),
+                                    () -> this.sysPivot.stopPivot())), //
+                            CoralPositionFactory.L2(this.sysElevator, this.sysPivot), //
+                            this::isTuningMode).withName("OPERATOR.b().onTrue"))
+                    .onFalse(CoralPositionFactory.Stop(this.sysElevator, this.sysPivot));
+        }
 
         /* Configure CoralHandler */
 
-        //  & OPERATOR LEFT BUMPER
-        // * Intakes coral
+        //& OPERATOR LEFT BUMPER
+        //* Intakes coral
         OPERATOR.leftBumper().onTrue(this.sysCoralHandler.intake())
                 .onFalse(this.sysCoralHandler.contain());
 
         //& OPERATOR LEFT TRIGGER
-        // * Spits out coral 
+        //* Spits out coral 
         OPERATOR.leftTrigger().onTrue(this.sysCoralHandler.spitItOut())
                 .onFalse(this.sysCoralHandler.stop());
 
+        /* Configure AlgaeHandler */
+
         //& RIGHT BUMPERS
         //* ALGAE HANDLER, N/A */
-        /* Configure AlgaeHandler */
         OPERATOR.rightBumper().onTrue(this.sysAlgaeHandler.rotateCW())
                 .onFalse(this.sysAlgaeHandler.stop());
         OPERATOR.rightTrigger().onTrue(this.sysAlgaeHandler.rotateCCW())
@@ -458,7 +334,7 @@ public class RobotContainer {
     }
 
     private void configureDashboardBindings() {
-
+        SmartDashboard.putData("control-states", this.LAPTOP);
     }
 
     public Command getAutonomousCommand() {
@@ -512,11 +388,14 @@ public class RobotContainer {
     }
 
     private void setupPIDTuning() {
-        SmartDashboard.putBoolean(frc.robot.sendables.SendablePID.prefix + "/Tuning Mode", false);
+        if (this.turnOffTuning)
+            return;
+        SmartDashboard.putBoolean(SendablePID.prefix + "/Tuning Mode", false);
     }
 
     private boolean isTuningMode() {
-        return SmartDashboard.getBoolean(frc.robot.sendables.SendablePID.prefix + "/Tuning Mode",
-                false);
+        if (this.turnOffTuning)
+            return false;
+        return SmartDashboard.getBoolean(SendablePID.prefix + "/Tuning Mode", false);
     }
 }

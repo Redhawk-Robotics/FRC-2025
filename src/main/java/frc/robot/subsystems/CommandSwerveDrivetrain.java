@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -9,7 +9,6 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -18,7 +17,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -29,7 +27,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import frc.robot.LimelightHelpers;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -114,11 +111,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
-    private Consumer<Pair<Rotation2d, SwerveModulePosition[]>> m_poseEstimatorUpdate = (p) -> {
+    private BiConsumer<Rotation2d, SwerveModulePosition[]> m_poseEstimatorUpdate = (r, s) -> {
         // default to no-op
     };
-
-    private final Field2d m_field = new Field2d();
 
     public enum speeds {
         NINETY_PERCENT(1), //
@@ -178,7 +173,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         configureAutoBuilder();
-        configureField();
     }
 
     /**
@@ -198,6 +192,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        configureAutoBuilder();
     }
 
     /**
@@ -224,7 +219,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         configureAutoBuilder();
-        configureField();
     }
 
     private void configureAutoBuilder() {
@@ -293,10 +287,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
-    public void setPoseUpdater(Consumer<Pair<Rotation2d, SwerveModulePosition[]>> update) {
+    public void setPoseUpdater(BiConsumer<Rotation2d, SwerveModulePosition[]> update) {
         if (update == null) {
             DriverStation.reportError("pose estimator update function is null -- programmer issue",
-                    Thread.currentThread().getStackTrace());
+                    true);
             return;
         }
         this.m_poseEstimatorUpdate = update;
@@ -378,18 +372,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-        // This causes a loop-overrun by about 0.01s
-        // TODO make sure this only happens on the first loop, which is OK
+        // This causes a loop-overrun by about 0.01s for the first iteration
         this.m_poseEstimatorUpdate.accept(//
-                new Pair<Rotation2d, SwerveModulePosition[]>(//
-                        this.getPigeon2().getRotation2d(), this.getState().ModulePositions));
-
-        // ** Field
-        m_field.setRobotPose(getPose());
+                this.getPigeon2().getRotation2d(), this.getState().ModulePositions);
 
         SmartDashboard.putString("Drive/speedMultiplier", this.m_speedMultiplier.toString());
         SmartDashboard.putNumber("Drive/speedMultiplierVal", this.m_speedMultiplier.mult());
-        SmartDashboard.putNumber("Elastic/Match Time", DriverStation.getMatchTime());
     }
 
     private void startSimThread() {
@@ -407,9 +395,4 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         m_simNotifier.startPeriodic(kSimLoopPeriod);
 
     }
-
-    public void configureField() {
-        SmartDashboard.putData("Drive/swerve field pose", m_field);
-    }
-
 }

@@ -19,7 +19,6 @@ public class Climber extends SubsystemBase {
 
     public Climber() {
         this.climberMotor = new SparkMax(Ports.Climber.kCAN_ID_CLIMBER, MotorType.kBrushless);
-        
     }
 
     @Override
@@ -27,8 +26,10 @@ public class Climber extends SubsystemBase {
         // This method will be called once per scheduler run
     }
 
-    public Command commandSetClimbSpeed( double speed) {
-        return this.runOnce( () -> { this.climberMotor.set(speed);} );
+    public Command commandSetClimbSpeed(double speed) {
+        return this.runOnce(() -> {
+            this.climberMotor.set(speed);
+        });
     }
 
     private boolean canWinch() {
@@ -62,7 +63,7 @@ public class Climber extends SubsystemBase {
      * winchDown has the effect of making the robot "UN-climb" (release from) the cage
      */
     public Command winchDown() {
-       return  Commands.none();
+        return Commands.none();
     }
 
     public Command stopWinch() {

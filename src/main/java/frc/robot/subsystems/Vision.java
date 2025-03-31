@@ -4,10 +4,10 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
@@ -32,24 +32,19 @@ public class Vision extends SubsystemBase {
 
     private final Supplier<Double> m_getRobotYawInDegrees;
     private final Consumer<Matrix<N3, N1>> m_setVisionMeasurementStdDevs;
-    private final Consumer<Pair<Pose2d, Double>> m_addVisionMeasurement;
+    private final BiConsumer<Pose2d, Double> m_addVisionMeasurement;
 
     /** Creates a new Vision Subsystem. */
     public Vision(Supplier<Double> getRobotYawInDegrees,
             Consumer<Matrix<N3, N1>> setVisionMeasurementStdDevs,
-            Consumer<Pair<Pose2d, Double>> addVisionMeasurement) {
+            BiConsumer<Pose2d, Double> addVisionMeasurement) {
         this.m_getRobotYawInDegrees = getRobotYawInDegrees;
         this.m_setVisionMeasurementStdDevs = setVisionMeasurementStdDevs;
         this.m_addVisionMeasurement = addVisionMeasurement;
 
-        LimelightHelpers.setCameraPose_RobotSpace(
-            LIMELIGHT_NUM_1, 
-            Settings.LimeLight.kCAMERAPOSE_FORWARD, 
-            Settings.LimeLight.kCAMERAPOSE_SIDE, 
-            Settings.LimeLight.kCAMERAPOSE_UP, 
-            0, 0, 
-            Settings.LimeLight.kCAMERAPOSE_YAW
-            );
+        LimelightHelpers.setCameraPose_RobotSpace(LIMELIGHT_NUM_1,
+                Settings.LimeLight.kCAMERAPOSE_FORWARD, Settings.LimeLight.kCAMERAPOSE_SIDE,
+                Settings.LimeLight.kCAMERAPOSE_UP, 0, 0, Settings.LimeLight.kCAMERAPOSE_YAW);
     }
 
     @Override
@@ -67,8 +62,8 @@ public class Vision extends SubsystemBase {
             // m_poseEstimator.setVisionMeasurementStdDevs();
             this.m_setVisionMeasurementStdDevs.accept(VecBuilder.fill(0.7, 0.7, 9999999));
             // m_poseEstimator.addVisionMeasurement();
-            this.m_addVisionMeasurement.accept(new Pair<Pose2d, Double>(limelightMeasurement.pose,
-                    limelightMeasurement.timestampSeconds));
+            this.m_addVisionMeasurement.accept(limelightMeasurement.pose,
+                    limelightMeasurement.timestampSeconds);
         }
     }
 }

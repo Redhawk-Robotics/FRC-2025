@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.math.geometry.Pose2d;
+// import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,7 +17,8 @@ public class Robot extends TimedRobot {
     private final RobotContainer m_robotContainer;
 
     public Robot() {
-        m_robotContainer = new RobotContainer();
+        this.m_robotContainer = new RobotContainer();
+        SmartDashboard.putData("CommandScheduler Instance", CommandScheduler.getInstance());
         // CameraServer.startAutomaticCapture();
     }
 
@@ -25,13 +26,8 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
 
-        // TODO fix / move?
-        Pose2d est = this.m_robotContainer.getEstimatedPosition();
-        SmartDashboard.putNumber("estimatedPose.X", est.getX());
-        SmartDashboard.putNumber("estimatedPose.Y", est.getY());
-        // TODO have another Field2D that shows the robotContainer's poseEstimate pose
-
-        SmartDashboard.putData("Command Sched Instance", CommandScheduler.getInstance());
+        this.m_robotContainer.updateField();
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     }
 
     @Override
@@ -55,9 +51,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void autonomousPeriodic() {
-
-    }
+    public void autonomousPeriodic() {}
 
     @Override
     public void autonomousExit() {}
@@ -68,6 +62,7 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.cancel();
         }
         this.m_robotContainer.zero();
+        // this.m_robotContainer. // reset ControlBoard
     }
 
     @Override

@@ -27,9 +27,9 @@ public class Elevator extends SubsystemBase {
     // looking at the elevator with the motors in view
     // looking at the front of the robot
     private final SparkMax topRightMotor = new SparkMax(// (**leader**)
-            Ports.Elevator.kCAN_ID_TOP_RIGHT, Settings.Elevator.TOP_RIGHT_MOTORTYPE);
+            Settings.Elevator.CAN.ID_TOP_RIGHT, Settings.Elevator.TOP_RIGHT_MOTORTYPE);
     private final SparkMax bottomRightMotor = new SparkMax(//
-            Ports.Elevator.kCAN_ID_BOTTOM_RIGHT, Settings.Elevator.BOTTOM_RIGHT_MOTORTYPE);
+            Settings.Elevator.CAN.ID_BOTTOM_RIGHT, Settings.Elevator.BOTTOM_RIGHT_MOTORTYPE);
     private final SparkMax topLeftMotor = new SparkMax(//
             Ports.Elevator.kCAN_ID_TOP_LEFT, Settings.Elevator.TOP_LEFT_MOTORTYPE);
     private final SparkMax bottomLeftMotor = new SparkMax(//

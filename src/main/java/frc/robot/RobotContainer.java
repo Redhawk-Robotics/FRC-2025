@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import java.lang.reflect.Field;
 import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -21,30 +22,27 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-// import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+// import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.CoralPositionFactory;
 import frc.robot.Constants.Ports;
 import frc.robot.Constants.Settings;
-import frc.robot.Constants.Settings.CoralPosition;
 import frc.robot.subsystems.Pivot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.AlgaeFloorIntake;
 import frc.robot.subsystems.AlgaeHandler;
-import frc.robot.subsystems.Climber;
+// import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralHandler;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.AlgaeFloorIntakeComponents.AlgaeFloorIntakeArm;
 import frc.robot.subsystems.AlgaeFloorIntakeComponents.AlgaeFloorIntakeRoller;
-import frc.robot.subsystems.AlgaeFloorIntakeComponents.AlgaeFloorIntakeArm.positions;
 import edu.wpi.first.math.MathUtil;
 
 public class RobotContainer {
@@ -70,32 +68,29 @@ public class RobotContainer {
 
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final SendableChooser<Command> autoChooser;
-
-
-    private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
+    private final Field2d field = new Field2d();
+    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
             drivetrain.getKinematics(), drivetrain.getPigeon2().getRotation2d(),
             drivetrain.getState().ModulePositions, new Pose2d()//*  merged with vision 
     ); // TODO we set initialPoseMeters from the selected Auto
 
-    private final Vision m_vision = new Vision(//
-            () -> drivetrain.getPigeon2().getRotation2d().getDegrees(),
-            matrix -> m_poseEstimator.setVisionMeasurementStdDevs(matrix),
-            poseAndTime -> m_poseEstimator.addVisionMeasurement(//* vision overwritten here
-                    poseAndTime.getFirst(), poseAndTime.getSecond())//
-    );
-
     //& SUBSYSTEM DECLARATION
-    private final Elevator m_elevator = new Elevator();
-    private final Pivot m_pivot = new Pivot();
+    private final Vision sysVision = new Vision(//
+            () -> drivetrain.getPigeon2().getRotation2d().getDegrees(),
+            matrix -> poseEstimator.setVisionMeasurementStdDevs(matrix),
+            (pose, time) -> poseEstimator.addVisionMeasurement(//* vision overwritten here
+                    pose, time)//
+    );
+    private final Elevator sysElevator = new Elevator();
+    private final Pivot sysPivot = new Pivot();
     // private final Climber m_climber = new Climber();
-    private final CoralHandler m_coralHandler = new CoralHandler();
-    private final AlgaeHandler m_algaeHandler = new AlgaeHandler();
-    // private final AlgaeFloorIntakeArm m_algaeFloorIntakeArm = new AlgaeFloorIntakeArm();
-    // private final AlgaeFloorIntakeRoller m_algaeFLoorIntakeRoller = new AlgaeFloorIntakeRoller();
-    private final AlgaeFloorIntake m_algaeFloor =
+    private final CoralHandler sysCoralHandler = new CoralHandler();
+    private final AlgaeHandler sysAlgaeHandler = new AlgaeHandler();
+    private final AlgaeFloorIntake sysAlgaeFloorIntake =
             new AlgaeFloorIntake(new AlgaeFloorIntakeArm(), new AlgaeFloorIntakeRoller());
 
-    private final Orchestra m_orchestra = new Orchestra();
+    // other stuff
+    private final Orchestra orchestra = new Orchestra();
 
     private class SendablePID implements Sendable {
         private boolean isTuningMode = false;
@@ -209,47 +204,47 @@ public class RobotContainer {
 
     private final SendablePID m_PID = new SendablePID();
 
-
     public RobotContainer() {
-
-        this.configureBindings();
+        // auto
         this.configureNamedCommands();
         this.autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
 
+        // teleop
+        this.configureBindings();
+
+        // misc
         this.drivetrain.setPoseUpdater(//
-                t -> this.m_poseEstimator.update(t.getFirst(), t.getSecond()));
-        // t -> this.m_poseEstimator.updateWithTime(Timer.getFPGATimestamp(), t.getFirst(),
-        // t.getSecond())); // TODO should we use this one?
+                (rotation, swerveModulePosition) -> this.poseEstimator
+                        .updateWithTime(Timer.getFPGATimestamp(), rotation, swerveModulePosition));
         drivetrain.registerTelemetry(logger::telemeterize);
-
-        // TODO remove once tuned
-        // SmartDashboard.putData("PID", this.m_PID);
-
+        SmartDashboard.putData("Field", this.field);
+        this.setupPIDTuning();
         if (true) { // todo ignore
-            configureMusic();
+            this.configureMusic();
         }
     }
 
     private void configureMusic() {
         for (SwerveModule<TalonFX, TalonFX, CANcoder> module : this.drivetrain.getModules()) {
-            m_orchestra.addInstrument(module.getDriveMotor());
-            m_orchestra.addInstrument(module.getSteerMotor());
+            orchestra.addInstrument(module.getDriveMotor());
+            orchestra.addInstrument(module.getSteerMotor());
         }
-        var status = m_orchestra.loadMusic(Filesystem.getDeployDirectory() + "/chrp/output.chrp");
+        var status = orchestra.loadMusic(Filesystem.getDeployDirectory() + "/chrp/output.chrp");
         if (!status.isOK()) {
             // log error
             DriverStation.reportError(status.toString(), Thread.currentThread().getStackTrace());
         } else {
-            System.out.println(m_orchestra.play());
+            System.out.println(orchestra.play());
         }
         System.out.println("###############################");
-        System.out.println(m_orchestra.isPlaying());
+        System.out.println(orchestra.isPlaying());
     }
 
     private void configureBindings() {
         this.configureDriverBindings();
         this.configureOperatorBindings();
+        this.configureDashboardBindings();
     }
 
     private SwerveRequest.FieldCentric getFieldCentricDrive() {
@@ -281,22 +276,22 @@ public class RobotContainer {
         // Note that each routine should be run exactly once in a single log.
 
         //&& DYNAMIC TEST WITH SYSID
-        // // && DRIVER BACK AND Y 
-        // // * Starts SYSID dynamic directions
+        // && DRIVER BACK AND Y 
+        // * Starts SYSID dynamic directions
 
         // ! CHANGE AFTER TESTING CHANGE AFTER CHANGE CHANGE CHANGE
         // DRIVER.povDown().and(DRIVER.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
 
-        // // // && DRIVER BACK AND X
-        // // // * Starts SYSID dynamic directions
+        // && DRIVER BACK AND X
+        // * Starts SYSID dynamic directions
         // DRIVER.povDown().and(DRIVER.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
 
-        // // // && START BACK AND Y 
-        // // // * Starts SYSID dynamic directions
+        // && START BACK AND Y 
+        // * Starts SYSID dynamic directions
         // DRIVER.povDown().and(DRIVER.a()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
 
-        // // // && START AND X 
-        // // // * TOGGLES REVERSE
+        // && START AND X 
+        // * TOGGLES REVERSE
         // DRIVER.povDown().and(DRIVER.b()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // && LEFT BUMPER
@@ -304,8 +299,7 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         DRIVER.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        //& 
-        // TODO -- if this is too cumbersome, we can move these to the OPERATOR
+        //&
         // left center button
         DRIVER.back().onTrue(this.drivetrain.runOnce(() -> {
             this.drivetrain.decreaseSpeedMultiplier();
@@ -314,66 +308,42 @@ public class RobotContainer {
         DRIVER.start().onTrue(this.drivetrain.runOnce(() -> {
             this.drivetrain.increaseSpeedMultiplier();
         }));
-        // TODO -- furthermore, we can implement "zoned" speeds using the pose estimator
+        // TODO -- we can implement "zoned" speeds using the pose estimator
 
         /* Configure Climb */
-        // TODO let's look at the new mechanism and see what changes we need to make
         // DRIVER.a().onTrue(this.m_climber.releaseClimbWinch());
         // DRIVER.rightBumper().whileTrue(this.m_climber.commandSetClimbSpeed(-1))
         //         .onFalse(this.m_climber.commandSetClimbSpeed(0));
-
         // DRIVER.rightTrigger().whileTrue(this.m_climber.commandSetClimbSpeed(0.5))
         //         .onFalse(this.m_climber.commandSetClimbSpeed(0));
-
-        // & INTAKING FOR ALGAE FLOOR
-        // TODO THIS WORKS
-        // DRIVER.povDown().whileTrue( 
-        //     Commands.parallel(
-        //         m_algaeFloorIntakeArm.moveToSetPoint(2),
-        //         m_algaeFLoorIntakeRoller.setSpeeds(1)
-        //         )
-        //     )
-        // .toggleOnFalse(
-        //     Commands.parallel(
-        //         m_algaeFloorIntakeArm.moveToSetPoint(0),
-        //         m_algaeFLoorIntakeRoller.setSpeeds(0))
-        // );
-        // TODO create a new AlgaeFloorIntake() and use its setStuff() here
-        // this.DRIVER.povDown().whileTrue() // ...
-
-
-        // DRIVER.povUp().whileTrue(m_algaeFLoorIntakeRoller.setSpeeds(1)).toggleOnFalse(m_algaeFLoorIntakeRoller.setSpeeds(0));
-
     }
 
     public void zero() {
-        this.m_elevator.stopElevator();
-        this.m_pivot.stopPivot();
+        this.sysElevator.stopElevator();
+        this.sysPivot.stopPivot();
     }
 
     private void configureOperatorBindings() {
-
-
         /* Configure Elevator */
         Command elevatorDefault = Commands.either(//
                 Commands.none(), //
-                this.m_elevator.runOnce(//
-                        () -> this.m_elevator.setSpeed(
+                this.sysElevator.runOnce(//
+                        () -> this.sysElevator.setSpeed(
                                 MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1) / 2.25)), //
                 this.m_PID::isTuningMode);
-        elevatorDefault.addRequirements(m_elevator);
-        this.m_elevator.setDefaultCommand(elevatorDefault);
+        elevatorDefault.addRequirements(sysElevator);
+        this.sysElevator.setDefaultCommand(elevatorDefault);
         // on the controller: up == -1, down == 1
 
         /* Configure Pivot */
         Command pivotDefault = Commands.either(//
                 Commands.none(), //
-                this.m_pivot.runOnce(//
-                        () -> this.m_pivot.setSpeed(
+                this.sysPivot.runOnce(//
+                        () -> this.sysPivot.setSpeed(
                                 MathUtil.applyDeadband((-1. * OPERATOR.getRightY()), 0.1) / 2.25)), //
                 this.m_PID::isTuningMode);
-        pivotDefault.addRequirements(m_pivot);
-        this.m_pivot.setDefaultCommand(pivotDefault);
+        pivotDefault.addRequirements(sysPivot);
+        this.sysPivot.setDefaultCommand(pivotDefault);
         // // on the controller: up == -1, down == 1
 
         /* Configure joint Elevator/Pivot positioning */
@@ -383,14 +353,10 @@ public class RobotContainer {
         // x == re-flash pivot motor (with new PID values)
         // y == pivot go to setpoint
 
-        // OPERATOR.a().whileTrue( CoralPositionFactory.L1(m_elevator, m_pivot));
-
-        // OPERATOR.b().whileTrue( CoralPositionFactory.L2(m_elevator, m_pivot));
-
-        // OPERATOR.x().whileTrue( CoralPositionFactory.L3(m_elevator, m_pivot));
-
-        // OPERATOR.y().whileTrue( CoralPositionFactory.L4(m_elevator, m_pivot));
-
+        // OPERATOR.a().whileTrue(CoralPositionFactory.L1(m_elevator, m_pivot));
+        // OPERATOR.b().whileTrue(CoralPositionFactory.L2(m_elevator, m_pivot));
+        // OPERATOR.x().whileTrue(CoralPositionFactory.L3(m_elevator, m_pivot));
+        // OPERATOR.y().whileTrue(CoralPositionFactory.L4(m_elevator, m_pivot));
 
         // //TODO DEPRECATED, PID CONTROL
         // //&& A BUTTON 
@@ -453,21 +419,21 @@ public class RobotContainer {
 
         //  & OPERATOR LEFT BUMPER
         // * Intakes coral
-        OPERATOR.leftBumper().onTrue(this.m_coralHandler.intake())
-                .onFalse(this.m_coralHandler.stop());
+        OPERATOR.leftBumper().onTrue(this.sysCoralHandler.intake())
+                .onFalse(this.sysCoralHandler.stop());
 
         //& OPERATOR LEFT TRIGGER
         // * Spits out coral 
-        OPERATOR.leftTrigger().onTrue(this.m_coralHandler.spitItOut())
-                .onFalse(this.m_coralHandler.stop());
+        OPERATOR.leftTrigger().onTrue(this.sysCoralHandler.spitItOut())
+                .onFalse(this.sysCoralHandler.stop());
 
         //& RIGHT BUMPERS
         //* ALGAE HANDLER, N/A */
         /* Configure AlgaeHandler */
-        OPERATOR.rightBumper().onTrue(this.m_algaeHandler.rotateCW())
-                .onFalse(this.m_algaeHandler.stop());
-        OPERATOR.rightTrigger().onTrue(this.m_algaeHandler.rotateCCW())
-                .onFalse(this.m_algaeHandler.stop());
+        OPERATOR.rightBumper().onTrue(this.sysAlgaeHandler.rotateCW())
+                .onFalse(this.sysAlgaeHandler.stop());
+        OPERATOR.rightTrigger().onTrue(this.sysAlgaeHandler.rotateCCW())
+                .onFalse(this.sysAlgaeHandler.stop());
 
         /* Algae Intake */
 
@@ -479,19 +445,25 @@ public class RobotContainer {
         // with the joysticks, instead of PID position control
         OPERATOR.povUp().onTrue(//
                 Commands.parallel(//
-                        this.m_elevator.runOnce(() -> this.m_elevator.useSpeed()), //
-                        this.m_pivot.runOnce(() -> this.m_pivot.useSpeed())));
+                        this.sysElevator.runOnce(() -> this.sysElevator.useSpeed()), //
+                        this.sysPivot.runOnce(() -> this.sysPivot.useSpeed())));
         // OPERATOR.povDown().onTrue(CoralPositionFactory.Feed(m_elevator, m_pivot));
 
-        OPERATOR.povLeft().onTrue(this.m_algaeFloor.setStuff(1, 0)).onFalse(this.m_algaeFloor.setStuff(0,0));
-        OPERATOR.povRight().onTrue(this.m_algaeFloor.setStuff(-1, 0)).onFalse(this.m_algaeFloor.setStuff(0,0));
-        OPERATOR.povDown().onTrue(this.m_algaeFloor.setStuff(0, 1)).onFalse(this.m_algaeFloor.setStuff(0,0));
+        OPERATOR.povLeft().onTrue(this.sysAlgaeFloorIntake.setStuff(1, 0))
+                .onFalse(this.sysAlgaeFloorIntake.setStuff(0, 0));
+        OPERATOR.povRight().onTrue(this.sysAlgaeFloorIntake.setStuff(-1, 0))
+                .onFalse(this.sysAlgaeFloorIntake.setStuff(0, 0));
+        OPERATOR.povDown().onTrue(this.sysAlgaeFloorIntake.setStuff(0, 1))
+                .onFalse(this.sysAlgaeFloorIntake.setStuff(0, 0));
+    }
+
+    private void configureDashboardBindings() {
+
     }
 
     public Command getAutonomousCommand() {
-        // reset the poseEstimator's initialPoseMeters to the AutoBuilder's pose // TODO verify
-        this.m_poseEstimator.resetPose(AutoBuilder.getCurrentPose());
-        // // return the autoChooser's selected Auto
+        this.poseEstimator.resetPose(AutoBuilder.getCurrentPose());
+        // return the autoChooser's selected Auto
         return this.autoChooser.getSelected();
 
         // ! DEBUG FEEDER LATER
@@ -509,28 +481,42 @@ public class RobotContainer {
 
     }
 
-    public Pose2d getEstimatedPosition() {
-        return this.m_poseEstimator.getEstimatedPosition();
-    }
-
-    public void configureNamedCommands() {
-
+    private void configureNamedCommands() {
         // && POSITIONS
-        NamedCommands.registerCommand("L1 Position", CoralPositionFactory.L1(m_elevator, m_pivot));
-        NamedCommands.registerCommand("L2 Position", CoralPositionFactory.L2(m_elevator, m_pivot));
-        NamedCommands.registerCommand("L3 Position", CoralPositionFactory.L3(m_elevator, m_pivot));
-        NamedCommands.registerCommand("L4 Position", CoralPositionFactory.L4(m_elevator, m_pivot));
-        NamedCommands.registerCommand("Feed", CoralPositionFactory.Feed(m_elevator, m_pivot));
+        // TODO -- what happens if we use the same command instance twice?
+        NamedCommands.registerCommand("L1 Position",
+                CoralPositionFactory.L1(sysElevator, sysPivot));
+        NamedCommands.registerCommand("L2 Position",
+                CoralPositionFactory.L2(sysElevator, sysPivot));
+        NamedCommands.registerCommand("L3 Position",
+                CoralPositionFactory.L3(sysElevator, sysPivot));
+        NamedCommands.registerCommand("L4 Position",
+                CoralPositionFactory.L4(sysElevator, sysPivot));
+        NamedCommands.registerCommand("Feed", CoralPositionFactory.Feed(sysElevator, sysPivot));
 
         // TODO THESE MUST BE TESTED
-        NamedCommands.registerCommand("Run Coral Intake", m_coralHandler.intake());
-        NamedCommands.registerCommand("Run Coral Outake", m_coralHandler.spitItOut());
-        NamedCommands.registerCommand("Stop Coral Intake", m_coralHandler.stop());
+        NamedCommands.registerCommand("Run Coral Intake", sysCoralHandler.intake());
+        NamedCommands.registerCommand("Run Coral Outake", sysCoralHandler.spitItOut());
+        NamedCommands.registerCommand("Stop Coral Intake", sysCoralHandler.stop());
 
         // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1));
         // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1));
         // NamedCommands.registerCommand("Stop Climbter", m_climber.commandSetClimbSpeed(1));
-
     }
 
+    public void updateField() {
+        this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
+        this.field.getObject("swervePose").setPose(this.drivetrain.getPose());
+        // can also set trajectories
+        // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html#sending-trajectories-to-field2d
+    }
+
+    private void setupPIDTuning() {
+        SmartDashboard.putBoolean(frc.robot.sendables.SendablePID.prefix + "/Tuning Mode", false);
+    }
+
+    private boolean isTuningMode() {
+        return SmartDashboard.getBoolean(frc.robot.sendables.SendablePID.prefix + "/Tuning Mode",
+                false);
+    }
 }

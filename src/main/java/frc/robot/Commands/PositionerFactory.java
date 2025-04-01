@@ -4,8 +4,6 @@
 
 package frc.robot.Commands;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.function.BooleanSupplier;
@@ -171,9 +169,10 @@ public final class PositionerFactory {
             }
         }
 
-        static Optional<List<State>> getMidList(State start, State end, Elevator elevator, Pivot pivot) {
-            ArrayList<State> result = new ArrayList<>();
-
+        // TODO this should also take in the spoiler for spoiler+pivot conflicts
+        static Optional<State[]> getMidList(State start, State end, Elevator elevator,
+                Pivot pivot) {
+            State[] result;
             // Add states to remove conflicts
             //
             // How?
@@ -246,14 +245,13 @@ public final class PositionerFactory {
                     }
                 }
                 BooleanSupplier done = () -> {
-                    return (Math
-                            .abs(pivot.getPosition() - pivotPos) < Settings.allowedPivotError)
+                    return (Math.abs(pivot.getPosition() - pivotPos) < Settings.allowedPivotError)
                             && (Math.abs(elevator.getPosition()
                                     - elevatorPos) < Settings.allowedElevatorError);
                 };
                 State mid = new State(elevatorPos, pivotPos, null, null, end.spoilerSetPoint, null,
                         done);
-                result.add(mid);
+                result = new State[] {mid};
             } else {
                 // Z1->Z2->Z3->Z4 (or reverse)
 
@@ -284,13 +282,11 @@ public final class PositionerFactory {
                     // nothing to do:
                     // - firstMid = Z1->Z2
                     // - secondMid = Z2->Z3
-                    result.add(firstMid);
-                    result.add(secondMid);
+                    result = new State[] {firstMid, secondMid};
                 } else {
                     // Z4->Z3->Z2->Z1
                     // need to swap firstMid and secondMid
-                    result.add(secondMid);
-                    result.add(firstMid);
+                    result = new State[] {secondMid, firstMid};
                 }
             }
             return Optional.of(result);
@@ -306,7 +302,27 @@ public final class PositionerFactory {
 
         private void proceedToNextState() {
             State next = this.trajectory.pop();
-            System.out.printf("[GoToState] proceeding to next state: %s\n", next.toString());
+            System.out.printf("[GoToState] finished state: %s\n", next.toString());
+            this.runCurrentState();
+        }
+
+        private void runCurrentState() {
+            if (this.isFinished()) {
+                return;
+            }
+            State curr = this.trajectory.peek();
+            // now actually go to the state
+            if (curr.elevatorSetPoint != null) {
+                this.elevator.setReference(curr.elevatorSetPoint);
+            }
+            if (curr.pivotSetPoint != null) {
+                this.pivot.setReference(curr.pivotSetPoint);
+            }
+            if (curr.coralHandlerSpeed != null) {
+                this.coral.setSpeed(curr.coralHandlerSpeed);
+            }
+            // this one handles passed-in nulls
+            this.spoiler.setArmAndRoller(curr.spoilerSetPoint, curr.spoilerRollerSpeed);
         }
 
         @Override
@@ -321,6 +337,7 @@ public final class PositionerFactory {
             ) {
                 System.out.println("[GoToState] request to re-position nothing");
                 // No conflicts to resolve
+                this.runCurrentState();
                 return;
             }
 
@@ -331,6 +348,7 @@ public final class PositionerFactory {
                 // make this command a no-op
                 this.trajectory.clear();
                 this.trajectory.push(new State());
+                this.runCurrentState();
                 return;
             }
             if (goal.pivotSetPoint != null && (goal.pivotSetPoint < Settings.minPivotPosition
@@ -339,6 +357,7 @@ public final class PositionerFactory {
                 // make this command a no-op
                 this.trajectory.clear();
                 this.trajectory.push(new State());
+                this.runCurrentState();
                 return;
             }
             if (goal.spoilerSetPoint != null && (goal.spoilerSetPoint < Settings.minSpoilerPosition
@@ -347,6 +366,7 @@ public final class PositionerFactory {
                 // make this command a no-op
                 this.trajectory.clear();
                 this.trajectory.push(new State());
+                this.runCurrentState();
                 return;
             }
 
@@ -356,130 +376,21 @@ public final class PositionerFactory {
                     this.spoiler.getRollerSpeed(), null); // done == null b/c we're already finished
             State fullGoal = goal.merge(curr);
 
-            // Add states to remove conflicts
-            //
-            // How?
-            //
-            // We split into 4 "zones" (see `./positioning-zones.png`)
-            // Rule: the robot can only move between numerically adjacent zones
-            // So, if you are in Z1 and need to get to Z4, then
-            // you have to go to Z2, then to Z3, _then_ to Z4.
-            //
-            // In practice, you might want to go from Feed (Z1) to L4 (Z3)
-            // so you first go to a safe point in Z2 = (goal.pivot, elevator.minBlocking)
-            // and _then_ to L4 = (goal.pivot, goal.elevator).
-            //
-            // You can think of the "zones" as a sort-of "XY" coordinate system
-            // where X == the pivot's horizontal component
-            // and Y == the elevator's vertical component.
-            //
-            // "zones" are highly dependent on the three pivot/elevator
-            // blocking parameters.
-
-            int startZone = zone(curr);
-            int endZone = zone(fullGoal);
-            if (startZone == 0 || endZone == 0) {
-                DriverStation.reportError(String.format(
-                        "Could not determine State zones for %s->%s (got zones %d->%d)",
-                        curr.toString(), fullGoal.toString(), startZone, endZone), false);
+            Optional<State[]> maybeResult =
+                    GoToState.getMidList(curr, fullGoal, this.elevator, this.pivot);
+            if (maybeResult.isEmpty()) {
                 // make this command a no-op
                 this.trajectory.clear();
                 this.trajectory.push(new State());
+                this.runCurrentState();
                 return;
             }
-            int extraStates = Math.abs(startZone - endZone) - 1;
-            if (extraStates > 2) {
-                DriverStation
-                        .reportError(
-                                String.format("Invalid zones for States %s->%s (got zones %d->%d)",
-                                        curr.toString(), fullGoal.toString(), startZone, endZone),
-                                false);
-                // make this command a no-op
-                this.trajectory.clear();
-                this.trajectory.push(new State());
-                return;
-            }
-            if (extraStates == 1) {
-                // curr -> mid -> goal
-                // Z1->Z2->Z3 (or reverse) (Feed -> L4)
-                // Z2->Z3->Z4 (or reverse)
-                // So, we need to know if we're going to Z2 or Z3
-                double pivotPos;
-                double elevatorPos;
-                if (startZone < endZone) {
-                    if (startZone == 1) {
-                        // Z1 -> Z3
-                        // Z2 intermediate (goal.pivot, elevator.minBlocking)
-                        pivotPos = goal.pivotSetPoint;
-                        elevatorPos = Settings.minPositionWhereElevatorDoesNotBlockPivot;
-                    } else {
-                        // Z2 -> Z4
-                        // Z3 intermediate (pivot.minBlocking, goal.elevator)
-                        pivotPos = Settings.minPositionWherePivotDoesNotCollideWithElevator;
-                        elevatorPos = goal.elevatorSetPoint;
-                    }
-                } else {
-                    if (startZone == 4) {
-                        // Z4 -> Z2
-                        // Z3 intermediate (goal.pivot, elevator.maxBlocking)
-                        pivotPos = goal.pivotSetPoint;
-                        elevatorPos = Settings.maxPositionWhereElevatorDoesNotBlockPivot;
-                    } else {
-                        // Z3 -> Z1
-                        // Z2 intermediate (pivot.minBlocking, goal.elevator)
-                        pivotPos = Settings.minPositionWherePivotDoesNotCollideWithElevator;
-                        elevatorPos = goal.elevatorSetPoint;
-                    }
-                }
-                BooleanSupplier done = () -> {
-                    return (Math
-                            .abs(this.pivot.getPosition() - pivotPos) < Settings.allowedPivotError)
-                            && (Math.abs(this.elevator.getPosition()
-                                    - elevatorPos) < Settings.allowedElevatorError);
-                };
-                State mid = new State(elevatorPos, pivotPos, null, null, goal.spoilerSetPoint, null,
-                        done);
-                this.trajectory.push(mid);
-            } else {
-                // Z1->Z2->Z3->Z4 (or reverse)
-
-                // Z1->Z2 or Z3->Z2
-                // (pivot.minBlocking, elevator.minBlocking)
-                State firstMid = new State(Settings.minPositionWhereElevatorDoesNotBlockPivot,
-                        Settings.minPositionWherePivotDoesNotCollideWithElevator, null, null,
-                        goal.spoilerSetPoint, null, () -> {
-                            return (Math.abs(this.pivot.getPosition()
-                                    - Settings.minPositionWherePivotDoesNotCollideWithElevator) < Settings.allowedPivotError)
-                                    && (Math.abs(this.elevator.getPosition()
-                                            - Settings.minPositionWhereElevatorDoesNotBlockPivot) < Settings.allowedElevatorError);
-                        });
-
-                // Z2->Z3 or Z4->Z3
-                // (pivot.minBlocking, elevator.maxBlocking)
-                State secondMid = new State(Settings.maxPositionWhereElevatorDoesNotBlockPivot,
-                        Settings.minPositionWherePivotDoesNotCollideWithElevator, null, null,
-                        goal.spoilerSetPoint, null, () -> {
-                            return (Math.abs(this.pivot.getPosition()
-                                    - Settings.minPositionWherePivotDoesNotCollideWithElevator) < Settings.allowedPivotError)
-                                    && (Math.abs(this.elevator.getPosition()
-                                            - Settings.maxPositionWhereElevatorDoesNotBlockPivot) < Settings.allowedElevatorError);
-                        });
-
-                if (startZone < endZone) {
-                    // Z1->Z2->Z3->Z4
-                    // nothing to do:
-                    // - firstMid = Z1->Z2
-                    // - secondMid = Z2->Z3
-                    this.trajectory.push(secondMid); // pushing in reverse b/c this.trajectory is a Stack
-                    this.trajectory.push(firstMid);
-                } else {
-                    // Z4->Z3->Z2->Z1
-                    // need to swap firstMid and secondMid
-                    this.trajectory.push(firstMid); // pushing in reverse b/c this.trajectory is a Stack
-                    this.trajectory.push(secondMid);
-                }
+            State[] list = maybeResult.get();
+            for (int i = list.length - 1; i >= 0; i--) {
+                this.trajectory.push(list[i]);
             }
             System.out.printf("[GoToState] generated trajectory:\n%s\n", this.trajectory);
+            this.runCurrentState();
         }
 
         @Override

@@ -22,27 +22,32 @@ public class krakenElevator extends SubsystemBase {
   private final TalonFX m_rightElevatorMotor = new TalonFX(Settings.Elevator.CAN.ID_TOP_RIGHT);
 
   public krakenElevator() {
-    configureMotors();
+    configureMotors( Settings.Elevator.kP_UP, Settings.Elevator.kI_UP, Settings.Elevator.kD_UP, //
+    Settings.Elevator.kP_DOWN, Settings.Elevator.kI_DOWN, Settings.Elevator.kD_DOWN);
   }
 
-  public void configureMotors(){
-    m_rightElevatorMotor.setControl(new Follower(Settings.Elevator.CAN.ID_TOP_LEFT, true));
-    TalonFXConfiguration m_leftElevatorMotorConfigs = new TalonFXConfiguration();
-    m_leftElevatorMotorConfigs.Slot0.kP = 0;
-    m_leftElevatorMotorConfigs.Slot0.kI = 0;
-    m_leftElevatorMotorConfigs.Slot0.kD = 0;
+  public void configureMotors(double kP1, double kI1, double kD1, double kP2, double kI2,
+  double kD2){
+    m_leftElevatorMotor.setControl(new Follower(Settings.Elevator.CAN.ID_TOP_RIGHT, true));
+    TalonFXConfiguration m_rightElevatorMotorConfigs = new TalonFXConfiguration();
+    m_rightElevatorMotorConfigs.Slot0.kP = 0;
+    m_rightElevatorMotorConfigs.Slot0.kI = 0;
+    m_rightElevatorMotorConfigs.Slot0.kD = 0;
 
     //Volts need to be confirmed
-    m_leftElevatorMotorConfigs.Voltage.withPeakForwardVoltage(0)
+    m_rightElevatorMotorConfigs.Voltage.withPeakForwardVoltage(0)
     .withPeakReverseVoltage(0);
 
     //Amps need to be confirmed
-    m_leftElevatorMotorConfigs.TorqueCurrent.withPeakForwardTorqueCurrent(0)
-        .withPeakForwardTorqueCurrent(0);
+    m_rightElevatorMotorConfigs.TorqueCurrent.withPeakForwardTorqueCurrent(0)
+        .withPeakReverseTorqueCurrent(0);
 
     //Make sure the encoder is set at 0 on init
     m_leftElevatorMotor.setPosition(0);
-    
+
+
+    //https://v6.docs.ctr-electronics.com/en/latest/docs/migration/migration-guide/closed-loop-guide.html
+
   }
 
   @Override

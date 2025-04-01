@@ -123,20 +123,21 @@ public class RobotContainer {
         }
     }
 
+    //BREAKS CODE
     private void configureMusic() {
-        for (SwerveModule<TalonFX, TalonFX, CANcoder> module : this.drivetrain.getModules()) {
-            orchestra.addInstrument(module.getDriveMotor());
-            orchestra.addInstrument(module.getSteerMotor());
-        }
-        var status = orchestra.loadMusic(Filesystem.getDeployDirectory() + "/chrp/output.chrp");
-        if (!status.isOK()) {
-            // log error
-            DriverStation.reportError(status.toString(), true);
-        } else {
-            System.out.println(orchestra.play());
-        }
-        System.out.println("###############################");
-        System.out.println(orchestra.isPlaying());
+    //     for (SwerveModule<TalonFX, TalonFX, CANcoder> module : this.drivetrain.getModules()) {
+    //         orchestra.addInstrument(module.getDriveMotor());
+    //         orchestra.addInstrument(module.getSteerMotor());
+    //     }
+    //     var status = orchestra.loadMusic(Filesystem.getDeployDirectory() + "/chrp/output.chrp");
+    //     if (!status.isOK()) {
+    //         // log error
+    //         DriverStation.reportError(status.toString(), true);
+    //     } else {
+    //         System.out.println(orchestra.play());
+    //     }
+    //     System.out.println("###############################");
+    //     System.out.println(orchestra.isPlaying());
     }
 
     private void configureBindings() {

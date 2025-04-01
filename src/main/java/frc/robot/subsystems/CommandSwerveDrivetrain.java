@@ -46,6 +46,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
 
+    // ! DIFF CODE
     private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
             new SwerveRequest.ApplyRobotSpeeds();
 
@@ -111,10 +112,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
+    // ! DIFF CODE
     private BiConsumer<Rotation2d, SwerveModulePosition[]> m_poseEstimatorUpdate = (r, s) -> {
         // default to no-op
     };
 
+    // ! DIFF CODE
     public enum speeds {
         NINETY_PERCENT(1), //
         EIGHTY_PERCENT(1), //
@@ -153,6 +156,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
     }
 
+    // ! DIFF CODE
     private speeds m_speedMultiplier = speeds.EIGHTY_PERCENT;
 
 
@@ -172,6 +176,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        // ! DIFF CODE
         configureAutoBuilder();
     }
 
@@ -192,6 +197,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        // ! DIFF CODE
         configureAutoBuilder();
     }
 
@@ -218,9 +224,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        // ! DIFF CODE
         configureAutoBuilder();
     }
 
+    // ! DIFF CODE
     private void configureAutoBuilder() {
         try {
             RobotConfig config = RobotConfig.fromGUISettings();
@@ -373,6 +381,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         // This causes a loop-overrun by about 0.01s for the first iteration
+        // ! DIFF CODE
+        // ^ might want to comment this out
         this.m_poseEstimatorUpdate.accept(//
                 this.getPigeon2().getRotation2d(), this.getState().ModulePositions);
 
@@ -394,5 +404,39 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
 
+    }
+
+     /**
+     * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
+     * while still accounting for measurement noise.
+     *
+     * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
+     * @param timestampSeconds The timestamp of the vision measurement in seconds.
+     */
+    @Override
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
+    }
+
+    /**
+     * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
+     * while still accounting for measurement noise.
+     * <p>
+     * Note that the vision measurement standard deviations passed into this method
+     * will continue to apply to future measurements until a subsequent call to
+     * {@link #setVisionMeasurementStdDevs(Matrix)} or this method.
+     *
+     * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
+     * @param timestampSeconds The timestamp of the vision measurement in seconds.
+     * @param visionMeasurementStdDevs Standard deviations of the vision pose measurement
+     *     in the form [x, y, theta]ᵀ, with units in meters and radians.
+     */
+    @Override
+    public void addVisionMeasurement(
+        Pose2d visionRobotPoseMeters,
+        double timestampSeconds,
+        Matrix<N3, N1> visionMeasurementStdDevs
+    ) {
+        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
 }

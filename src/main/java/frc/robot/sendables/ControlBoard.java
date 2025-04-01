@@ -13,7 +13,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Commands.CoralPositionFactory;
+import frc.robot.Commands.PositionerFactory;
+import frc.robot.subsystems.AlgaeFloorIntake;
+import frc.robot.subsystems.AlgaeHandler;
+import frc.robot.subsystems.CoralHandler;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Pivot;
 
@@ -24,8 +27,12 @@ public class ControlBoard implements Sendable {
 
     private final Elevator elevator;
     private final Pivot pivot;
+    private final CoralHandler coral;
+    private final AlgaeHandler algae;
+    private final AlgaeFloorIntake spoiler;
 
-    public ControlBoard(Elevator elevator, Pivot pivot) {
+    public ControlBoard(Elevator elevator, Pivot pivot, CoralHandler coral, AlgaeHandler algae,
+            AlgaeFloorIntake spoiler) {
         this.states = new HashMap<>(Map.ofEntries(//
                 Map.entry("Default", this::Default), //
                 Map.entry("Coral.Feed", this::CoralFeed), //
@@ -39,6 +46,9 @@ public class ControlBoard implements Sendable {
 
         this.elevator = elevator;
         this.pivot = pivot;
+        this.coral = coral;
+        this.algae = algae;
+        this.spoiler = spoiler;
     }
 
     @Override
@@ -71,6 +81,9 @@ public class ControlBoard implements Sendable {
 
     private void setState(String state) {
         this.currentState = state;
+        if (this.currentCmd != null && this.currentCmd.isScheduled()) {
+            this.cancelCurrentCommand();
+        }
         this.currentCmd = this.states
                 .getOrDefault(this.currentState, () -> ControlBoard.notFound(this.currentState))
                 .get();
@@ -94,26 +107,27 @@ public class ControlBoard implements Sendable {
     private static Command notFound(String state) {
         return Commands.runOnce(() -> {
             DriverStation.reportWarning("State \"" + state + "\" not found!", false);
-        }).withName("ControlBoard.notFound("+state+")");
+        }).withName("ControlBoard.notFound(" + state + ")");
     }
 
     // TODO remove this
     private static Command notImplemented(String state) {
         return Commands.runOnce(() -> {
             DriverStation.reportError("State \"" + state + "\" not implemented!", false);
-        }).withName("ControlBoard.notImplemented("+state+")");
+        }).withName("ControlBoard.notImplemented(" + state + ")");
     }
 
     private Command Default() {
-        return CoralPositionFactory.Feed(this.elevator, this.pivot).withName("ControlBoard.Default");
+        return PositionerFactory.Feed(this.elevator, this.pivot, this.coral, this.algae, this.spoiler).withName("ControlBoard.Default");
     }
 
     private Command CoralFeed() {
-        return CoralPositionFactory.Feed(this.elevator, this.pivot).withName("ControlBoard.CoralFeed");
+        return PositionerFactory.Feed(this.elevator, this.pivot, this.coral, this.algae, this.spoiler).withName("ControlBoard.CoralFeed");
     }
 
     private Command CoralL1() {
-        return CoralPositionFactory.L1(this.elevator, this.pivot).withName("ControlBoard.CoralL1");
+        return PositionerFactory.L1(this.elevator, this.pivot, this.coral, this.algae, this.spoiler)
+                .withName("ControlBoard.CoralL1");
     }
 
     private Command CoralL2() {

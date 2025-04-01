@@ -94,27 +94,6 @@ public final class Settings {
         public static final double FLOOR_INTAKING_POSITION = 0;
     }
 
-    public static final class CoralPosition {
-        // TODO ALL OF THESE NEED TO BE TUNED ALONGSIDE PID
-        // these values change depending on the zeroOffset and conversionFactor
-        public static final double ELEVATOR_MIN_BLOCKING_POSITION = 5.; // elevator blocks the pivot above this reference
-        public static final double ELEVATOR_MAX_BLOCKING_POSITION = 55.; // elevator blocks the pivot below this reference
-        public static final double PIVOT_MIN_BLOCKING_POSITION = 65; // for completeness // ! TO BE TESTED, ASSGIN TO FEEDER POSITION
-        public static final double PIVOT_MAX_BLOCKING_POSITION = 120.; // elevator can move in the range above when pivot is here
-        public static final double ELEVATOR_ALLOWED_ERROR = 1; //TODO CONFIRM
-        public static final double PIVOT_ALLOWED_ERROR = 0.5;// TODO CONFIRM 
-        public static final double ELEVATOR_FEED_POSITION = 0;
-        public static final double ELEVATOR_L1_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L2_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L3_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L4_POSITION = 106;
-        public static final double PIVOT_FEED_POSITION = 72;
-        public static final double PIVOT_L1_POSITION = 145;
-        public static final double PIVOT_L2_POSITION = 153;
-        public static final double PIVOT_L3_POSITION = 180;
-        public static final double PIVOT_L4_POSITION = 166;
-    }
-
     public static final class LimeLight {
         public static final double kCAMERAPOSE_YAW = 72.5; // DOUBLE CHECK  MIGHT BE EIGHT DEGREES, NEW MOUNT IS CLOSER TO 0
         public static final double kCAMERAPOSE_FORWARD = .1905;//0.24;

@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Settings;
 
 public class AlgaeHandler extends SubsystemBase {
-    /** Creates a new AlgaeHandler. */
+
     private final SparkMax algaeHandlerMotor;
 
-
+    /** Creates a new AlgaeHandler. */
     public AlgaeHandler() {
         this.algaeHandlerMotor = new SparkMax(Settings.AlgaeHandler.CAN.ID_MOTOR,
                 Settings.AlgaeHandler.ALGAE_INTAKE_MOTORTYPE);
@@ -23,28 +23,33 @@ public class AlgaeHandler extends SubsystemBase {
 
     public Command rotateCW() {
         return this.runOnce(() -> {
-            // TODO turn the motor CW
-            algaeHandlerMotor.set(1);
+            this.setSpeed(1);
         });
     }
 
     public Command rotateCCW() {
         return this.runOnce(() -> {
-            // TODO turn the motor CCW
-            algaeHandlerMotor.set(-1);
+            this.setSpeed(-1);
         });
     }
 
     public Command stop() {
         return this.runOnce(() -> {
-            // TODO stop the motor
-            algaeHandlerMotor.set(0);
+            this.setSpeed(0);
         });
+    }
+
+    public void setSpeed(double speed) {
+        this.algaeHandlerMotor.set(speed);
+    }
+
+    public double getSpeed() {
+        return this.algaeHandlerMotor.get();
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Algae Handler/motor current",
-                algaeHandlerMotor.getOutputCurrent());
+                this.algaeHandlerMotor.getOutputCurrent());
     }
 }

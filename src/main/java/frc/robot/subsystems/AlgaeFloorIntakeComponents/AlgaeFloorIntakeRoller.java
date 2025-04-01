@@ -26,6 +26,10 @@ public class AlgaeFloorIntakeRoller {
     }
 
     public void setSpeed(double speed) {
-        this.rollerMotor.set(speed / 2.);
+        this.rollerMotor.set(speed);
+    }
+
+    public double getSpeed() {
+        return this.rollerMotor.get();
     }
 }

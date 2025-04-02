@@ -30,9 +30,9 @@ public final class PositionerFactory {
         public static final double minPositionWhereElevatorFreesPivotAndSpoiler = 1;
         public static final double minPositionWherePivotDoesNotCollideWithSpoiler = 10;
         public static final double minPositionWhereSpoilerDoesNotCollideWithPivot = 1;
-        public static final double minPositionWherePivotDoesNotCollideWithElevator = 120; // threshold_p_e (pivot blocks the elevator below this reference)
+        public static final double minPositionWherePivotDoesNotCollideWithElevator = 0.33; // threshold_p_e (pivot blocks the elevator below this reference)
         public static final double minPositionWhereElevatorDoesNotBlockPivot = 5; // threshold_e_p1 (elevator blocks the pivot above this reference)
-        public static final double maxPositionWhereElevatorDoesNotBlockPivot = 55; // threshold_e_p2 (elevator blocks the pivot below this reference)
+        public static final double maxPositionWhereElevatorDoesNotBlockPivot = 80; // threshold_e_p2 (elevator blocks the pivot below this reference)
         public static final double midpointPositionWhereElevatorBlocksPivot =
                 (minPositionWhereElevatorDoesNotBlockPivot
                         + maxPositionWhereElevatorDoesNotBlockPivot) / 2;
@@ -41,9 +41,9 @@ public final class PositionerFactory {
         public static final double maxElevatorPosition = 107;
         public static final double allowedElevatorError = 0.5;
 
-        public static final double minPivotPosition = 70;
-        public static final double maxPivotPosition = 181;
-        public static final double allowedPivotError = 0.5;
+        public static final double minPivotPosition = 0.01;
+        public static final double maxPivotPosition = 0.588;
+        public static final double allowedPivotError = 0.01;
 
         public static final double minSpoilerPosition = 0;
         public static final double maxSpoilerPosition = 10;
@@ -52,14 +52,14 @@ public final class PositionerFactory {
         public static final double ELEVATOR_FEED_POSITION = 0;
         public static final double ELEVATOR_L1_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L2_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L3_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L4_POSITION = 106;
+        public static final double ELEVATOR_L3_POSITION = 36;
+        public static final double ELEVATOR_L4_POSITION = 106.5;
 
-        public static final double PIVOT_FEED_POSITION = 72;
-        public static final double PIVOT_L1_POSITION = 145;
-        public static final double PIVOT_L2_POSITION = 153;
-        public static final double PIVOT_L3_POSITION = 180;
-        public static final double PIVOT_L4_POSITION = 166;
+        public static final double PIVOT_FEED_POSITION = 0.049;
+        public static final double PIVOT_L1_POSITION = PIVOT_FEED_POSITION;
+        public static final double PIVOT_L2_POSITION = 0.581;
+        public static final double PIVOT_L3_POSITION = PIVOT_L2_POSITION;
+        public static final double PIVOT_L4_POSITION = PIVOT_L2_POSITION;
     }
 
     static class State {

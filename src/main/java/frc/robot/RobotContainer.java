@@ -5,10 +5,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import com.ctre.phoenix6.Orchestra;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -16,10 +12,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -91,9 +87,11 @@ public class RobotContainer {
     private final ControlBoard LAPTOP = new ControlBoard(this.sysElevator, this.sysPivot,
             this.sysCoralHandler, this.sysAlgaeHandler, this.sysAlgaeFloorIntake);
 
+    private final PowerDistribution pdh = new PowerDistribution(30, ModuleType.kRev); // rev PD
+
     // other stuff
-    private final boolean allowMusic = false;
-    private final boolean enablePIDTuningMode = false;
+    private final boolean allowMusic = true;
+    private final boolean enablePIDTuningMode = true;
     private final SendablePID elevatorUpPID =
             new SendablePID("Elevator.Up", (float) Settings.Elevator.kP_UP,
                     (float) Settings.Elevator.kI_UP, (float) Settings.Elevator.kD_UP, 20);
@@ -101,7 +99,7 @@ public class RobotContainer {
             new SendablePID("Elevator.Down", (float) Settings.Elevator.kP_DOWN,
                     (float) Settings.Elevator.kI_DOWN, (float) Settings.Elevator.kD_DOWN, 20);
     private final SendablePID pivotPID = new SendablePID("Pivot", (float) Settings.Pivot.kP,
-            (float) Settings.Pivot.kI, (float) Settings.Pivot.kD, 100);
+            (float) Settings.Pivot.kI, (float) Settings.Pivot.kD, 0.3f);
 
     public RobotContainer() {
         // auto
@@ -113,6 +111,7 @@ public class RobotContainer {
         this.configureBindings();
 
         // misc
+        this.enableRadioPowerFromPDH();
         this.drivetrain.setPoseUpdater(//
                 (rotation, swerveModulePosition) -> this.poseEstimator
                         .updateWithTime(Timer.getFPGATimestamp(), rotation, swerveModulePosition));
@@ -214,6 +213,8 @@ public class RobotContainer {
     }
 
     private void configureOperatorBindings() {
+        // TODO wrap this in
+        // if (this.enablePIDTuningMode) {}
         /* Configure Elevator */
         Command elevatorDefault = Commands.either(//
                 Commands.none(), //
@@ -231,7 +232,7 @@ public class RobotContainer {
                 Commands.none(), //
                 this.sysPivot.runOnce(//
                         () -> this.sysPivot.setSpeed(
-                                MathUtil.applyDeadband((-1. * OPERATOR.getRightY()), 0.1) / 2.25)), //
+                                MathUtil.applyDeadband((this.OPERATOR.getRightY()), 0.1) / 2.25)), //
                 this::isTuningMode);
         pivotDefault.addRequirements(sysPivot);
         pivotDefault.setName("pivotDefault");
@@ -439,12 +440,20 @@ public class RobotContainer {
             return;
         }
         SmartDashboard.putBoolean(SendablePID.prefix + "/Tuning Mode", false);
+        SmartDashboard.putData(SendablePID.prefix, this.elevatorUpPID);
+        SmartDashboard.putData(SendablePID.prefix, this.elevatorDownPID);
+        SmartDashboard.putData(SendablePID.prefix, this.pivotPID);
     }
 
     private boolean isTuningMode() {
         if (!this.enablePIDTuningMode) {
             return false;
         }
+        // System.out.printf("tuning mode: %b\n", SmartDashboard.getBoolean(SendablePID.prefix + "/Tuning Mode", false));
         return SmartDashboard.getBoolean(SendablePID.prefix + "/Tuning Mode", false);
+    }
+
+    private void enableRadioPowerFromPDH() {
+        this.pdh.setSwitchableChannel(true);
     }
 }

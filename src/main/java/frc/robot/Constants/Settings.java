@@ -47,7 +47,7 @@ public final class Settings {
 
         public static final MotorType LEFT_PIVOT_MOTORTYPE = MotorType.kBrushless;
 
-        public static final double ZERO_OFFSET = 0.6369465;
+        public static final double ZERO_OFFSET = 0.1969758;
         public static final double CONVERSION_FACTOR = 1.;
         public static final double kP = 0.025;
         public static final double kI = 0.;

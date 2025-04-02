@@ -47,11 +47,11 @@ public class Pivot extends SubsystemBase {
 
         SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
         leftMotorConfig.apply(globalConfig);
-        leftMotorConfig.softLimit//
-                .forwardSoftLimitEnabled(true)//
-                .forwardSoftLimit(0.6)//
-                .reverseSoftLimitEnabled(true)//
-                .reverseSoftLimit(0);
+        // leftMotorConfig.softLimit//
+        //         .forwardSoftLimitEnabled(true)//
+        //         .forwardSoftLimit(0.6)//
+        //         .reverseSoftLimitEnabled(true)//
+        //         .reverseSoftLimit(0);
         leftMotorConfig.absoluteEncoder//
                 .setSparkMaxDataPortConfig()//
                 .inverted(false)//

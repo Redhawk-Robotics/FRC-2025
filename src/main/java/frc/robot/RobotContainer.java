@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Commands.PlayMusic;
 // import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.PositionerFactory;
 import frc.robot.Constants.Settings;
@@ -91,8 +92,7 @@ public class RobotContainer {
             this.sysCoralHandler, this.sysAlgaeHandler, this.sysAlgaeFloorIntake);
 
     // other stuff
-    private final Orchestra orchestra = new Orchestra();
-
+    private final boolean allowMusic = false;
     private final boolean enablePIDTuningMode = false;
     private final SendablePID elevatorUpPID =
             new SendablePID("Elevator.Up", (float) Settings.Elevator.kP_UP,
@@ -119,23 +119,6 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
         SmartDashboard.putData("Field", this.field);
         this.setupPIDTuning();
-        this.configureMusic();
-    }
-
-    private void configureMusic() {
-        for (SwerveModule<TalonFX, TalonFX, CANcoder> module : this.drivetrain.getModules()) {
-            this.orchestra.addInstrument(module.getDriveMotor());
-            this.orchestra.addInstrument(module.getSteerMotor());
-        }
-        var status =
-                this.orchestra.loadMusic(Filesystem.getDeployDirectory() + "/chrp/output.chrp");
-        if (!status.isOK()) {
-            // log error
-            DriverStation.reportError(status.toString(), true);
-        } else {
-            System.out.println(this.orchestra.play());
-        }
-        System.out.printf("Orchestra is playing: %b\n", this.orchestra.isPlaying());
     }
 
     private void configureBindings() {
@@ -219,6 +202,10 @@ public class RobotContainer {
         //         .onFalse(this.m_climber.commandSetClimbSpeed(0));
         // DRIVER.rightTrigger().whileTrue(this.m_climber.commandSetClimbSpeed(0.5))
         //         .onFalse(this.m_climber.commandSetClimbSpeed(0));
+
+        if (this.allowMusic) {
+            this.DRIVER.y().whileTrue(new PlayMusic("c-maj-test.chrp", this.drivetrain));
+        }
     }
 
     public void zero() {

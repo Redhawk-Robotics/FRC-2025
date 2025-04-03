@@ -111,7 +111,7 @@ public class RobotContainer {
         this.configureBindings();
 
         // misc
-        this.enableRadioPowerFromPDH();
+        this.enableSwitchChannelPDH();
         this.drivetrain.setPoseUpdater(//
                 (rotation, swerveModulePosition) -> this.poseEstimator
                         .updateWithTime(Timer.getFPGATimestamp(), rotation, swerveModulePosition));
@@ -453,7 +453,7 @@ public class RobotContainer {
         return SmartDashboard.getBoolean(SendablePID.prefix + "/Tuning Mode", false);
     }
 
-    private void enableRadioPowerFromPDH() {
+    private void enableSwitchChannelPDH() {
         this.pdh.setSwitchableChannel(true);
     }
 }

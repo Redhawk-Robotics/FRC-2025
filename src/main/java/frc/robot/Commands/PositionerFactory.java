@@ -59,7 +59,7 @@ public final class PositionerFactory {
         public static final double PIVOT_L1_POSITION = PIVOT_FEED_POSITION;
         public static final double PIVOT_L2_POSITION = 0.581;
         public static final double PIVOT_L3_POSITION = PIVOT_L2_POSITION;
-        public static final double PIVOT_L4_POSITION = PIVOT_L2_POSITION;
+        public static final double PIVOT_L4_POSITION = 0.61; //PIVOT_L2_POSITION;
     }
 
     static class State {

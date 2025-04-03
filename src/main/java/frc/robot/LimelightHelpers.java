@@ -1295,10 +1295,8 @@ public class LimelightHelpers {
 
         double[] result = getBotPose(limelightName);
         return toPose2D(result);
-
     }
    
-
 
     /////
     /////

@@ -47,11 +47,13 @@ public class Pivot extends SubsystemBase {
 
         SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
         leftMotorConfig.apply(globalConfig);
+
         // leftMotorConfig.softLimit//
-        //         .forwardSoftLimitEnabled(true)//
-        //         .forwardSoftLimit(0.6)//
+        //         .forwardSoftLimitEnabled(false)//
+        //         .forwardSoftLimit(0.05)//
         //         .reverseSoftLimitEnabled(true)//
-        //         .reverseSoftLimit(0);
+        //         .reverseSoftLimit(0.5);
+
         leftMotorConfig.absoluteEncoder//
                 .setSparkMaxDataPortConfig()//
                 .inverted(false)//
@@ -60,7 +62,9 @@ public class Pivot extends SubsystemBase {
                 .velocityConversionFactor(Settings.Pivot.CONVERSION_FACTOR);
         leftMotorConfig.closedLoop//
                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)//
-                .pid(kP1, kI1, kD1, ClosedLoopSlot.kSlot1)//
+                .pid(kP1, kI1, kD1, ClosedLoopSlot.kSlot1)
+                .maxOutput(0.8)
+                .minOutput(-0.8);//
         ;
         // slot 1 == position control
         leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters,

@@ -30,7 +30,7 @@ public class AutoAlign {
      * flush against the reef, I guess we can skip this step for now.
      * 
      * Goal - depending on a button the driver presses, the swerve base begins going left / right until the
-     * boolean from the CoralAligner subsystem is satisfied.
+     * boolean isAlignedLeft() / isAlignedRight() from the CoralAligner subsystem is satisfied.
      */
   public Command alignToLeftReef(CommandSwerveDrivetrain m_drivetrain, CoralAligner m_CoralAligner){
     return driveLeft(m_drivetrain);

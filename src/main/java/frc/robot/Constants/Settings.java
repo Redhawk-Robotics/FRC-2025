@@ -100,4 +100,16 @@ public final class Settings {
         public static final double kCAMERAPOSE_SIDE = -0.2286; //-0.28;
         public static final double kCAMERAPOSE_UP = 0.4953; //0.32;
     }
+
+    public static final class CoralAligner {
+        public static final class CAN {
+            public static final int kLEFT = 0;
+            public static final int kRIGHT = 0;
+            public static final String kBUS = "rio";
+        }
+
+        public static final class RANGE {
+            public static final double kLOWERBOUND = 0; //TODO TO BE TUNED
+        }
+    }
 }

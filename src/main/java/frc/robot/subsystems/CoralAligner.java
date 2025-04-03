@@ -55,8 +55,6 @@ public class CoralAligner extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("CANRANGE/Left Distance", m_leftDistance);
     SmartDashboard.putNumber("CANRANGE/Right Distance", m_rightDistance);
-
-
     updateDistances();
   }
 }

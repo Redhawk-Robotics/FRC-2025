@@ -5,6 +5,8 @@
 package frc.robot.Commands;
 
 import java.nio.channels.Pipe.SourceChannel;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.generated.TunerConstants;
@@ -19,11 +21,56 @@ import frc.robot.subsystems.CoralAligner;
 public class AutoAlign {
   /** Creates a new AutoAlign.  We use time of flight sensors here */
 
+
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();//
+            // .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05)
+            // .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    /*
+     * First, the swerve needs to rotate to become paralell to the reef, but given that we're going to be 
+     * flush against the reef, I guess we can skip this step for now.
+     * 
+     * Goal - depending on a button the driver presses, the swerve base begins going left / right until the
+     * boolean from the CoralAligner subsystem is satisfied.
+     */
   public Command alignToLeftReef(CommandSwerveDrivetrain m_drivetrain, CoralAligner m_CoralAligner){
+    return driveLeft(m_drivetrain);
+  }
+
+  public Command alignToRightReef(CommandSwerveDrivetrain m_drivetrain, CoralAligner m_CoralAligner) {
     return Commands.none();
   }
 
-  public Command alignToRightReef(CommandSwerveDrivetrain m_Drivetrain, CoralAligner m_CoralAligner) {
-    return Commands.none();
+  //! not sure about this
+  public Command stopDrive( CommandSwerveDrivetrain m_drivetrain) {
+    return m_drivetrain.applyRequest(() -> drive.withVelocityX(-1)).withName("@@@@@@@@@@@@@@Stopping Drive Train"); 
   }
+
+  //todo test these values
+  public Command driveLeft( CommandSwerveDrivetrain m_drivetrain) {
+    return m_drivetrain.applyRequest(() -> drive.withVelocityX(0.2)).withName("@@@@@@@@@@@@@@Aligning Left");
+  }
+
+  public Command driveRight( CommandSwerveDrivetrain m_drivetrain) {
+    return m_drivetrain.applyRequest(() -> drive.withVelocityX(-0.2)).withName("@@@@@@@@@@@@@@Aligning Right...");
+  }
+
+  // !not sure how i should be making this command ..?
+  public Command makeSwerveParalell(CommandSwerveDrivetrain m_drivetrain){
+    return Commands.none(); //m_drivetrain.getRotation3d();
+  } 
+
+
+  /*
+    return this.drive//
+                .withVelocityX( // Drive forward with positive Y (forward)
+                        MathUtil.applyDeadband(this.DRIVER.getLeftY(), 0.1)//
+                                * this.MaxSpeed * this.drivetrain.speedMultiplier())
+                .withVelocityY( // Drive left with positive X (left)
+                        MathUtil.applyDeadband(this.DRIVER.getLeftX(), 0.1)//
+                                * this.MaxSpeed * this.drivetrain.speedMultiplier())
+                .withRotationalRate( // Drive counterclockwise with negative X (left)
+                        MathUtil.applyDeadband(-this.DRIVER.getRightX(), 0.1)//
+                                * this.MaxAngularRate * this.drivetrain.speedMultiplier());
+   */
+  
 }

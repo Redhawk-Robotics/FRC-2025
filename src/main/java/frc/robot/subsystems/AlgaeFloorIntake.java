@@ -28,6 +28,32 @@ public class AlgaeFloorIntake extends SubsystemBase {
         });
     }
 
+    public void setArmAndRoller(Double armRef, Double rollerSpeed) {
+        if (armRef != null) {
+            this.m_arm.setRef(armRef);
+        }
+        if (rollerSpeed != null) {
+            this.m_roller.setSpeed(rollerSpeed);
+        }
+    }
+
+    public double getArmPosition() {
+        return this.m_arm.getPosition();
+    }
+
+    public double getRollerSpeed() {
+        return this.m_roller.getSpeed();
+    }
+
+    public void stopArm() {
+        this.m_arm.setSpeed(0);
+    }
+
+    public void stopArmAndRoller() {
+        this.m_arm.setSpeed(0);
+        this.m_roller.setSpeed(0);
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run

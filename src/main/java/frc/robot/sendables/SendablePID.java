@@ -57,13 +57,13 @@ public class SendablePID implements Sendable {
         // setter = SmartDashboard is giving the Robot a value
         // getter = SmartDashboard is requesting the current value
 
-        builder.addFloatProperty("PID-Tuner/" + this.name + "/P", () -> this.kP,
+        builder.addFloatProperty(this.name + "/P", () -> this.kP,
                 val -> this.kP = SendablePID.clamp(val, 0, 1000));
-        builder.addFloatProperty("PID-Tuner/" + this.name + "/I", () -> this.kI,
+        builder.addFloatProperty(this.name + "/I", () -> this.kI,
                 val -> this.kI = SendablePID.clamp(val, 0, 1000));
-        builder.addFloatProperty("PID-Tuner/" + this.name + "/D", () -> this.kD,
+        builder.addFloatProperty(this.name + "/D", () -> this.kD,
                 val -> this.kD = SendablePID.clamp(val, 0, 1000));
-        builder.addFloatProperty("PID-Tuner/" + this.name + "/set-point", () -> this.setpoint,
+        builder.addFloatProperty(this.name + "/set-point", () -> this.setpoint,
                 val -> this.setpoint = val);
     }
 }

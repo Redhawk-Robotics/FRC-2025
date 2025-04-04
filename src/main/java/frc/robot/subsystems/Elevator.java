@@ -80,7 +80,7 @@ public class Elevator extends SubsystemBase {
         SparkMaxConfig topLeftMotorConfig = new SparkMaxConfig();
         SparkMaxConfig bottomLeftMotorConfig = new SparkMaxConfig();
 
-        topRightMotorConfig.apply(globalConfig);
+        topRightMotorConfig.apply(globalConfig).inverted(false);
         bottomRightMotorConfig.apply(globalConfig).follow(topRightMotor, false); // leader
         topLeftMotorConfig.apply(globalConfig).follow(bottomRightMotor, true);
         bottomLeftMotorConfig.apply(globalConfig).follow(bottomRightMotor, true);

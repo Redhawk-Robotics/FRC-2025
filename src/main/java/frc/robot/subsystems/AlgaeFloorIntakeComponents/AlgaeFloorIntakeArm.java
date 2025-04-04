@@ -4,7 +4,8 @@
 
 package frc.robot.subsystems.AlgaeFloorIntakeComponents;
 
-import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
+// import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -18,7 +19,8 @@ public class AlgaeFloorIntakeArm {
 
     private final SparkMax leftMotor = new SparkMax(Settings.AlgaeFloorIntake.CAN.ID_ARM,
             Settings.AlgaeFloorIntake.ALGAE_FLOOR_INTAKE_MOTORTYPE);
-    private final SparkAbsoluteEncoder encoder = leftMotor.getAbsoluteEncoder();
+    private final RelativeEncoder encoder = this.leftMotor.getEncoder();
+    // private final SparkAbsoluteEncoder encoder = leftMotor.getAbsoluteEncoder();
     private final SparkClosedLoopController controller = leftMotor.getClosedLoopController();
 
     public enum positions {
@@ -43,7 +45,7 @@ public class AlgaeFloorIntakeArm {
         SparkMaxConfig globalConfig = new SparkMaxConfig();
         SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
 
-        globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
+        globalConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
 
         leftMotorConfig.apply(globalConfig);
         // leftMotorConfig.apply(globalConfig).closedLoop
@@ -85,5 +87,9 @@ public class AlgaeFloorIntakeArm {
     public void setSpeed(double setpoint) {
         this.leftMotor.set(setpoint);
         // this.controller.setReference(setpoint, ControlType.kDutyCycle);
+    }
+
+    public void setPosition(double position) {
+        this.encoder.setPosition(0);
     }
 }

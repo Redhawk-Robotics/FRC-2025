@@ -19,7 +19,7 @@ public class AlgaeFloorIntakeRoller {
         SparkMaxConfig rollerMotorConfig = new SparkMaxConfig();
         SparkMaxConfig globalConfig = new SparkMaxConfig();
 
-        globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
+        globalConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
 
         rollerMotorConfig.apply(globalConfig).inverted(true);
 

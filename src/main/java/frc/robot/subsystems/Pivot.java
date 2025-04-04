@@ -43,7 +43,7 @@ public class Pivot extends SubsystemBase {
         System.out.printf("Configuring Pivot motor\n\t(kP:%f kI:%f kD:%f)...\n", kP1, kI1, kD1);
 
         SparkMaxConfig globalConfig = new SparkMaxConfig();
-        globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake).inverted(true);
+        globalConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake).inverted(true);
 
         SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
         leftMotorConfig.apply(globalConfig);

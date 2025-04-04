@@ -49,7 +49,7 @@ public final class Settings {
 
         public static final double ZERO_OFFSET = 0.1969758;
         public static final double CONVERSION_FACTOR = 1.;
-        public static final double kP = 3;
+        public static final double kP = 10.;
         public static final double kI = 0.;
         public static final double kD = 0.;
     }

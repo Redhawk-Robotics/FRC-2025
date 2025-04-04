@@ -155,6 +155,11 @@ public class RobotContainer {
                                 new Rotation2d(this.DRIVER.getLeftY(), this.DRIVER.getLeftX())))
                         .withName("drivetrain point at direction (DRIVER.b)"));
 
+        // slightly unsafe
+        this.DRIVER.x().onTrue(Commands.runOnce(() -> {
+            this.zero();
+        }, this.sysElevator, this.sysPivot));
+
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
 
@@ -193,7 +198,7 @@ public class RobotContainer {
         this.DRIVER.start().onTrue(this.drivetrain.runOnce(() -> {
             this.drivetrain.increaseSpeedMultiplier();
         }).withName("increase speed mult (DRIVER.start)"));
-        // TODO -- we can implement "zoned" speeds using the pose estimator
+        // TODO -- we can implement "♦oned" speeds using the pose estimator
 
         /* Configure Climb */
         // DRIVER.a().onTrue(this.m_climber.releaseClimbWinch());
@@ -202,13 +207,13 @@ public class RobotContainer {
         // DRIVER.rightTrigger().whileTrue(this.m_climber.commandSetClimbSpeed(0.5))
         //         .onFalse(this.m_climber.commandSetClimbSpeed(0));
 
-        this.DRIVER.povDown().onTrue(this.sysAlgaeFloorIntake.setSpeeds(-0.5, 0))
+        this.DRIVER.povDown().onTrue(this.sysAlgaeFloorIntake.setSpeeds(-0.6, 0.6))
                 .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
-        this.DRIVER.povUp().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0.5, 0))
+        this.DRIVER.povUp().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0.6, 0))
                 .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
-        this.DRIVER.rightTrigger().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0, 1))
+        this.DRIVER.rightTrigger().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0, 0.6))
                 .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
-        this.DRIVER.leftTrigger().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0, -1))
+        this.DRIVER.leftTrigger().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0, -0.6))
                 .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
 
         if (this.allowMusic) {
@@ -217,8 +222,8 @@ public class RobotContainer {
     }
 
     public void zero() {
-        this.sysElevator.stopElevator();
-        this.sysPivot.stopPivot();
+        this.sysElevator.resetElevatorPosition();
+        this.sysAlgaeFloorIntake.resetArmPosition();
     }
 
     private void configureOperatorBindings() {
@@ -226,31 +231,6 @@ public class RobotContainer {
         // if (this.enablePIDTuningMode) {}
         /* Configure Elevator */
         if (this.enablePIDTuningMode) {
-            Command elevatorDefault = Commands.either(//
-                    Commands.none(), //
-                    this.sysElevator.runOnce(//
-                            () -> this.sysElevator.setSpeed(
-                                    MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1)
-                                            / 2.25)), //
-                    this::isTuningMode);
-            elevatorDefault.addRequirements(sysElevator);
-            elevatorDefault.setName("elevatorDefault");
-            this.sysElevator.setDefaultCommand(elevatorDefault);
-            // on the controller: up == -1, down == 1
-
-            /* Configure Pivot */
-            Command pivotDefault = Commands.either(//
-                    Commands.none(), //
-                    this.sysPivot.runOnce(//
-                            () -> this.sysPivot.setSpeed(
-                                    MathUtil.applyDeadband((-1. * this.OPERATOR.getRightY()), 0.1)
-                                            / 2.25)), //
-                    this::isTuningMode);
-            pivotDefault.addRequirements(sysPivot);
-            pivotDefault.setName("pivotDefault");
-            this.sysPivot.setDefaultCommand(pivotDefault);
-            // on the controller: up == -1, down == 1
-        } else {
             Command elevatorDefault = this.sysElevator.runOnce(//
                     () -> this.sysElevator.setSpeed(
                             MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1) / 2.25));
@@ -267,6 +247,23 @@ public class RobotContainer {
             pivotDefault.setName("pivotDefault");
             this.sysPivot.setDefaultCommand(pivotDefault);
             // on the controller: up == -1, down == 1
+        } else {
+            Command elevatorDefault = this.sysElevator.runOnce(//
+                    () -> this.sysElevator.setSpeed(
+                            MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1) / 2.));
+            elevatorDefault.addRequirements(sysElevator);
+            elevatorDefault.setName("elevatorDefault");
+            this.sysElevator.setDefaultCommand(elevatorDefault);
+            // on the controller: up == -1, down == 1
+
+            /* Configure Pivot */
+            Command pivotDefault = this.sysPivot.runOnce(//
+                    () -> this.sysPivot.setSpeed(
+                            MathUtil.applyDeadband((-1. * this.OPERATOR.getRightY()), 0.1) / 2.));
+            pivotDefault.addRequirements(sysPivot);
+            pivotDefault.setName("pivotDefault");
+            this.sysPivot.setDefaultCommand(pivotDefault);
+            // on the controller: up == -1, down == 1
         }
 
         /* Configure joint Elevator/Pivot positioning */
@@ -276,37 +273,28 @@ public class RobotContainer {
             // b == re-flash pivot motor and go to setpoint
             // todo other subsystems
             this.OPERATOR.a().whileTrue(//
-                    Commands.either(//
-                            this.sysElevator.runOnce(() -> {
-                                this.sysElevator.configureMotors(this.elevatorUpPID.P(),
-                                        this.elevatorUpPID.I(), this.elevatorUpPID.D(),
-                                        this.elevatorDownPID.P(), this.elevatorDownPID.I(),
-                                        this.elevatorDownPID.D());
-                            }).andThen(this.sysElevator.startEnd(
-                                    () -> this.sysElevator
-                                            .setReference(this.elevatorUpPID.SetPoint()),
-                                    () -> this.sysElevator.stopElevator())), //
-                            PositionerFactory.L1(this.sysElevator, this.sysPivot,
-                                    this.sysCoralHandler, this.sysAlgaeHandler,
-                                    this.sysAlgaeFloorIntake), //
-                            this::isTuningMode).withName("Elevator PID or L1 (OPERATOR.a)"))
+                    this.sysElevator.runOnce(() -> {
+                        this.sysElevator.configureMotors(this.elevatorUpPID.P(),
+                                this.elevatorUpPID.I(), this.elevatorUpPID.D(),
+                                this.elevatorDownPID.P(), this.elevatorDownPID.I(),
+                                this.elevatorDownPID.D());
+                    }).andThen(this.sysElevator.startEnd(
+                            () -> this.sysElevator.setReference(this.elevatorUpPID.SetPoint()),
+                            () -> this.sysElevator.stopElevator()))
+                            .withName("Elevator PID or L1 (OPERATOR.a)"))
                     .onFalse(PositionerFactory
                             .Stop(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                                     this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
                             .withName("stop all (OPERATOR.a off)"));
 
             this.OPERATOR.b().whileTrue(//
-                    Commands.either(//
-                            this.sysPivot.runOnce(() -> {
-                                this.sysPivot.configureMotors(this.pivotPID.P(), this.pivotPID.I(),
-                                        this.pivotPID.D());
-                            }).andThen(this.sysPivot.startEnd(
-                                    () -> this.sysPivot.setReference(this.pivotPID.SetPoint()),
-                                    () -> this.sysPivot.stopPivot())), //
-                            PositionerFactory.L2(this.sysElevator, this.sysPivot,
-                                    this.sysCoralHandler, this.sysAlgaeHandler,
-                                    this.sysAlgaeFloorIntake), //
-                            this::isTuningMode).withName("Pivot PID or L2 (OPERATOR.b)"))
+                    this.sysPivot.runOnce(() -> {
+                        this.sysPivot.configureMotors(this.pivotPID.P(), this.pivotPID.I(),
+                                this.pivotPID.D());
+                    }).andThen(this.sysPivot.startEnd(
+                            () -> this.sysPivot.setReference(this.pivotPID.SetPoint()),
+                            () -> this.sysPivot.stopPivot()))
+                            .withName("Pivot PID or L2 (OPERATOR.b)"))
                     .onFalse(PositionerFactory
                             .Stop(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                                     this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
@@ -373,12 +361,12 @@ public class RobotContainer {
         //& RIGHT BUMPERS
         //* ALGAE HANDLER, N/A */
         this.OPERATOR.rightBumper()
-                .onTrue(this.sysAlgaeHandler.rotateCW()
+                .onTrue(this.sysAlgaeHandler.rotateCW_Intake()
                         .withName("algae clockwise (OPERATOR.rightBumper)"))
                 .onFalse(this.sysAlgaeHandler.contain()
                         .withName("algae contain (OPERATOR.rightBumper off)"));
         this.OPERATOR.rightTrigger()
-                .onTrue(this.sysAlgaeHandler.rotateCCW()
+                .onTrue(this.sysAlgaeHandler.rotateCCW_Outtake()
                         .withName("algae counterclockwise (OPERATOR.rightTrigger)"))
                 .onFalse(this.sysAlgaeHandler.stop()
                         .withName("algae stop (OPERATOR.rightTrigger off)"));

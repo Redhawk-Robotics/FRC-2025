@@ -21,13 +21,13 @@ public class AlgaeHandler extends SubsystemBase {
         // TODO configure motor
     }
 
-    public Command rotateCW() {
+    public Command rotateCW_Intake() {
         return this.runOnce(() -> {
             this.setSpeed(1);
         });
     }
 
-    public Command rotateCCW() {
+    public Command rotateCCW_Outtake() {
         return this.runOnce(() -> {
             this.setSpeed(-1);
         });

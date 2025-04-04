@@ -52,6 +52,11 @@ public class AlgaeFloorIntake extends SubsystemBase {
         this.m_roller.setSpeed(0);
     }
 
+    public void resetArmPosition() {
+        System.out.printf("Resetting Algae Arm encoder position (%f) -> zero\n", this.getArmPosition());
+        this.m_arm.setPosition(0.0);
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run

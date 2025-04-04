@@ -56,7 +56,7 @@ public class CoralHandler extends SubsystemBase {
 
     public Command spitItOut() {
         return this.runOnce(() -> {
-            this.setSpeed(-0.7); // TODO TUNE
+            this.setSpeed(-0.9); // TODO TUNE
         });
     }
 

@@ -49,7 +49,7 @@ public final class Settings {
 
         public static final double ZERO_OFFSET = 0.1969758;
         public static final double CONVERSION_FACTOR = 1.;
-        public static final double kP = 0.025;
+        public static final double kP = 3;
         public static final double kI = 0.;
         public static final double kD = 0.;
     }
@@ -103,9 +103,9 @@ public final class Settings {
 
     public static final class CoralAligner {
         public static final class CAN {
-            public static final int kLEFT = 0;
-            public static final int kRIGHT = 0;
-            public static final String kBUS = "rio";
+            public static final int kLEFT = 20;
+            public static final int kRIGHT = 21;
+            public static final String kBUS = "drive-bus";
         }
 
         public static final class RANGE {

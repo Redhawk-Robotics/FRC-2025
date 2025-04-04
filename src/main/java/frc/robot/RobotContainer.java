@@ -90,8 +90,8 @@ public class RobotContainer {
     private final PowerDistribution pdh = new PowerDistribution(30, ModuleType.kRev); // rev PD
 
     // other stuff
-    private final boolean allowMusic = true;
-    private final boolean enablePIDTuningMode = true;
+    private final boolean allowMusic = false;
+    private final boolean enablePIDTuningMode = false;
     private final SendablePID elevatorUpPID =
             new SendablePID("Elevator.Up", (float) Settings.Elevator.kP_UP,
                     (float) Settings.Elevator.kI_UP, (float) Settings.Elevator.kD_UP, 20);
@@ -202,6 +202,15 @@ public class RobotContainer {
         // DRIVER.rightTrigger().whileTrue(this.m_climber.commandSetClimbSpeed(0.5))
         //         .onFalse(this.m_climber.commandSetClimbSpeed(0));
 
+        this.DRIVER.povDown().onTrue(this.sysAlgaeFloorIntake.setSpeeds(-0.5, 0))
+                .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
+        this.DRIVER.povUp().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0.5, 0))
+                .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
+        this.DRIVER.rightTrigger().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0, 1))
+                .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
+        this.DRIVER.leftTrigger().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0, -1))
+                .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
+
         if (this.allowMusic) {
             this.DRIVER.y().whileTrue(new PlayMusic("c-maj-test.chrp", this.drivetrain));
         }
@@ -216,28 +225,49 @@ public class RobotContainer {
         // TODO wrap this in
         // if (this.enablePIDTuningMode) {}
         /* Configure Elevator */
-        Command elevatorDefault = Commands.either(//
-                Commands.none(), //
-                this.sysElevator.runOnce(//
-                        () -> this.sysElevator.setSpeed(
-                                MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1) / 2.25)), //
-                this::isTuningMode);
-        elevatorDefault.addRequirements(sysElevator);
-        elevatorDefault.setName("elevatorDefault");
-        this.sysElevator.setDefaultCommand(elevatorDefault);
-        // on the controller: up == -1, down == 1
+        if (this.enablePIDTuningMode) {
+            Command elevatorDefault = Commands.either(//
+                    Commands.none(), //
+                    this.sysElevator.runOnce(//
+                            () -> this.sysElevator.setSpeed(
+                                    MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1)
+                                            / 2.25)), //
+                    this::isTuningMode);
+            elevatorDefault.addRequirements(sysElevator);
+            elevatorDefault.setName("elevatorDefault");
+            this.sysElevator.setDefaultCommand(elevatorDefault);
+            // on the controller: up == -1, down == 1
 
-        /* Configure Pivot */
-        Command pivotDefault = Commands.either(//
-                Commands.none(), //
-                this.sysPivot.runOnce(//
-                        () -> this.sysPivot.setSpeed(
-                                MathUtil.applyDeadband((this.OPERATOR.getRightY()), 0.1) / 2.25)), //
-                this::isTuningMode);
-        pivotDefault.addRequirements(sysPivot);
-        pivotDefault.setName("pivotDefault");
-        this.sysPivot.setDefaultCommand(pivotDefault);
-        // on the controller: up == -1, down == 1
+            /* Configure Pivot */
+            Command pivotDefault = Commands.either(//
+                    Commands.none(), //
+                    this.sysPivot.runOnce(//
+                            () -> this.sysPivot.setSpeed(
+                                    MathUtil.applyDeadband((-1. * this.OPERATOR.getRightY()), 0.1)
+                                            / 2.25)), //
+                    this::isTuningMode);
+            pivotDefault.addRequirements(sysPivot);
+            pivotDefault.setName("pivotDefault");
+            this.sysPivot.setDefaultCommand(pivotDefault);
+            // on the controller: up == -1, down == 1
+        } else {
+            Command elevatorDefault = this.sysElevator.runOnce(//
+                    () -> this.sysElevator.setSpeed(
+                            MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1) / 2.25));
+            elevatorDefault.addRequirements(sysElevator);
+            elevatorDefault.setName("elevatorDefault");
+            this.sysElevator.setDefaultCommand(elevatorDefault);
+            // on the controller: up == -1, down == 1
+
+            /* Configure Pivot */
+            Command pivotDefault = this.sysPivot.runOnce(//
+                    () -> this.sysPivot.setSpeed(
+                            MathUtil.applyDeadband((-1. * this.OPERATOR.getRightY()), 0.1) / 2.25));
+            pivotDefault.addRequirements(sysPivot);
+            pivotDefault.setName("pivotDefault");
+            this.sysPivot.setDefaultCommand(pivotDefault);
+            // on the controller: up == -1, down == 1
+        }
 
         /* Configure joint Elevator/Pivot positioning */
         if (this.enablePIDTuningMode) {
@@ -345,8 +375,8 @@ public class RobotContainer {
         this.OPERATOR.rightBumper()
                 .onTrue(this.sysAlgaeHandler.rotateCW()
                         .withName("algae clockwise (OPERATOR.rightBumper)"))
-                .onFalse(this.sysAlgaeHandler.stop()
-                        .withName("algae stop (OPERATOR.rightBumper off)"));
+                .onFalse(this.sysAlgaeHandler.contain()
+                        .withName("algae contain (OPERATOR.rightBumper off)"));
         this.OPERATOR.rightTrigger()
                 .onTrue(this.sysAlgaeHandler.rotateCCW()
                         .withName("algae counterclockwise (OPERATOR.rightTrigger)"))
@@ -366,13 +396,6 @@ public class RobotContainer {
                         this.sysElevator.runOnce(() -> this.sysElevator.useSpeed()), //
                         this.sysPivot.runOnce(() -> this.sysPivot.useSpeed())));
         // OPERATOR.povDown().onTrue(CoralPositionFactory.Feed(m_elevator, m_pivot));
-
-        OPERATOR.povLeft().onTrue(this.sysAlgaeFloorIntake.setStuff(1, 0))
-                .onFalse(this.sysAlgaeFloorIntake.setStuff(0, 0));
-        OPERATOR.povRight().onTrue(this.sysAlgaeFloorIntake.setStuff(-1, 0))
-                .onFalse(this.sysAlgaeFloorIntake.setStuff(0, 0));
-        OPERATOR.povDown().onTrue(this.sysAlgaeFloorIntake.setStuff(0, 0.5))
-                .onFalse(this.sysAlgaeFloorIntake.setStuff(0, 0));
     }
 
     private void configureDashboardBindings() {
@@ -421,7 +444,7 @@ public class RobotContainer {
         // TODO THESE MUST BE TESTED
         NamedCommands.registerCommand("Run Coral Intake", this.sysCoralHandler.intake());
         NamedCommands.registerCommand("Run Coral Outake", this.sysCoralHandler.spitItOut());
-        NamedCommands.registerCommand("Stop Coral Intake", this.sysCoralHandler.stop());
+        NamedCommands.registerCommand("Stop Coral", this.sysCoralHandler.stop());
 
         // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1));
         // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1));

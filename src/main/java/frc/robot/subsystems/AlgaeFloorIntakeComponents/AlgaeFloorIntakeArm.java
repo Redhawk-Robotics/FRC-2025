@@ -8,6 +8,8 @@ import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.Settings;
@@ -46,6 +48,9 @@ public class AlgaeFloorIntakeArm {
         leftMotorConfig.apply(globalConfig);
         // leftMotorConfig.apply(globalConfig).closedLoop
         //         .feedbackSensor(FeedbackSensor.kPrimaryEncoder).maxOutput(.2); // NO PID YET
+
+        leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
     }
 
     public double getPosition() {

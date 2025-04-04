@@ -33,6 +33,12 @@ public class AlgaeHandler extends SubsystemBase {
         });
     }
 
+    public Command contain() {
+        return this.runOnce(() -> {
+            this.setSpeed(0.05);
+        });
+    }
+
     public Command stop() {
         return this.runOnce(() -> {
             this.setSpeed(0);

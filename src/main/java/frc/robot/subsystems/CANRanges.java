@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Settings;
 
-public class CoralAligner extends SubsystemBase {
+public class CANRanges extends SubsystemBase {
   /** Creates a new coralAligner. */
 
   // I made a seperate subsystem for these things because I don't want to touch swerve
@@ -21,7 +21,7 @@ public class CoralAligner extends SubsystemBase {
 
   private double m_leftDistance, m_rightDistance;
 
-  public CoralAligner() {
+  public CANRanges() {
     configure();
   }
 

@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision;
-import frc.robot.subsystems.CoralAligner;
+import frc.robot.subsystems.CANRanges;
 
 // notes
 // let's turn this into a Factory? 
@@ -32,11 +32,11 @@ public class AutoAlign {
      * Goal - depending on a button the driver presses, the swerve base begins going left / right until the
      * boolean isAlignedLeft() / isAlignedRight() from the CoralAligner subsystem is satisfied.
      */
-  public Command alignToLeftReef(CommandSwerveDrivetrain m_drivetrain, CoralAligner m_CoralAligner){
+  public Command alignToLeftReef(CommandSwerveDrivetrain m_drivetrain, CANRanges m_CoralAligner){
     return driveLeft(m_drivetrain);
   }
 
-  public Command alignToRightReef(CommandSwerveDrivetrain m_drivetrain, CoralAligner m_CoralAligner) {
+  public Command alignToRightReef(CommandSwerveDrivetrain m_drivetrain, CANRanges m_CoralAligner) {
     return Commands.none();
   }
 

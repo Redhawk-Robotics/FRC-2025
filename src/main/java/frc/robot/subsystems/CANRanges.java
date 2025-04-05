@@ -54,7 +54,7 @@ public class CANRanges extends SubsystemBase {
         //     return false;
         // }
         // return !value.booleanValue();
-        return m_leftDistance > 0.25;
+        return m_leftDistance > 0.3;
     }
 
     public boolean isAlignedRight() {
@@ -65,7 +65,7 @@ public class CANRanges extends SubsystemBase {
         //     return false;
         // }
         // return !value.booleanValue();
-        return m_rightDistance > 0.25;
+        return m_rightDistance > 0.3;
     }
 
     @Override

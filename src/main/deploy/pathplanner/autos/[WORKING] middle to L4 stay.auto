@@ -27,30 +27,6 @@
           "data": {
             "name": "L4 Position"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Run Coral Outake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop Coral"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
         }
       ]
     }

@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Commands.AutoAlign;
 import frc.robot.Commands.PlayMusic;
 // import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.PositionerFactory;
@@ -31,6 +32,7 @@ import frc.robot.sendables.ControlBoard;
 import frc.robot.sendables.SendablePID;
 import frc.robot.subsystems.AlgaeFloorIntake;
 import frc.robot.subsystems.AlgaeHandler;
+import frc.robot.subsystems.CANRanges;
 // import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralHandler;
@@ -83,6 +85,7 @@ public class RobotContainer {
     private final AlgaeHandler sysAlgaeHandler = new AlgaeHandler();
     private final AlgaeFloorIntake sysAlgaeFloorIntake =
             new AlgaeFloorIntake(new AlgaeFloorIntakeArm(), new AlgaeFloorIntakeRoller());
+    private final CANRanges sysCANRanges = new CANRanges();
 
     private final ControlBoard LAPTOP = new ControlBoard(this.sysElevator, this.sysPivot,
             this.sysCoralHandler, this.sysAlgaeHandler, this.sysAlgaeFloorIntake);
@@ -131,13 +134,13 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         return this.drive//
                 .withVelocityX( // Drive forward with positive Y (forward)
-                        MathUtil.applyDeadband(this.DRIVER.getLeftY(), 0.1)//
+                        Math.pow(MathUtil.applyDeadband(this.DRIVER.getLeftY(), 0.01), 3)//
                                 * this.MaxSpeed * this.drivetrain.speedMultiplier())
                 .withVelocityY( // Drive left with positive X (left)
-                        MathUtil.applyDeadband(this.DRIVER.getLeftX(), 0.1)//
+                        Math.pow(MathUtil.applyDeadband(this.DRIVER.getLeftX(), 0.01), 3)//
                                 * this.MaxSpeed * this.drivetrain.speedMultiplier())
                 .withRotationalRate( // Drive counterclockwise with negative X (left)
-                        MathUtil.applyDeadband(-this.DRIVER.getRightX(), 0.1)//
+                        MathUtil.applyDeadband(-this.DRIVER.getRightX(), 0.01)//
                                 * this.MaxAngularRate * this.drivetrain.speedMultiplier());
     }
 
@@ -211,6 +214,9 @@ public class RobotContainer {
                 .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
         this.DRIVER.povUp().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0.6, 0))
                 .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
+
+        this.DRIVER.povRight().whileTrue(AutoAlign.alignToRightReef(drivetrain, sysCANRanges));
+
         this.DRIVER.rightTrigger().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0, 0.6))
                 .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
         this.DRIVER.leftTrigger().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0, -0.6))

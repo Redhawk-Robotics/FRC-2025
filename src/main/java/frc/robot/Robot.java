@@ -34,13 +34,14 @@ public class Robot extends TimedRobot {
         m_visionThread = new Thread(() -> {
             // Get the UsbCamera from CameraServer
             UsbCamera camera = CameraServer.startAutomaticCapture();
-            
+            int width = 160;
+            int height = 120;
             // Set the resolution
-            camera.setResolution(320, 240);
+            camera.setResolution(width, height);
             // Get a CvSink. This will capture Mats from the camera
             CvSink cvSink = CameraServer.getVideo();
             // Setup a CvSource. This will send images back to the Dashboard
-            CvSource outputStream = CameraServer.putVideo("VideoOverlay", 320, 240);
+            CvSource outputStream = CameraServer.putVideo("VideoOverlay", width, height);
             // Mats are very memory expensive. Lets reuse this Mat.
             Mat mat = new Mat();
             // This cannot be 'true'. The program will never exit if it is. This
@@ -56,8 +57,8 @@ public class Robot extends TimedRobot {
                     continue;
                 }
                 // Put a line on the image
-                Imgproc.line(mat, new Point(160,0), new Point(160,240),
-                        new Scalar(0, 255, 0), 2); // green
+                Imgproc.line(mat, new Point(80,0), new Point(80,60),
+                        new Scalar(0, 255, 0), 1); // green
                 // Give the output stream a new image to display
                 outputStream.putFrame(mat);
             }

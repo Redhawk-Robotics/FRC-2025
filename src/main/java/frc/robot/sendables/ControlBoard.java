@@ -134,8 +134,8 @@ public class ControlBoard implements Sendable {
 
     private Command CoralContain() {
         return PositionerFactory
-                .Contain(this.elevator, this.pivot, this.coral, this.algae, this.spoiler)
-                .withName("ControlBoard.CoralContain");
+                .Attack(this.elevator, this.pivot, this.coral, this.algae, this.spoiler)
+                .withName("ControlBoard.Attack(stow)");
     }
 
     private Command CoralL1() {

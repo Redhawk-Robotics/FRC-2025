@@ -296,45 +296,29 @@ public class RobotContainer {
                             .withName("stop all (OPERATOR.b off)"));
         } else {
             this.OPERATOR.a()
-                    .whileTrue(PositionerFactory
+                    .onTrue(PositionerFactory
                             .L1(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                                     this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("L1 (OPERATOR.a)"))
-                    .onFalse(PositionerFactory
-                            .Stop(this.sysElevator, this.sysPivot, this.sysCoralHandler,
-                                    this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("Stop (OPERATOR.a off)"));
+                            .withName("L1 (OPERATOR.a)"));
             this.OPERATOR.b()
-                    .whileTrue(PositionerFactory
+                    .onTrue(PositionerFactory
                             .L2(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                                     this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("L2 (OPERATOR.b)"))
-                    .onFalse(PositionerFactory
-                            .Stop(this.sysElevator, this.sysPivot, this.sysCoralHandler,
-                                    this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("Stop (OPERATOR.b off)"));
+                            .withName("L2 (OPERATOR.b)"));
             this.OPERATOR.x()
-                    .whileTrue(PositionerFactory
+                    .onTrue(PositionerFactory
                             .L3(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                                     this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("L3 (OPERATOR.x)"))
-                    .onFalse(PositionerFactory
-                            .Stop(this.sysElevator, this.sysPivot, this.sysCoralHandler,
-                                    this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("Stop (OPERATOR.x off)"));
+                            .withName("L3 (OPERATOR.x)"));
             this.OPERATOR.y()
-                    .whileTrue(PositionerFactory
+                    .onTrue(PositionerFactory
                             .L4(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                                     this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("L4 (OPERATOR.y)"))
-                    .onFalse(PositionerFactory
-                            .Stop(this.sysElevator, this.sysPivot, this.sysCoralHandler,
-                                    this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("Stop (OPERATOR.y off)"));
+                            .withName("L4 (OPERATOR.y)"));
         }
 
         /* Configure CoralHandler */
- 
+
         //& OPERATOR LEFT BUMPER
         //* Intakes coral
         this.OPERATOR.leftBumper()
@@ -378,7 +362,28 @@ public class RobotContainer {
                 Commands.parallel(//
                         this.sysElevator.runOnce(() -> this.sysElevator.useSpeed()), //
                         this.sysPivot.runOnce(() -> this.sysPivot.useSpeed())));
-        // OPERATOR.povDown().onTrue(CoralPositionFactory.Feed(m_elevator, m_pivot));
+
+        // for testing the spoiler arm position PID
+        // this.OPERATOR.povUp().onTrue(this.sysAlgaeFloorIntake.runOnce(() -> {
+        //     this.sysAlgaeFloorIntake.setArmAndRoller(0.,0.);
+        // }));
+
+        this.OPERATOR.povLeft()
+                .onTrue(PositionerFactory
+                        .AlgaeL2(this.sysElevator, this.sysPivot, this.sysCoralHandler,
+                                this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
+                        .withName("Algae.L2 (OPERATOR.left)"));
+        this.OPERATOR.povRight()
+                .onTrue(PositionerFactory
+                        .AlgaeL3(this.sysElevator, this.sysPivot, this.sysCoralHandler,
+                                this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
+                        .withName("Algae.L3 (OPERATOR.right)"));
+        this.OPERATOR.povUp()
+                .onTrue(PositionerFactory
+                        .Barge(this.sysElevator, this.sysPivot, this.sysCoralHandler,
+                                this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
+                        .withName("Barge (OPERATOR.up)"));
+        // TODO povDown for Algae ground
     }
 
     private void configureDashboardBindings() {

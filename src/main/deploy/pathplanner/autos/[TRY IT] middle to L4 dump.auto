@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "L2 Position"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L4 starting2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4 Position"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Coral Outake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Coral"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

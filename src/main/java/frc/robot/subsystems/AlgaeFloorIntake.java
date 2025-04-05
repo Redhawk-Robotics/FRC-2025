@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.AlgaeFloorIntakeComponents.AlgaeFloorIntakeArm;
@@ -53,12 +54,15 @@ public class AlgaeFloorIntake extends SubsystemBase {
     }
 
     public void resetArmPosition() {
-        System.out.printf("Resetting Algae Arm encoder position (%f) -> zero\n", this.getArmPosition());
+        System.out.printf("Resetting Algae Arm encoder position (%f) -> zero\n",
+                this.getArmPosition());
         this.m_arm.setPosition(0.0);
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        SmartDashboard.putNumber("Spoiler/Arm/Position", this.m_arm.getPosition());
+        SmartDashboard.putNumber("Spoiler/Arm/Velocity", this.m_arm.getVelocity());
     }
 }

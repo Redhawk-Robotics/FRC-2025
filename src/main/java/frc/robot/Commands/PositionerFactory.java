@@ -50,7 +50,7 @@ public final class PositionerFactory {
         public static final double allowedSpoilerError = 0.5;
 
         public static final double ELEVATOR_FEED_POSITION = 0;
-        public static final double ELEVATOR_CONTAIN_POSITION = ELEVATOR_FEED_POSITION;
+        public static final double ELEVATOR_ATTACK_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L1_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L2_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L3_POSITION = 18.3;
@@ -60,10 +60,10 @@ public final class PositionerFactory {
         public static final double ELEVATOR_ALGAE_L3_POSITION = ELEVATOR_FEED_POSITION;
 
         public static final double PIVOT_FEED_POSITION = 0.055;
-        public static final double PIVOT_CONTAIN_POSITION = 0.600;
+        public static final double PIVOT_ATTACK_POSITION = 0.600;
         public static final double PIVOT_L1_POSITION = PIVOT_FEED_POSITION;
         public static final double PIVOT_L2_POSITION = 0.530;
-        public static final double PIVOT_L3_POSITION = PIVOT_CONTAIN_POSITION;
+        public static final double PIVOT_L3_POSITION = PIVOT_ATTACK_POSITION;
         public static final double PIVOT_L4_POSITION = 0.60;
         public static final double PIVOT_BARGE_POSITION = 0.510;
         public static final double PIVOT_ALGAE_L2_POSITION = 0.290;
@@ -463,12 +463,12 @@ public final class PositionerFactory {
         return new GoToState(goal, elevator, pivot, coral, algae, spoiler).withName("Feed");
     }
 
-    public static Command Contain(Elevator elevator, Pivot pivot, CoralHandler coral,
+    public static Command Attack(Elevator elevator, Pivot pivot, CoralHandler coral,
             AlgaeHandler algae, AlgaeFloorIntake spoiler) {
 
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
-                Settings.ELEVATOR_CONTAIN_POSITION, pivot, Settings.PIVOT_CONTAIN_POSITION);
-        return new GoToState(goal, elevator, pivot, coral, algae, spoiler).withName("Contain");
+                Settings.ELEVATOR_ATTACK_POSITION, pivot, Settings.PIVOT_ATTACK_POSITION);
+        return new GoToState(goal, elevator, pivot, coral, algae, spoiler).withName("Attack");
     }
 
     public static Command L1(Elevator elevator, Pivot pivot, CoralHandler coral, AlgaeHandler algae,

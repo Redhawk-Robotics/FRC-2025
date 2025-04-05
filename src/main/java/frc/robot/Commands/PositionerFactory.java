@@ -212,6 +212,11 @@ public final class PositionerFactory {
                 // make this command a no-op
                 return Optional.empty();
             }
+            // examples:
+            // (4-1)-1 = 2 (zone 4->1, need 2 extra zones (z3 and z2))
+            // (3-1)-1 = 1 (zone 3->1, need 1 extra zone (z2))
+            // (2-1)-1 = 0 (zone 2->1, can go direct b/c they're adjacent)
+            // (1-1)-1 = -1 (same zone, can go direct)
             int extraStates = Math.abs(startZone - endZone) - 1;
             if (extraStates > 2) {
                 DriverStation
@@ -221,8 +226,7 @@ public final class PositionerFactory {
                                 false);
                 // make this command a no-op
                 return Optional.empty();
-            }
-            if (extraStates == 1) {
+            } else if (extraStates == 1) {
                 // curr -> mid -> goal
                 // Z1->Z2->Z3 (or reverse) (Feed -> L4)
                 // Z2->Z3->Z4 (or reverse)
@@ -254,38 +258,23 @@ public final class PositionerFactory {
                         elevatorPos = end.elevatorSetPoint;
                     }
                 }
-                BooleanSupplier done = () -> {
-                    return (Math.abs(pivot.getPosition() - pivotPos) < Settings.allowedPivotError)
-                            && (Math.abs(elevator.getPosition()
-                                    - elevatorPos) < Settings.allowedElevatorError);
-                };
-                State mid = new State(elevatorPos, pivotPos, null, null, end.spoilerSetPoint, null,
-                        done);
+                State mid = PositionerFactory.ElevatorAndPivotToPosition(elevator, elevatorPos,
+                        pivot, pivotPos);
                 result = new State[] {mid};
-            } else {
+            } else if (extraStates == 2) {
                 // Z1->Z2->Z3->Z4 (or reverse)
 
                 // Z1->Z2 or Z3->Z2
                 // (pivot.minBlocking, elevator.minBlocking)
-                State firstMid = new State(Settings.minPositionWhereElevatorDoesNotBlockPivot,
-                        Settings.minPositionWherePivotDoesNotCollideWithElevator, null, null,
-                        end.spoilerSetPoint, null, () -> {
-                            return (Math.abs(pivot.getPosition()
-                                    - Settings.minPositionWherePivotDoesNotCollideWithElevator) < Settings.allowedPivotError)
-                                    && (Math.abs(elevator.getPosition()
-                                            - Settings.minPositionWhereElevatorDoesNotBlockPivot) < Settings.allowedElevatorError);
-                        });
+                State firstMid = PositionerFactory.ElevatorAndPivotToPosition(elevator,
+                        Settings.minPositionWhereElevatorDoesNotBlockPivot, pivot,
+                        Settings.minPositionWherePivotDoesNotCollideWithElevator);
 
                 // Z2->Z3 or Z4->Z3
                 // (pivot.minBlocking, elevator.maxBlocking)
-                State secondMid = new State(Settings.maxPositionWhereElevatorDoesNotBlockPivot,
-                        Settings.minPositionWherePivotDoesNotCollideWithElevator, null, null,
-                        end.spoilerSetPoint, null, () -> {
-                            return (Math.abs(pivot.getPosition()
-                                    - Settings.minPositionWherePivotDoesNotCollideWithElevator) < Settings.allowedPivotError)
-                                    && (Math.abs(elevator.getPosition()
-                                            - Settings.maxPositionWhereElevatorDoesNotBlockPivot) < Settings.allowedElevatorError);
-                        });
+                State secondMid = PositionerFactory.ElevatorAndPivotToPosition(elevator,
+                        Settings.maxPositionWhereElevatorDoesNotBlockPivot, pivot,
+                        Settings.minPositionWherePivotDoesNotCollideWithElevator);
 
                 if (startZone < endZone) {
                     // Z1->Z2->Z3->Z4
@@ -298,6 +287,11 @@ public final class PositionerFactory {
                     // need to swap firstMid and secondMid
                     result = new State[] {secondMid, firstMid};
                 }
+            } else {
+                // no extra states
+                // either we're going within the same zone
+                // or we're going to an adjacent zone
+                result = new State[] {}; // give it an empty list, add no middle states
             }
             return Optional.of(result);
         }

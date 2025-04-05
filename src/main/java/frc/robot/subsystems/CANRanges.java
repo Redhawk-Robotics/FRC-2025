@@ -33,9 +33,9 @@ public class CANRanges extends SubsystemBase {
         
         CANrangeConfiguration config = new CANrangeConfiguration();
         //TODO What config settings do we need?
-        config.ProximityParams.ProximityThreshold = 1;
-        config.ProximityParams.MinSignalStrengthForValidMeasurement = 2500;
-        config.ProximityParams.ProximityHysteresis = 0.1;
+        // config.ProximityParams.ProximityThreshold = 1;
+        // config.ProximityParams.MinSignalStrengthForValidMeasurement = 2500;
+        // config.ProximityParams.ProximityHysteresis = 0.1;
         m_leftCanRange.getConfigurator().apply(config);
         m_rightCanRange.getConfigurator().apply(config);
 
@@ -47,23 +47,25 @@ public class CANRanges extends SubsystemBase {
     }
 
     public boolean isAlignedLeft() {
-        var isDetected = this.m_leftCanRange.getIsDetected(true);
-        var value = isDetected.getValue();
-        if (value == null) {
-            DriverStation.reportWarning("[LEFT] isDetected gave null Boolean", false);
-            return false;
-        }
-        return !value.booleanValue();
+        // var isDetected = this.m_leftCanRange.getIsDetected(true);
+        // var value = isDetected.getValue();
+        // if (value == null) {
+        //     DriverStation.reportWarning("[LEFT] isDetected gave null Boolean", false);
+        //     return false;
+        // }
+        // return !value.booleanValue();
+        return m_leftDistance > 0.25;
     }
 
     public boolean isAlignedRight() {
-        var isDetected = this.m_rightCanRange.getIsDetected(true);
-        var value = isDetected.getValue();
-        if (value == null) {
-            DriverStation.reportWarning("[RIGHT] isDetected gave null Boolean", false);
-            return false;
-        }
-        return !value.booleanValue();
+        // var isDetected = this.m_rightCanRange.getIsDetected(true);
+        // var value = isDetected.getValue();
+        // if (value == null) {
+        //     DriverStation.reportWarning("[RIGHT] isDetected gave null Boolean", false);
+        //     return false;
+        // }
+        // return !value.booleanValue();
+        return m_rightDistance > 0.25;
     }
 
     @Override

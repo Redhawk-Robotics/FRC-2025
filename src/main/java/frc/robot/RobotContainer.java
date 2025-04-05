@@ -157,7 +157,7 @@ public class RobotContainer {
 
         // slightly unsafe
         this.DRIVER.x().onTrue(Commands.runOnce(() -> {
-            this.zero();
+            this.resetRelativeEncoders();
         }, this.sysElevator, this.sysPivot));
 
         // Run SysId routines when holding back/start and X/Y.
@@ -219,11 +219,6 @@ public class RobotContainer {
         if (this.allowMusic) {
             this.DRIVER.y().whileTrue(new PlayMusic("c-maj-test.chrp", this.drivetrain));
         }
-    }
-
-    public void zero() {
-        this.sysElevator.resetElevatorPosition();
-        this.sysAlgaeFloorIntake.resetArmPosition();
     }
 
     private void configureOperatorBindings() {
@@ -445,6 +440,17 @@ public class RobotContainer {
         // can also set trajectories
         // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html#sending-trajectories-to-field2d
     }
+
+    public void zero() {
+        this.sysElevator.stopElevator();
+        this.sysPivot.stopPivot();
+    }
+
+    private void resetRelativeEncoders() {
+        this.sysElevator.resetElevatorPosition();
+        this.sysAlgaeFloorIntake.resetArmPosition();
+    }
+
 
     private void setupPIDTuning() {
         if (!this.enablePIDTuningMode) {

@@ -53,17 +53,17 @@ public final class PositionerFactory {
         public static final double ELEVATOR_CONTAIN_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L1_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L2_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L3_POSITION = 36;
+        public static final double ELEVATOR_L3_POSITION = 18.3;
         public static final double ELEVATOR_L4_POSITION = 106.5;
         public static final double ELEVATOR_BARGE_POSITION = ELEVATOR_L4_POSITION;
 
         public static final double PIVOT_FEED_POSITION = 0.055;
         public static final double PIVOT_CONTAIN_POSITION = 0.600;
         public static final double PIVOT_L1_POSITION = PIVOT_FEED_POSITION;
-        public static final double PIVOT_L2_POSITION = 0.481;
-        public static final double PIVOT_L3_POSITION = PIVOT_L2_POSITION;
-        public static final double PIVOT_L4_POSITION = 0.580;
-        public static final double PIVOT_BARGE_POSITION = 0.500;
+        public static final double PIVOT_L2_POSITION = 0.530;
+        public static final double PIVOT_L3_POSITION = PIVOT_CONTAIN_POSITION;
+        public static final double PIVOT_L4_POSITION = 0.60;
+        public static final double PIVOT_BARGE_POSITION = 0.510;
 
         public static final boolean Verbose = true;
     }
@@ -500,6 +500,19 @@ public final class PositionerFactory {
     }
 
     public static Command Barge(Elevator elevator, Pivot pivot, CoralHandler coral,
+            AlgaeHandler algae, AlgaeFloorIntake spoiler) {
+
+        State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
+                Settings.ELEVATOR_BARGE_POSITION, pivot, Settings.PIVOT_BARGE_POSITION);
+        return new GoToState(goal, elevator, pivot, coral, algae, spoiler).withName("Barge");
+    }
+
+    // Algae L2
+    // todo pivot 0.29, no elevator
+    // Algae L3
+    // todo same, elevator up
+
+    public static Command AlgaeL2(Elevator elevator, Pivot pivot, CoralHandler coral,
             AlgaeHandler algae, AlgaeFloorIntake spoiler) {
 
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,

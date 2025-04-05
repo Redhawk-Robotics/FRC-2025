@@ -156,9 +156,9 @@ public class RobotContainer {
                         .withName("drivetrain point at direction (DRIVER.b)"));
 
         // slightly unsafe
-        this.DRIVER.x().onTrue(Commands.runOnce(() -> {
-            this.resetRelativeEncoders();
-        }, this.sysElevator, this.sysPivot));
+        // this.DRIVER.x().onTrue(Commands.runOnce(() -> {
+        //     this.resetRelativeEncoders();
+        // }, this.sysElevator, this.sysPivot));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -334,7 +334,7 @@ public class RobotContainer {
         }
 
         /* Configure CoralHandler */
-
+ 
         //& OPERATOR LEFT BUMPER
         //* Intakes coral
         this.OPERATOR.leftBumper()

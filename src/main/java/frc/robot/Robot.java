@@ -21,6 +21,7 @@ public class Robot extends TimedRobot {
         this.m_robotContainer = new RobotContainer();
         SmartDashboard.putData("CommandScheduler Instance", CommandScheduler.getInstance());
         CameraServer.startAutomaticCapture();
+        Elastic.selectTab("Autonomous");
     }
 
     @Override
@@ -63,6 +64,7 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.cancel();
         }
         this.m_robotContainer.zero();
+        Elastic.selectTab("Teleoperated");
         // this.m_robotContainer. // reset ControlBoard
     }
 

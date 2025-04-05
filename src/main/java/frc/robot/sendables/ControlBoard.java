@@ -173,7 +173,8 @@ public class ControlBoard implements Sendable {
         // - move elevator and pivot back down ?
         return PositionerFactory
                 .Barge(this.elevator, this.pivot, this.coral, this.algae, this.spoiler)
-                .andThen(this.algae.rotateCCW_Outtake()).andThen(Commands.waitSeconds(.1))
-                .andThen(this.algae.stop()).withName("ControlBoard.Barge");
+                // .andThen(this.algae.rotateCCW_Outtake()).andThen(Commands.waitSeconds(.1))
+                // .andThen(this.algae.stop())
+                .withName("ControlBoard.Barge");
     }
 }

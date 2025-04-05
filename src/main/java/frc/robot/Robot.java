@@ -27,6 +27,8 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         this.m_robotContainer = new RobotContainer();
+        this.m_robotContainer.resetRelativeEncoders();
+
         SmartDashboard.putData("CommandScheduler Instance", CommandScheduler.getInstance());
         // https://docs.wpilib.org/en/stable/docs/software/vision-processing/roborio/using-the-cameraserver-on-the-roborio.html
         m_visionThread = new Thread(() -> {
@@ -105,7 +107,7 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        this.m_robotContainer.zero();
+        // this.m_robotContainer.zero();
         Elastic.selectTab("Teleoperated");
         // this.m_robotContainer. // reset ControlBoard
     }

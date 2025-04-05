@@ -358,7 +358,7 @@ public class RobotContainer {
 
         // on d-pad up, tell the elevator and pivot to use _speed_ control
         // with the joysticks, instead of PID position control
-        OPERATOR.povUp().onTrue(//
+        this.OPERATOR.start().onTrue(//
                 Commands.parallel(//
                         this.sysElevator.runOnce(() -> this.sysElevator.useSpeed()), //
                         this.sysPivot.runOnce(() -> this.sysPivot.useSpeed())));
@@ -394,20 +394,6 @@ public class RobotContainer {
         this.poseEstimator.resetPose(AutoBuilder.getCurrentPose());
         // return the autoChooser's selected Auto
         return this.autoChooser.getSelected();
-
-        // ! DEBUG FEEDER LATER
-        // return Commands.sequence(
-        //     CoralPositionFactory.L1(m_elevator, m_pivot),
-        //     Commands.waitSeconds(0.2),
-        //     CoralPositionFactory.Feed(m_elevator, m_pivot),
-        //     Commands.waitSeconds(0.2),
-        //     CoralPositionFactory.L1(m_elevator, m_pivot)
-        // );
-        // return Commands.sequence(
-        //     CoralPositionFactory.Feed(m_elevator, m_pivot),
-        //     m_coralHandler.commandIntakeCoral()
-        // );
-
     }
 
     private void configureNamedCommands() {
@@ -429,7 +415,6 @@ public class RobotContainer {
                 PositionerFactory.Feed(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                         this.sysAlgaeHandler, this.sysAlgaeFloorIntake));
 
-        // TODO THESE MUST BE TESTED
         NamedCommands.registerCommand("Run Coral Intake", this.sysCoralHandler.intake());
         NamedCommands.registerCommand("Run Coral Outake", this.sysCoralHandler.spitItOut());
         NamedCommands.registerCommand("Stop Coral", this.sysCoralHandler.stop());
@@ -451,7 +436,7 @@ public class RobotContainer {
         this.sysPivot.stopPivot();
     }
 
-    private void resetRelativeEncoders() {
+    public void resetRelativeEncoders() {
         this.sysElevator.resetElevatorPosition();
         this.sysAlgaeFloorIntake.resetArmPosition();
     }

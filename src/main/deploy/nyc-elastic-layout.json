@@ -186,7 +186,7 @@
           },
           {
             "title": "Algae.BargeFromGround",
-            "x": 480.0,
+            "x": 608.0,
             "y": 128.0,
             "width": 160.0,
             "height": 128.0,
@@ -212,7 +212,7 @@
           },
           {
             "title": "Coral.L4",
-            "x": 0.0,
+            "x": 480.0,
             "y": 128.0,
             "width": 96.0,
             "height": 128.0,
@@ -225,7 +225,7 @@
           },
           {
             "title": "Coral.L3",
-            "x": 96.0,
+            "x": 384.0,
             "y": 128.0,
             "width": 96.0,
             "height": 128.0,
@@ -238,7 +238,7 @@
           },
           {
             "title": "Coral.L2",
-            "x": 192.0,
+            "x": 288.0,
             "y": 128.0,
             "width": 96.0,
             "height": 128.0,
@@ -251,7 +251,7 @@
           },
           {
             "title": "Coral.L1",
-            "x": 288.0,
+            "x": 192.0,
             "y": 128.0,
             "width": 96.0,
             "height": 128.0,
@@ -302,7 +302,7 @@
           },
           {
             "title": "Coral.Feed",
-            "x": 384.0,
+            "x": 0.0,
             "y": 128.0,
             "width": 96.0,
             "height": 128.0,
@@ -311,18 +311,6 @@
               "topic": "/SmartDashboard/control-states/Coral.Feed",
               "period": 0.06,
               "data_type": "boolean"
-            }
-          },
-          {
-            "title": "USB Camera 0",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/USB Camera 0",
-              "period": 0.06
             }
           },
           {
@@ -339,6 +327,85 @@
               "time_display_mode": "Minutes and Seconds",
               "red_start_time": 15,
               "yellow_start_time": 30
+            }
+          },
+          {
+            "title": "Position",
+            "x": 1024.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Pivot/Position",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Position",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Elevator/Position",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Coral.Contain",
+            "x": 96.0,
+            "y": 128.0,
+            "width": 96.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/SmartDashboard/control-states/Coral.Contain",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Algae.L2",
+            "x": 320.0,
+            "y": 256.0,
+            "width": 96.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/SmartDashboard/control-states/Algae.L2",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Algae.L3",
+            "x": 416.0,
+            "y": 256.0,
+            "width": 96.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/SmartDashboard/control-states/Algae.L3",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "VideoOverlay",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/VideoOverlay",
+              "period": 0.06
             }
           }
         ]
@@ -636,6 +703,26 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tab 4",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "VideoOverlay",
+            "x": 704.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/VideoOverlay",
+              "period": 0.06
             }
           }
         ]

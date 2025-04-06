@@ -41,6 +41,8 @@ public class ControlBoard implements Sendable {
                 Map.entry("Coral.L2", this::CoralL2), //
                 Map.entry("Coral.L3", this::CoralL3), //
                 Map.entry("Coral.L4", this::CoralL4), //
+                Map.entry("Algae.L2", this::AlgaeL2), //
+                Map.entry("Algae.L3", this::AlgaeL3), //
                 // Map.entry("Algae.GroundIntake", this::AlgaeGroundIntake), //
                 Map.entry("Algae.BargeFromGround", this::AlgaeBargeFromGround)));
         this.currentState = "";
@@ -132,8 +134,8 @@ public class ControlBoard implements Sendable {
 
     private Command CoralContain() {
         return PositionerFactory
-                .Contain(this.elevator, this.pivot, this.coral, this.algae, this.spoiler)
-                .withName("ControlBoard.CoralContain");
+                .Attack(this.elevator, this.pivot, this.coral, this.algae, this.spoiler)
+                .withName("ControlBoard.Attack(stow)");
     }
 
     private Command CoralL1() {
@@ -156,6 +158,16 @@ public class ControlBoard implements Sendable {
                 .withName("ControlBoard.CoralL4");
     }
 
+    private Command AlgaeL2() {
+        return PositionerFactory.AlgaeL2(this.elevator, this.pivot, this.coral, this.algae, this.spoiler)
+                .withName("ControlBoard.AlgaeL2");
+    }
+
+    private Command AlgaeL3() {
+        return PositionerFactory.AlgaeL3(this.elevator, this.pivot, this.coral, this.algae, this.spoiler)
+                .withName("ControlBoard.AlgaeL3");
+    }
+
     private Command AlgaeGroundIntake() {
         // - move spoiler out
         // - turn on roller
@@ -173,7 +185,8 @@ public class ControlBoard implements Sendable {
         // - move elevator and pivot back down ?
         return PositionerFactory
                 .Barge(this.elevator, this.pivot, this.coral, this.algae, this.spoiler)
-                .andThen(this.algae.rotateCCW_Outtake()).andThen(Commands.waitSeconds(.1))
-                .andThen(this.algae.stop()).withName("ControlBoard.Barge");
+                // .andThen(this.algae.rotateCCW_Outtake()).andThen(Commands.waitSeconds(.1))
+                // .andThen(this.algae.stop())
+                .withName("ControlBoard.Barge");
     }
 }

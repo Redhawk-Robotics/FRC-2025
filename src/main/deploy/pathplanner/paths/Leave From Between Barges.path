@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.823412251178503,
+        "x": 6.802521582299082,
         "y": 3.943686868686869
       },
       "isLocked": false,
@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 5.817234848484849,
+        "x": 5.78,
         "y": 3.943686868686869
       },
       "prevControl": {
-        "x": 6.457656420284283,
+        "x": 6.579610057249773,
         "y": 3.943686868686869
       },
       "nextControl": null,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 5.0
   },
   "reversed": false,
   "folder": "Middle To L1 Dump ",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 179.5878072585977
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

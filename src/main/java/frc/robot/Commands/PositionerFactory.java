@@ -30,7 +30,7 @@ public final class PositionerFactory {
         public static final double minPositionWhereElevatorFreesPivotAndSpoiler = 1;
         public static final double minPositionWherePivotDoesNotCollideWithSpoiler = 10;
         public static final double minPositionWhereSpoilerDoesNotCollideWithPivot = 1;
-        public static final double minPositionWherePivotDoesNotCollideWithElevator = 0.34; // threshold_p_e (pivot blocks the elevator below this reference)
+        public static final double minPositionWherePivotDoesNotCollideWithElevator = 0.38; // threshold_p_e (pivot blocks the elevator below this reference)
         public static final double minPositionWhereElevatorDoesNotBlockPivot = 4.5; // threshold_e_p1 (elevator blocks the pivot above this reference)
         public static final double maxPositionWhereElevatorDoesNotBlockPivot = 80; // threshold_e_p2 (elevator blocks the pivot below this reference)
         public static final double midpointPositionWhereElevatorBlocksPivot =
@@ -38,8 +38,8 @@ public final class PositionerFactory {
                         + maxPositionWhereElevatorDoesNotBlockPivot) / 2; // (4.5+80)/2 = 42.25
 
         public static final double minElevatorPosition = 0;
-        public static final double maxElevatorPosition = 107;
-        public static final double allowedElevatorError = 0.5;
+        public static final double maxElevatorPosition = 108.6;
+        public static final double allowedElevatorError = 0.25;
 
         public static final double minPivotPosition = 0.01;
         public static final double maxPivotPosition = 0.62;
@@ -50,20 +50,24 @@ public final class PositionerFactory {
         public static final double allowedSpoilerError = 0.5;
 
         public static final double ELEVATOR_FEED_POSITION = 0;
-        public static final double ELEVATOR_CONTAIN_POSITION = ELEVATOR_FEED_POSITION;
+        public static final double ELEVATOR_ATTACK_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L1_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L2_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L3_POSITION = 36;
-        public static final double ELEVATOR_L4_POSITION = 106.5;
+        public static final double ELEVATOR_L3_POSITION = 26.1;
+        public static final double ELEVATOR_L4_POSITION = 108.5; //106.5
         public static final double ELEVATOR_BARGE_POSITION = ELEVATOR_L4_POSITION;
+        public static final double ELEVATOR_ALGAE_L2_POSITION = ELEVATOR_FEED_POSITION;
+        public static final double ELEVATOR_ALGAE_L3_POSITION = 57.2;
 
         public static final double PIVOT_FEED_POSITION = 0.055;
-        public static final double PIVOT_CONTAIN_POSITION = 0.600;
+        public static final double PIVOT_ATTACK_POSITION = 0.600;
         public static final double PIVOT_L1_POSITION = PIVOT_FEED_POSITION;
-        public static final double PIVOT_L2_POSITION = 0.481;
-        public static final double PIVOT_L3_POSITION = PIVOT_L2_POSITION;
-        public static final double PIVOT_L4_POSITION = 0.580;
-        public static final double PIVOT_BARGE_POSITION = 0.500;
+        public static final double PIVOT_L2_POSITION = 0.56;
+        public static final double PIVOT_L3_POSITION = 0.61;
+        public static final double PIVOT_L4_POSITION = PIVOT_L3_POSITION;
+        public static final double PIVOT_BARGE_POSITION = 0.510;
+        public static final double PIVOT_ALGAE_L2_POSITION = 0.320;
+        public static final double PIVOT_ALGAE_L3_POSITION = 0.28;
 
         public static final boolean Verbose = true;
     }
@@ -459,12 +463,12 @@ public final class PositionerFactory {
         return new GoToState(goal, elevator, pivot, coral, algae, spoiler).withName("Feed");
     }
 
-    public static Command Contain(Elevator elevator, Pivot pivot, CoralHandler coral,
+    public static Command Attack(Elevator elevator, Pivot pivot, CoralHandler coral,
             AlgaeHandler algae, AlgaeFloorIntake spoiler) {
 
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
-                Settings.ELEVATOR_CONTAIN_POSITION, pivot, Settings.PIVOT_CONTAIN_POSITION);
-        return new GoToState(goal, elevator, pivot, coral, algae, spoiler).withName("Contain");
+                Settings.ELEVATOR_ATTACK_POSITION, pivot, Settings.PIVOT_ATTACK_POSITION);
+        return new GoToState(goal, elevator, pivot, coral, algae, spoiler).withName("Attack");
     }
 
     public static Command L1(Elevator elevator, Pivot pivot, CoralHandler coral, AlgaeHandler algae,
@@ -505,6 +509,22 @@ public final class PositionerFactory {
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
                 Settings.ELEVATOR_BARGE_POSITION, pivot, Settings.PIVOT_BARGE_POSITION);
         return new GoToState(goal, elevator, pivot, coral, algae, spoiler).withName("Barge");
+    }
+
+    public static Command AlgaeL2(Elevator elevator, Pivot pivot, CoralHandler coral,
+            AlgaeHandler algae, AlgaeFloorIntake spoiler) {
+
+        State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
+                Settings.ELEVATOR_ALGAE_L2_POSITION, pivot, Settings.PIVOT_ALGAE_L2_POSITION);
+        return new GoToState(goal, elevator, pivot, coral, algae, spoiler).withName("Algae.L2");
+    }
+
+    public static Command AlgaeL3(Elevator elevator, Pivot pivot, CoralHandler coral,
+            AlgaeHandler algae, AlgaeFloorIntake spoiler) {
+
+        State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
+                Settings.ELEVATOR_ALGAE_L3_POSITION, pivot, Settings.PIVOT_ALGAE_L3_POSITION);
+        return new GoToState(goal, elevator, pivot, coral, algae, spoiler).withName("Algae.L3");
     }
 
     public static Command Stop(Elevator elevator, Pivot pivot, CoralHandler coral,

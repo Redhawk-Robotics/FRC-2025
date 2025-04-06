@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Commands.AutoAlign;
 import frc.robot.Commands.PlayMusic;
 // import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.PositionerFactory;
@@ -31,6 +32,7 @@ import frc.robot.sendables.ControlBoard;
 import frc.robot.sendables.SendablePID;
 import frc.robot.subsystems.AlgaeFloorIntake;
 import frc.robot.subsystems.AlgaeHandler;
+import frc.robot.subsystems.CANRanges;
 // import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralHandler;
@@ -83,6 +85,7 @@ public class RobotContainer {
     private final AlgaeHandler sysAlgaeHandler = new AlgaeHandler();
     private final AlgaeFloorIntake sysAlgaeFloorIntake =
             new AlgaeFloorIntake(new AlgaeFloorIntakeArm(), new AlgaeFloorIntakeRoller());
+    private final CANRanges sysCANRanges = new CANRanges();
 
     private final ControlBoard LAPTOP = new ControlBoard(this.sysElevator, this.sysPivot,
             this.sysCoralHandler, this.sysAlgaeHandler, this.sysAlgaeFloorIntake);
@@ -131,13 +134,13 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         return this.drive//
                 .withVelocityX( // Drive forward with positive Y (forward)
-                        MathUtil.applyDeadband(this.DRIVER.getLeftY(), 0.1)//
+                        Math.pow(MathUtil.applyDeadband(this.DRIVER.getLeftY(), 0.01), 3)//
                                 * this.MaxSpeed * this.drivetrain.speedMultiplier())
                 .withVelocityY( // Drive left with positive X (left)
-                        MathUtil.applyDeadband(this.DRIVER.getLeftX(), 0.1)//
+                        Math.pow(MathUtil.applyDeadband(this.DRIVER.getLeftX(), 0.01), 3)//
                                 * this.MaxSpeed * this.drivetrain.speedMultiplier())
                 .withRotationalRate( // Drive counterclockwise with negative X (left)
-                        MathUtil.applyDeadband(-this.DRIVER.getRightX(), 0.1)//
+                        MathUtil.applyDeadband(-this.DRIVER.getRightX(), 0.01)//
                                 * this.MaxAngularRate * this.drivetrain.speedMultiplier());
     }
 
@@ -156,9 +159,9 @@ public class RobotContainer {
                         .withName("drivetrain point at direction (DRIVER.b)"));
 
         // slightly unsafe
-        this.DRIVER.x().onTrue(Commands.runOnce(() -> {
-            this.resetRelativeEncoders();
-        }, this.sysElevator, this.sysPivot));
+        // this.DRIVER.x().onTrue(Commands.runOnce(() -> {
+        //     this.resetRelativeEncoders();
+        // }, this.sysElevator, this.sysPivot));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -211,6 +214,10 @@ public class RobotContainer {
                 .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
         this.DRIVER.povUp().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0.6, 0))
                 .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
+
+        this.DRIVER.povLeft().whileTrue(AutoAlign.alignToLeftReef(drivetrain, sysCANRanges));
+        this.DRIVER.povRight().whileTrue(AutoAlign.alignToRightReef(drivetrain, sysCANRanges));
+
         this.DRIVER.rightTrigger().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0, 0.6))
                 .onFalse(this.sysAlgaeFloorIntake.setSpeeds(0, 0));
         this.DRIVER.leftTrigger().onTrue(this.sysAlgaeFloorIntake.setSpeeds(0, -0.6))
@@ -296,41 +303,25 @@ public class RobotContainer {
                             .withName("stop all (OPERATOR.b off)"));
         } else {
             this.OPERATOR.a()
-                    .whileTrue(PositionerFactory
+                    .onTrue(PositionerFactory
                             .L1(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                                     this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("L1 (OPERATOR.a)"))
-                    .onFalse(PositionerFactory
-                            .Stop(this.sysElevator, this.sysPivot, this.sysCoralHandler,
-                                    this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("Stop (OPERATOR.a off)"));
+                            .withName("L1 (OPERATOR.a)"));
             this.OPERATOR.b()
-                    .whileTrue(PositionerFactory
+                    .onTrue(PositionerFactory
                             .L2(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                                     this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("L2 (OPERATOR.b)"))
-                    .onFalse(PositionerFactory
-                            .Stop(this.sysElevator, this.sysPivot, this.sysCoralHandler,
-                                    this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("Stop (OPERATOR.b off)"));
+                            .withName("L2 (OPERATOR.b)"));
             this.OPERATOR.x()
-                    .whileTrue(PositionerFactory
+                    .onTrue(PositionerFactory
                             .L3(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                                     this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("L3 (OPERATOR.x)"))
-                    .onFalse(PositionerFactory
-                            .Stop(this.sysElevator, this.sysPivot, this.sysCoralHandler,
-                                    this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("Stop (OPERATOR.x off)"));
+                            .withName("L3 (OPERATOR.x)"));
             this.OPERATOR.y()
-                    .whileTrue(PositionerFactory
+                    .onTrue(PositionerFactory
                             .L4(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                                     this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("L4 (OPERATOR.y)"))
-                    .onFalse(PositionerFactory
-                            .Stop(this.sysElevator, this.sysPivot, this.sysCoralHandler,
-                                    this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                            .withName("Stop (OPERATOR.y off)"));
+                            .withName("L4 (OPERATOR.y)"));
         }
 
         /* Configure CoralHandler */
@@ -374,11 +365,32 @@ public class RobotContainer {
 
         // on d-pad up, tell the elevator and pivot to use _speed_ control
         // with the joysticks, instead of PID position control
-        OPERATOR.povUp().onTrue(//
+        this.OPERATOR.start().onTrue(//
                 Commands.parallel(//
                         this.sysElevator.runOnce(() -> this.sysElevator.useSpeed()), //
                         this.sysPivot.runOnce(() -> this.sysPivot.useSpeed())));
-        // OPERATOR.povDown().onTrue(CoralPositionFactory.Feed(m_elevator, m_pivot));
+
+        // for testing the spoiler arm position PID
+        // this.OPERATOR.povUp().onTrue(this.sysAlgaeFloorIntake.runOnce(() -> {
+        //     this.sysAlgaeFloorIntake.setArmAndRoller(0.,0.);
+        // }));
+
+        this.OPERATOR.povLeft()
+                .onTrue(PositionerFactory
+                        .AlgaeL2(this.sysElevator, this.sysPivot, this.sysCoralHandler,
+                                this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
+                        .withName("Algae.L2 (OPERATOR.left)"));
+        this.OPERATOR.povRight()
+                .onTrue(PositionerFactory
+                        .AlgaeL3(this.sysElevator, this.sysPivot, this.sysCoralHandler,
+                                this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
+                        .withName("Algae.L3 (OPERATOR.right)"));
+        this.OPERATOR.povUp()
+                .onTrue(PositionerFactory
+                        .Barge(this.sysElevator, this.sysPivot, this.sysCoralHandler,
+                                this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
+                        .withName("Barge (OPERATOR.up)"));
+        // TODO povDown for Algae ground
     }
 
     private void configureDashboardBindings() {
@@ -389,20 +401,6 @@ public class RobotContainer {
         this.poseEstimator.resetPose(AutoBuilder.getCurrentPose());
         // return the autoChooser's selected Auto
         return this.autoChooser.getSelected();
-
-        // ! DEBUG FEEDER LATER
-        // return Commands.sequence(
-        //     CoralPositionFactory.L1(m_elevator, m_pivot),
-        //     Commands.waitSeconds(0.2),
-        //     CoralPositionFactory.Feed(m_elevator, m_pivot),
-        //     Commands.waitSeconds(0.2),
-        //     CoralPositionFactory.L1(m_elevator, m_pivot)
-        // );
-        // return Commands.sequence(
-        //     CoralPositionFactory.Feed(m_elevator, m_pivot),
-        //     m_coralHandler.commandIntakeCoral()
-        // );
-
     }
 
     private void configureNamedCommands() {
@@ -424,7 +422,6 @@ public class RobotContainer {
                 PositionerFactory.Feed(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                         this.sysAlgaeHandler, this.sysAlgaeFloorIntake));
 
-        // TODO THESE MUST BE TESTED
         NamedCommands.registerCommand("Run Coral Intake", this.sysCoralHandler.intake());
         NamedCommands.registerCommand("Run Coral Outake", this.sysCoralHandler.spitItOut());
         NamedCommands.registerCommand("Stop Coral", this.sysCoralHandler.stop());
@@ -446,7 +443,7 @@ public class RobotContainer {
         this.sysPivot.stopPivot();
     }
 
-    private void resetRelativeEncoders() {
+    public void resetRelativeEncoders() {
         this.sysElevator.resetElevatorPosition();
         this.sysAlgaeFloorIntake.resetArmPosition();
     }

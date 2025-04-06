@@ -24,7 +24,7 @@ public class AlgaeFloorIntakeArm {
     private final SparkClosedLoopController controller = leftMotor.getClosedLoopController();
 
     public enum positions {
-        INSIDE(0), OUTSIDE(5);
+        INSIDE(0), OUTSIDE(0.5); //todo confirm this, likely not 5 rotations
 
         private final double pos;
 

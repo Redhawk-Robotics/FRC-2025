@@ -58,6 +58,7 @@ public final class PositionerFactory {
         public static final double ELEVATOR_BARGE_POSITION = ELEVATOR_L4_POSITION;
         public static final double ELEVATOR_ALGAE_L2_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_ALGAE_L3_POSITION = 57.2;
+        public static final double ELEVATOR_ALGAE_GROUND_POSITION = 0;
 
         public static final double PIVOT_FEED_POSITION = 0.055;
         public static final double PIVOT_ATTACK_POSITION = 0.600;
@@ -68,6 +69,7 @@ public final class PositionerFactory {
         public static final double PIVOT_BARGE_POSITION = 0.510;
         public static final double PIVOT_ALGAE_L2_POSITION = 0.320;
         public static final double PIVOT_ALGAE_L3_POSITION = 0.28;
+        public static final double PIVOT_ALGAE_GROUND_POSITION = 0.02;
 
         public static final boolean Verbose = true;
     }
@@ -525,6 +527,14 @@ public final class PositionerFactory {
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
                 Settings.ELEVATOR_ALGAE_L3_POSITION, pivot, Settings.PIVOT_ALGAE_L3_POSITION);
         return new GoToState(goal, elevator, pivot, coral, algae, spoiler).withName("Algae.L3");
+    }
+
+    public static Command AlgaeGround(Elevator elevator, Pivot pivot, CoralHandler coral,
+            AlgaeHandler algae, AlgaeFloorIntake spoiler) {
+
+        State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
+                Settings.ELEVATOR_ALGAE_GROUND_POSITION, pivot, Settings.PIVOT_ALGAE_GROUND_POSITION);
+        return new GoToState(goal, elevator, pivot, coral, algae, spoiler).withName("Algae.Ground");
     }
 
     public static Command Stop(Elevator elevator, Pivot pivot, CoralHandler coral,

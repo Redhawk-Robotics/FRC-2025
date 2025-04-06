@@ -389,8 +389,12 @@ public class RobotContainer {
                 .onTrue(PositionerFactory
                         .Barge(this.sysElevator, this.sysPivot, this.sysCoralHandler,
                                 this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
-                        .withName("Barge (OPERATOR.up)"));
-        // TODO povDown for Algae ground
+                        .withName("Algae.Barge (OPERATOR.up)"));
+        this.OPERATOR.povDown()
+                .onTrue(PositionerFactory
+                        .AlgaeGround(this.sysElevator, this.sysPivot, this.sysCoralHandler,
+                                this.sysAlgaeHandler, this.sysAlgaeFloorIntake)
+                        .withName("Algae.Ground (OPERATOR.down)"));
     }
 
     private void configureDashboardBindings() {
@@ -425,6 +429,9 @@ public class RobotContainer {
         NamedCommands.registerCommand("Run Coral Intake", this.sysCoralHandler.intake());
         NamedCommands.registerCommand("Run Coral Outake", this.sysCoralHandler.spitItOut());
         NamedCommands.registerCommand("Stop Coral", this.sysCoralHandler.stop());
+
+        NamedCommands.registerCommand("♦ Reef Right",
+                AutoAlign.alignToRightReef(this.drivetrain, this.sysCANRanges));
 
         // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1));
         // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1));

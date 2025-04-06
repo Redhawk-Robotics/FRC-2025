@@ -26,7 +26,7 @@ public class AlgaeHandler extends SubsystemBase {
                 Settings.AlgaeHandler.ALGAE_INTAKE_MOTORTYPE);
 
         SparkMaxConfig globalConfig = new SparkMaxConfig();
-        globalConfig.smartCurrentLimit(55).idleMode(IdleMode.kCoast);
+        globalConfig.smartCurrentLimit(70).idleMode(IdleMode.kCoast);
 
         SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
         leftMotorConfig.apply(globalConfig);
@@ -48,7 +48,7 @@ public class AlgaeHandler extends SubsystemBase {
 
     public Command contain() {
         return this.runOnce(() -> {
-            this.setSpeed(0.04);
+            this.setSpeed(0.08);
         });
     }
 

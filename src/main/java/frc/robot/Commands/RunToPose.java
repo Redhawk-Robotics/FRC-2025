@@ -19,6 +19,33 @@ public class RunToPose extends Command {
     private Pose2d pathPlannerPose;
     CommandSwerveDrivetrain drive;
     Vision vision;
+
+    // https://firstfrc.blob.core.windows.net/frc2025/Manual/2025GameManual.pdf 
+    //page twenty four 
+    private enum REEF_POSES{
+        A(0.0, 0.0, 0),
+        C(0, 0, 0),
+        D(0,0, 0),
+        E(0,0,0),
+        F(0,0,0),
+        G(0,0,0),
+        H(0,0,0),
+        I(0,0,0),
+        J(0,0,0),
+        K(0,0,0),
+        L(0,0,0);
+
+        private final double x;
+        private final double y;
+
+        private REEF_POSES( double x, double y, double rotation) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+
+
   /** Creates a new RunToPose. */
   public RunToPose(CommandSwerveDrivetrain drivetrain, Vision m_vision) {
     // Use addRequirements() here to declare subsystem dependencies.

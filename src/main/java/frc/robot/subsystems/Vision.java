@@ -63,9 +63,10 @@ public class Vision extends SubsystemBase {
             Settings.LimeLight.kCAMERAPOSE_SIDE, 
             Settings.LimeLight.kCAMERAPOSE_UP, 
             0, 0, 
-            Settings.LimeLight.kCAMERAPOSE_YAW
+            Settings.LimeLight.kCAMERAPOSE_YAW + 180
             );
 
+        // todo make this depend on alliance 
         int[] validIDs = {7};
         LimelightHelpers.SetFiducialIDFiltersOverride(LIMELIGHT_NUM_1, validIDs);
             

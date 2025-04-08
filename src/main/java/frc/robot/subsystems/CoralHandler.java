@@ -44,26 +44,34 @@ public class CoralHandler extends SubsystemBase {
 
     public Command intake() {
         return this.runOnce(() -> {
-            coralIntakeMotor.set(1); // TODO TUNE
+            this.setSpeed(1); // TODO TUNE
         });
     }
 
     public Command contain() {
         return this.runOnce(() -> {
-            coralIntakeMotor.set(0.05); // TODO TUNE
+            this.setSpeed(0.05); // TODO TUNE
         });
     }
 
     public Command spitItOut() {
         return this.runOnce(() -> {
-            coralIntakeMotor.set(-0.7); // TODO TUNE
+            this.setSpeed(-0.9); // TODO TUNE
         });
     }
 
     public Command stop() {
         return this.runOnce(() -> {
-            coralIntakeMotor.set(0);
+            this.setSpeed(0);
         });
+    }
+
+    public void setSpeed(double speed) {
+        this.coralIntakeMotor.set(speed);
+    }
+
+    public double getSpeed() {
+        return this.coralIntakeMotor.get();
     }
 
     //TODO CONFIRM THIS

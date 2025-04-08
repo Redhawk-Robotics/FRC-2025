@@ -73,14 +73,14 @@ public class Elevator extends SubsystemBase {
                 kP1, kI1, kD1, kP2, kI2, kD2);
 
         SparkMaxConfig globalConfig = new SparkMaxConfig();
-        globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
+        globalConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
 
         SparkMaxConfig topRightMotorConfig = new SparkMaxConfig();
         SparkMaxConfig bottomRightMotorConfig = new SparkMaxConfig();
         SparkMaxConfig topLeftMotorConfig = new SparkMaxConfig();
         SparkMaxConfig bottomLeftMotorConfig = new SparkMaxConfig();
 
-        topRightMotorConfig.apply(globalConfig);
+        topRightMotorConfig.apply(globalConfig).inverted(false);
         bottomRightMotorConfig.apply(globalConfig).follow(topRightMotor, false); // leader
         topLeftMotorConfig.apply(globalConfig).follow(bottomRightMotor, true);
         bottomLeftMotorConfig.apply(globalConfig).follow(bottomRightMotor, true);
@@ -153,7 +153,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public void resetElevatorPosition() {
-        System.out.printf("Resetting Elevator encoder position (%f) -> zero\n", this.getPosition());
+        // System.out.printf("Resetting Elevator encoder position (%f) -> zero\n", this.getPosition());
         this.encoder.setPosition(0.0);
     }
 

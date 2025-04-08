@@ -43,19 +43,28 @@ public class Pivot extends SubsystemBase {
         System.out.printf("Configuring Pivot motor\n\t(kP:%f kI:%f kD:%f)...\n", kP1, kI1, kD1);
 
         SparkMaxConfig globalConfig = new SparkMaxConfig();
-        globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
+        globalConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake).inverted(true);
 
         SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
         leftMotorConfig.apply(globalConfig);
+
+        // leftMotorConfig.softLimit//
+        //         .forwardSoftLimitEnabled(false)//
+        //         .forwardSoftLimit(0.05)//
+        //         .reverseSoftLimitEnabled(true)//
+        //         .reverseSoftLimit(0.5);
+
         leftMotorConfig.absoluteEncoder//
                 .setSparkMaxDataPortConfig()//
-                .inverted(true)//
+                .inverted(false)// TODO -- check this?
                 .zeroOffset(Settings.Pivot.ZERO_OFFSET)//
                 .positionConversionFactor(Settings.Pivot.CONVERSION_FACTOR)// 360deg/rev
                 .velocityConversionFactor(Settings.Pivot.CONVERSION_FACTOR);
         leftMotorConfig.closedLoop//
                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)//
                 .pid(kP1, kI1, kD1, ClosedLoopSlot.kSlot1)//
+                .maxOutput(0.8)//
+                .minOutput(-0.8);//
         ;
         // slot 1 == position control
         leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters,

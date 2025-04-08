@@ -3,6 +3,7 @@
   "robotLength": 0.857,
   "holonomicMode": true,
   "pathFolders": [
+    " L3 starting 1 2C [Algee remove] (KEEP tbd)",
     "L3 middle",
     "L3 starting 1",
     "L3 starting 1 2C,,,,3C",
@@ -10,14 +11,10 @@
     "L3 starting 3 2C",
     "L4 startings",
     "Leaves",
-    " L3 starting 1 2C [Algee remove] (KEEP tbd)",
+    "Middle To L1 Dump ",
     "Testing"
   ],
   "autoFolders": [
-    "L3 middle",
-    "L3 starting 1",
-    "L3 starting 3",
-    "L4 starting",
     "Leaves",
     "Testing"
   ],

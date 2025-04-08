@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.AlgaeFloorIntakeComponents.AlgaeFloorIntakeArm;
@@ -19,17 +20,49 @@ public class AlgaeFloorIntake extends SubsystemBase {
         this.m_roller = roller;
     }
 
-    public Command setStuff(double armSP, double rollerS) {
+    public Command setSpeeds(double armSP, double rollerS) {
         return this.runOnce(() -> {
-            System.out.printf("@@@@@@@@@@@@@@@ setting stuff %f %f\n", armSP, rollerS);
-            // this.m_arm.setRef(armSP); // TODO revert
             this.m_arm.setSpeed(armSP);
             this.m_roller.setSpeed(rollerS);
         });
     }
 
+    public void setArmAndRoller(Double armRef, Double rollerSpeed) {
+        if (armRef != null) {
+            this.m_arm.setRef(armRef);
+        }
+        if (rollerSpeed != null) {
+            this.m_roller.setSpeed(rollerSpeed);
+        }
+    }
+
+    public double getArmPosition() {
+        return this.m_arm.getPosition();
+    }
+
+    public double getRollerSpeed() {
+        return this.m_roller.getSpeed();
+    }
+
+    public void stopArm() {
+        this.m_arm.setSpeed(0);
+    }
+
+    public void stopArmAndRoller() {
+        this.m_arm.setSpeed(0);
+        this.m_roller.setSpeed(0);
+    }
+
+    public void resetArmPosition() {
+        System.out.printf("Resetting Algae Arm encoder position (%f) -> zero\n",
+                this.getArmPosition());
+        this.m_arm.setPosition(0.0);
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        SmartDashboard.putNumber("Spoiler/Arm/Position", this.m_arm.getPosition());
+        SmartDashboard.putNumber("Spoiler/Arm/Velocity", this.m_arm.getVelocity());
     }
 }

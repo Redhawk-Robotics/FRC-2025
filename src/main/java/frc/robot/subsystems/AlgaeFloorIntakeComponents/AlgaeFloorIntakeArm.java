@@ -4,10 +4,13 @@
 
 package frc.robot.subsystems.AlgaeFloorIntakeComponents;
 
-import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
+// import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.Settings;
@@ -16,7 +19,8 @@ public class AlgaeFloorIntakeArm {
 
     private final SparkMax leftMotor = new SparkMax(Settings.AlgaeFloorIntake.CAN.ID_ARM,
             Settings.AlgaeFloorIntake.ALGAE_FLOOR_INTAKE_MOTORTYPE);
-    private final SparkAbsoluteEncoder encoder = leftMotor.getAbsoluteEncoder();
+    private final RelativeEncoder encoder = this.leftMotor.getEncoder();
+    // private final SparkAbsoluteEncoder encoder = leftMotor.getAbsoluteEncoder();
     private final SparkClosedLoopController controller = leftMotor.getClosedLoopController();
 
     public enum positions {
@@ -41,11 +45,14 @@ public class AlgaeFloorIntakeArm {
         SparkMaxConfig globalConfig = new SparkMaxConfig();
         SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
 
-        globalConfig.smartCurrentLimit(60).idleMode(IdleMode.kBrake);
+        globalConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
 
         leftMotorConfig.apply(globalConfig);
         // leftMotorConfig.apply(globalConfig).closedLoop
         //         .feedbackSensor(FeedbackSensor.kPrimaryEncoder).maxOutput(.2); // NO PID YET
+
+        leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
     }
 
     public double getPosition() {
@@ -80,5 +87,9 @@ public class AlgaeFloorIntakeArm {
     public void setSpeed(double setpoint) {
         this.leftMotor.set(setpoint);
         // this.controller.setReference(setpoint, ControlType.kDutyCycle);
+    }
+
+    public void setPosition(double position) {
+        this.encoder.setPosition(0);
     }
 }

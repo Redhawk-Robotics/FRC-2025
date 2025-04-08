@@ -5,15 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "L2 Position"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "L2 middle"
+            "pathName": "Leave From Between Barges"
           }
         },
         {
@@ -25,25 +19,19 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.3
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Stop Coral Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Feed"
+            "name": "Stop Coral"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "L3 middle",
+  "folder": null,
   "choreoAuto": false
 }

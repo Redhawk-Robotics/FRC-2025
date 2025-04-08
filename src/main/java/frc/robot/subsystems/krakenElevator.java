@@ -38,40 +38,40 @@ public class krakenElevator extends SubsystemBase {
   public void configureMotors(double kP1, double kI1, double kD1, double kP2, double kI2,
             double kD2) {
     m_rightElevatorMotor.setControl(new Follower(Settings.Elevator.CAN.ID_TOP_LEFT, true));
-    TalonFXConfiguration m_leftElevatorMotorConfigs = new TalonFXConfiguration();
+    TalonFXConfiguration m_rightMotorConfigs = new TalonFXConfiguration();
 
     // Slot configurations 
-    m_leftElevatorMotorConfigs.Slot0.kP = kP1;
-    m_leftElevatorMotorConfigs.Slot0.kI = kI1;
-    m_leftElevatorMotorConfigs.Slot0.kD = kD1;
+    m_rightMotorConfigs.Slot0.kP = kP1;
+    m_rightMotorConfigs.Slot0.kI = kI1;
+    m_rightMotorConfigs.Slot0.kD = kD1;
 
-    m_leftElevatorMotorConfigs.Slot1.kP = kP2;
-    m_leftElevatorMotorConfigs.Slot1.kI = kI2;
-    m_leftElevatorMotorConfigs.Slot1.kD = kD2;
+    m_rightMotorConfigs.Slot1.kP = kP2;
+    m_rightMotorConfigs.Slot1.kI = kI2;
+    m_rightMotorConfigs.Slot1.kD = kD2;
 
     // slot 1 == position control, elevator up
     // slot 2 == position control, elevator down
 
     //Volts need to be confirmed
-    m_leftElevatorMotorConfigs.Voltage.withPeakForwardVoltage(0)
+    m_rightMotorConfigs.Voltage.withPeakForwardVoltage(0)
     .withPeakReverseVoltage(0);
 
     //Amps need to be confirmed
-    m_leftElevatorMotorConfigs.TorqueCurrent.withPeakForwardTorqueCurrent(0)
-        .withPeakForwardTorqueCurrent(0);
+    m_rightMotorConfigs.TorqueCurrent.withPeakForwardTorqueCurrent(0)
+        .withPeakReverseTorqueCurrent(0);
 
     //Make sure the encoder is set at 0 on init
-    m_leftElevatorMotor.setPosition(0);
+    m_rightElevatorMotor.setPosition(0);
 
     System.out.println("Done configuring Kraken motors.");
   }
 
   public double getPosition() {
-    return m_leftElevatorMotor.getPosition().getValueAsDouble();
+    return m_rightElevatorMotor.getPosition().getValueAsDouble();
   }
 
   public StatusSignal<Angle> getPositionAsAngle() {
-    return m_leftElevatorMotor.getPosition();
+    return m_rightElevatorMotor.getPosition();
   }
 
   public void setReference(double reference) {
@@ -88,13 +88,22 @@ public class krakenElevator extends SubsystemBase {
 
   public void useSpeed() {
     //not sure about slot indexing since this has preset values that we can adjust
+    //! empty
   }
 
 //   private boolean shouldUsePIDControl() {}
 
-  public void stopElevator(){}
+  public void stopElevator(){
+    this.useSpeed();
+    this.setSpeed(0);
+    this.m_rightElevatorMotor.set(0);
+    this.m_leftElevatorMotor.set(0);
 
-  public void resetElevatorPosition(){}
+  }
+
+  public void resetElevatorPosition(){
+    m_rightElevatorMotor.setPosition(0);
+  }
 
   @Override
   public void periodic() {

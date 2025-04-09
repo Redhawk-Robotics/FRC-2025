@@ -1,0 +1,145 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "SPARK MAX [1] RELATIVE ENCODER": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Pose": "Field2d",
+      "/SmartDashboard/Alerts": "Alerts",
+      "/SmartDashboard/Auto Mode": "String Chooser",
+      "/SmartDashboard/Command Sched Instance": "Scheduler",
+      "/SmartDashboard/CommandScheduler Instance": "Scheduler",
+      "/SmartDashboard/Drive/swerve field pose": "Field2d",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Module 0": "Mechanism2d",
+      "/SmartDashboard/Module 1": "Mechanism2d",
+      "/SmartDashboard/Module 2": "Mechanism2d",
+      "/SmartDashboard/Module 3": "Mechanism2d"
+    },
+    "windows": {
+      "/Pose": {
+        "bottom": 1638,
+        "builtin": "2025 Reefscape",
+        "height": 8.051901817321777,
+        "left": 534,
+        "right": 3466,
+        "robotPose": {
+          "color": [
+            198.33331298828125,
+            0.0,
+            255.0,
+            255.0
+          ],
+          "length": 0.8700000047683716,
+          "weight": 1.0,
+          "width": 0.8700000047683716
+        },
+        "top": 291,
+        "width": 17.54825210571289,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Field": {
+        "Robot": {
+          "arrowWeight": 1.0,
+          "color": [
+            238.00001525878906,
+            0.0,
+            255.0,
+            255.0
+          ],
+          "length": 0.8700000047683716,
+          "width": 0.8700000047683716
+        },
+        "bottom": 1638,
+        "builtin": "2025 Reefscape",
+        "height": 8.051901817321777,
+        "left": 534,
+        "pp-active-path": {
+          "arrowWeight": 1.0,
+          "color": [
+            0.058609798550605774,
+            0.03847735375165939,
+            0.9444444179534912,
+            255.0
+          ],
+          "length": 0.8700000047683716,
+          "width": 0.8700000047683716
+        },
+        "pp-current-pose": {
+          "color": [
+            0.5219749808311462,
+            0.02222222089767456,
+            1.0,
+            255.0
+          ],
+          "length": 0.8700000047683716,
+          "weight": 1.0,
+          "width": 0.8700000047683716
+        },
+        "pp-target-pose": {
+          "arrowWeight": 1.0,
+          "color": [
+            1.0,
+            0.0037037134170532227,
+            0.6014818549156189,
+            255.0
+          ],
+          "length": 0.8700000047683716,
+          "weight": 1.0,
+          "width": 0.8700000047683716
+        },
+        "right": 3466,
+        "top": 291,
+        "width": 17.54825210571289,
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "CameraPublisher": {
+        "USB Camera 0": {
+          "open": true
+        }
+      },
+      "SmartDashboard": {
+        "PID": {
+          "Elevator": {
+            "open": true
+          },
+          "Pivot": {
+            "open": true
+          },
+          "open": true
+        },
+        "Robot": {
+          "PID": {
+            "Elevator": {
+              "open": true
+            },
+            "Pivot": {
+              "open": true
+            },
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}

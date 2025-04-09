@@ -9,36 +9,36 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Commands.AutoAlign;
-import frc.robot.Commands.PlayMusic;
-// import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Commands.PositionerFactory;
-import frc.robot.Constants.Settings;
+import frc.robot.commands.AutoAlign;
+import frc.robot.commands.DriveToPose;
+import frc.robot.commands.PlayMusic;
+import frc.robot.commands.PositionerFactory;
+import frc.robot.constants.Settings;
 import frc.robot.subsystems.Pivot;
-import frc.robot.generated.TunerConstants;
 import frc.robot.sendables.ControlBoard;
+import frc.robot.sendables.Field;
 import frc.robot.sendables.SendablePID;
 import frc.robot.subsystems.AlgaeArm;
 import frc.robot.subsystems.AlgaeHandler;
 import frc.robot.subsystems.AlgaeRoller;
 import frc.robot.subsystems.CANRanges;
-// import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralHandler;
-import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.swerve.Telemetry;
+import frc.robot.subsystems.swerve.TunerConstants;
 import edu.wpi.first.math.MathUtil;
 
 public class RobotContainer {
@@ -64,17 +64,12 @@ public class RobotContainer {
 
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final SendableChooser<Command> autoChooser;
-    private final Field2d field = new Field2d();
-    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
-            drivetrain.getKinematics(), drivetrain.getPigeon2().getRotation2d(),
-            drivetrain.getState().ModulePositions, new Pose2d()//*  merged with vision 
-    ); // TODO we set initialPoseMeters from the selected Auto
 
     //& SUBSYSTEM DECLARATION
     private final Vision sysVision = new Vision(//
             () -> drivetrain.getPigeon2().getRotation2d().getDegrees(),
-            matrix -> poseEstimator.setVisionMeasurementStdDevs(matrix),
-            (pose, time) -> poseEstimator.addVisionMeasurement(//* vision overwritten here
+            matrix -> drivetrain.setVisionMeasurementStdDevs(matrix),
+            (pose, time) -> drivetrain.addVisionMeasurement(//* vision overwritten here
                     pose, time)//
     );
     private final Elevator sysElevator = new Elevator();
@@ -114,11 +109,7 @@ public class RobotContainer {
 
         // misc
         this.enableSwitchChannelPDH();
-        this.drivetrain.setPoseUpdater(//
-                (rotation, swerveModulePosition) -> this.poseEstimator
-                        .updateWithTime(Timer.getFPGATimestamp(), rotation, swerveModulePosition));
-        drivetrain.registerTelemetry(logger::telemeterize);
-        SmartDashboard.putData("Field", this.field);
+        this.drivetrain.registerTelemetry(logger::telemeterize);
         this.setupPIDTuning();
     }
 
@@ -401,9 +392,16 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        this.poseEstimator.resetPose(AutoBuilder.getCurrentPose());
+        var pose = AutoBuilder.getCurrentPose();
+        this.drivetrain.resetPose(pose);
+        this.drivetrain.seedFieldCentric();
+        PathPlannerLogging
+                .setLogActivePathCallback(Field.field.getObject("pp-active-path")::setPoses);
         // return the autoChooser's selected Auto
-        return this.autoChooser.getSelected();
+        PathPlannerLogging.setLogCurrentPoseCallback(Field.field.getObject("pp-current-pose")::setPose);
+        PathPlannerLogging.setLogTargetPoseCallback(Field.field.getObject("pp-target-pose")::setPose);
+        // return this.autoChooser.getSelected();
+        return new DriveToPose(this.drivetrain, new Pose2d(12, 6, new Rotation2d(6)));
     }
 
     private void configureNamedCommands() {
@@ -436,8 +434,9 @@ public class RobotContainer {
     }
 
     public void updateField() {
-        this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
-        this.field.getObject("swervePose").setPose(this.drivetrain.getPose());
+        Field.field.setRobotPose(this.drivetrain.getPose()); // this isn't necessary for AdvantageScope, but _is_ for Elastic
+        // AdvantageScope can read the  struct:Pose2d  in NetworkTables "/DriveState/Pose"
+
         // can also set trajectories
         // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html#sending-trajectories-to-field2d
     }

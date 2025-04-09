@@ -13,10 +13,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Commands.PositionerFactory;
+import frc.robot.commands.PositionerFactory;
 import frc.robot.subsystems.AlgaeArm;
-import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.elevator.Elevator;
 
 public class ControlBoard implements Sendable {
     private Map<String, Supplier<Command>> states;

@@ -1,10 +1,10 @@
-package frc.robot.Commands;
+package frc.robot.commands;
 // https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/unit-testing.html#writing-tests
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Optional;
-import frc.robot.Commands.PositionerFactory;
+import frc.robot.commands.PositionerFactory;
 // import org.junit.jupiter.api.AfterEach;
 // import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

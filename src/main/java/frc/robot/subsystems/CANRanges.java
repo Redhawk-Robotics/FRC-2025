@@ -10,7 +10,7 @@ import com.ctre.phoenix6.signals.UpdateModeValue;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Settings;
+import frc.robot.constants.Settings;
 
 public class CANRanges extends SubsystemBase {
     /** Creates a new coralAligner. */

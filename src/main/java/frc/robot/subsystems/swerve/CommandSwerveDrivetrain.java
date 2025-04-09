@@ -1,7 +1,6 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.swerve;
 
 import static edu.wpi.first.units.Units.*;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -12,7 +11,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,11 +21,11 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.subsystems.swerve.TunerConstants.TunerSwerveDrivetrain;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
@@ -110,10 +108,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
-
-    private BiConsumer<Rotation2d, SwerveModulePosition[]> m_poseEstimatorUpdate = (r, s) -> {
-        // default to no-op
-    };
 
     public enum speeds {
         NINETY_PERCENT(1), //
@@ -287,15 +281,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
-    public void setPoseUpdater(BiConsumer<Rotation2d, SwerveModulePosition[]> update) {
-        if (update == null) {
-            DriverStation.reportError("pose estimator update function is null -- programmer issue",
-                    true);
-            return;
-        }
-        this.m_poseEstimatorUpdate = update;
-    }
-
     public void increaseSpeedMultiplier() {
         switch (this.m_speedMultiplier) {
             case MIN:
@@ -371,10 +356,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-
-        // This causes a loop-overrun by about 0.01s for the first iteration
-        this.m_poseEstimatorUpdate.accept(//
-                this.getPigeon2().getRotation2d(), this.getState().ModulePositions);
 
         SmartDashboard.putString("Drive/speedMultiplier", this.m_speedMultiplier.toString());
         SmartDashboard.putNumber("Drive/speedMultiplierVal", this.m_speedMultiplier.mult());

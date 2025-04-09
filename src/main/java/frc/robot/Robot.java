@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.Elastic;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -57,8 +58,7 @@ public class Robot extends TimedRobot {
                     continue;
                 }
                 // Put a line on the image
-                Imgproc.line(mat, new Point(80,0), new Point(80,60),
-                        new Scalar(0, 255, 0), 1); // green
+                Imgproc.line(mat, new Point(80, 0), new Point(80, 60), new Scalar(0, 255, 0), 1); // green
                 // Give the output stream a new image to display
                 outputStream.putFrame(mat);
             }

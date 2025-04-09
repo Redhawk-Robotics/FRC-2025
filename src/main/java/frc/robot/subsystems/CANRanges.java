@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.hardware.CANrange;
+import com.ctre.phoenix6.signals.UpdateModeValue;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,9 +34,10 @@ public class CANRanges extends SubsystemBase {
         
         CANrangeConfiguration config = new CANrangeConfiguration();
         //TODO What config settings do we need?
-        // config.ProximityParams.ProximityThreshold = 1;
-        // config.ProximityParams.MinSignalStrengthForValidMeasurement = 2500;
-        // config.ProximityParams.ProximityHysteresis = 0.1;
+        config.ToFParams.UpdateMode = UpdateModeValue.ShortRange100Hz;
+        config.ProximityParams.ProximityThreshold = 0.26;
+        config.ProximityParams.MinSignalStrengthForValidMeasurement = 5000;
+        config.ProximityParams.ProximityHysteresis = 0.3;
         m_leftCanRange.getConfigurator().apply(config);
         m_rightCanRange.getConfigurator().apply(config);
 
@@ -47,6 +49,11 @@ public class CANRanges extends SubsystemBase {
     }
 
     public boolean isAlignedLeft() {
+        return m_leftDistance < 0.17 || m_leftDistance > 0.35;
+        // return m_leftDistance < 0.17;
+        // if (m_leftDistance < 0.23) {
+        //     return false;
+        // }
         // var isDetected = this.m_leftCanRange.getIsDetected(true);
         // var value = isDetected.getValue();
         // if (value == null) {
@@ -54,10 +61,14 @@ public class CANRanges extends SubsystemBase {
         //     return false;
         // }
         // return !value.booleanValue();
-        return m_leftDistance > 0.3;
     }
 
     public boolean isAlignedRight() {
+        return m_rightDistance < 0.17 || m_rightDistance > 0.35;
+        // return m_rightDistance < 0.17;
+        // if (m_leftDistance < 0.23) {
+        //     return false;
+        // }
         // var isDetected = this.m_rightCanRange.getIsDetected(true);
         // var value = isDetected.getValue();
         // if (value == null) {
@@ -65,7 +76,6 @@ public class CANRanges extends SubsystemBase {
         //     return false;
         // }
         // return !value.booleanValue();
-        return m_rightDistance > 0.3;
     }
 
     @Override
@@ -77,6 +87,10 @@ public class CANRanges extends SubsystemBase {
 
         SmartDashboard.putBoolean("CANRANGE/Is Aligned Left", isAlignedLeft());
         SmartDashboard.putBoolean("CANRANGE/Is Aligned Right", isAlignedRight());
+
+
+        SmartDashboard.putNumber("CANRANGE/signal left", m_leftCanRange.getSignalStrength().getValueAsDouble());
+        SmartDashboard.putNumber("CANRANGE/signal right", m_rightCanRange.getSignalStrength().getValueAsDouble());
 
     }
 }

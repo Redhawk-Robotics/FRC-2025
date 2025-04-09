@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "top-right to reef J"
+            "pathName": "Leave From Between Barges"
           }
         },
         {
@@ -37,13 +37,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.25
+            "waitTime": 0.0
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Align Reef Left"
+            "name": "Align Reef Right"
           }
         },
         {
@@ -68,6 +68,12 @@
           "type": "named",
           "data": {
             "name": "Stop Coral"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0
           }
         }
       ]

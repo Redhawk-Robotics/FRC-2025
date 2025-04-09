@@ -14,9 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Commands.PositionerFactory;
-import frc.robot.subsystems.AlgaeFloorIntake;
-import frc.robot.subsystems.AlgaeHandler;
-import frc.robot.subsystems.CoralHandler;
+import frc.robot.subsystems.AlgaeArm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Pivot;
 
@@ -27,27 +25,25 @@ public class ControlBoard implements Sendable {
 
     private final Elevator elevator;
     private final Pivot pivot;
-    private final CoralHandler coral;
-    private final AlgaeHandler algae;
-    private final AlgaeFloorIntake spoiler;
+    private final AlgaeArm spoiler;
 
-    public ControlBoard(Elevator elevator, Pivot pivot, CoralHandler coral, AlgaeHandler algae,
-            AlgaeFloorIntake spoiler) {
+    public ControlBoard(Elevator elevator, Pivot pivot, AlgaeArm spoiler) {
         this.states = new HashMap<>(Map.ofEntries(//
                 Map.entry("Default", this::Default), //
+                Map.entry("Coral.Contain", this::CoralContain), //
                 Map.entry("Coral.Feed", this::CoralFeed), //
                 Map.entry("Coral.L1", this::CoralL1), //
                 Map.entry("Coral.L2", this::CoralL2), //
                 Map.entry("Coral.L3", this::CoralL3), //
                 Map.entry("Coral.L4", this::CoralL4), //
-                Map.entry("Algae.GroundIntake", this::AlgaeGroundIntake), //
+                Map.entry("Algae.L2", this::AlgaeL2), //
+                Map.entry("Algae.L3", this::AlgaeL3), //
+                // Map.entry("Algae.GroundIntake", this::AlgaeGroundIntake), //
                 Map.entry("Algae.BargeFromGround", this::AlgaeBargeFromGround)));
         this.currentState = "";
 
         this.elevator = elevator;
         this.pivot = pivot;
-        this.coral = coral;
-        this.algae = algae;
         this.spoiler = spoiler;
     }
 
@@ -118,28 +114,48 @@ public class ControlBoard implements Sendable {
     }
 
     private Command Default() {
-        return PositionerFactory.Feed(this.elevator, this.pivot, this.coral, this.algae, this.spoiler).withName("ControlBoard.Default");
+        return PositionerFactory.Feed(this.elevator, this.pivot, this.spoiler)
+                .withName("ControlBoard.Default");
     }
 
     private Command CoralFeed() {
-        return PositionerFactory.Feed(this.elevator, this.pivot, this.coral, this.algae, this.spoiler).withName("ControlBoard.CoralFeed");
+        return PositionerFactory.Feed(this.elevator, this.pivot, this.spoiler)
+                .withName("ControlBoard.CoralFeed");
+    }
+
+    private Command CoralContain() {
+        return PositionerFactory.Attack(this.elevator, this.pivot, this.spoiler)
+                .withName("ControlBoard.Attack(stow)");
     }
 
     private Command CoralL1() {
-        return PositionerFactory.L1(this.elevator, this.pivot, this.coral, this.algae, this.spoiler)
+        return PositionerFactory.L1(this.elevator, this.pivot, this.spoiler)
                 .withName("ControlBoard.CoralL1");
     }
 
     private Command CoralL2() {
-        return ControlBoard.notImplemented("CoralL2()");
+        return PositionerFactory.L2(this.elevator, this.pivot, this.spoiler)
+                .withName("ControlBoard.CoralL2");
     }
 
     private Command CoralL3() {
-        return ControlBoard.notImplemented("CoralL3()");
+        return PositionerFactory.L3(this.elevator, this.pivot, this.spoiler)
+                .withName("ControlBoard.CoralL3");
     }
 
     private Command CoralL4() {
-        return ControlBoard.notImplemented("CoralL4()");
+        return PositionerFactory.L4(this.elevator, this.pivot, this.spoiler)
+                .withName("ControlBoard.CoralL4");
+    }
+
+    private Command AlgaeL2() {
+        return PositionerFactory.AlgaeL2(this.elevator, this.pivot, this.spoiler)
+                .withName("ControlBoard.AlgaeL2");
+    }
+
+    private Command AlgaeL3() {
+        return PositionerFactory.AlgaeL3(this.elevator, this.pivot, this.spoiler)
+                .withName("ControlBoard.AlgaeL3");
     }
 
     private Command AlgaeGroundIntake() {
@@ -157,6 +173,9 @@ public class ControlBoard implements Sendable {
         // - when both are there, reverse the algae handler wheel
         // - wait 100ms
         // - move elevator and pivot back down ?
-        return ControlBoard.notImplemented("AlgaeBargeFromGround()");
+        return PositionerFactory.Barge(this.elevator, this.pivot, this.spoiler)
+                // .andThen(this.algae.rotateCCW_Outtake()).andThen(Commands.waitSeconds(.1))
+                // .andThen(this.algae.stop())
+                .withName("ControlBoard.Barge");
     }
 }

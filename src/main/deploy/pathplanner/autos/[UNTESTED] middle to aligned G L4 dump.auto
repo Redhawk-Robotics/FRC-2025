@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "L2 Position"
@@ -13,7 +19,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L2 middle"
+            "pathName": "Leave From Between Barges"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4 Position"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align Reef Right"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
@@ -25,43 +61,25 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Stop Coral Intake"
+            "name": "Stop Coral"
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "L2 middle.3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Feed"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "L2 middle.2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Run Coral Intake"
+            "waitTime": 0
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "L3 middle",
+  "folder": null,
   "choreoAuto": false
 }

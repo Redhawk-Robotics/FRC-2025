@@ -4,7 +4,13 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,18 +24,31 @@ public class AlgaeHandler extends SubsystemBase {
     public AlgaeHandler() {
         this.algaeHandlerMotor = new SparkMax(Settings.AlgaeHandler.CAN.ID_MOTOR,
                 Settings.AlgaeHandler.ALGAE_INTAKE_MOTORTYPE);
-        // TODO configure motor
+
+        SparkMaxConfig globalConfig = new SparkMaxConfig();
+        globalConfig.smartCurrentLimit(70).idleMode(IdleMode.kCoast);
+
+        SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
+        leftMotorConfig.apply(globalConfig);
+        algaeHandlerMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
     }
 
-    public Command rotateCW() {
+    public Command rotateCW_Intake() {
         return this.runOnce(() -> {
-            this.setSpeed(1);
+            this.setSpeed(0.73);
         });
     }
 
-    public Command rotateCCW() {
+    public Command rotateCCW_Outtake() {
         return this.runOnce(() -> {
             this.setSpeed(-1);
+        });
+    }
+
+    public Command contain() {
+        return this.runOnce(() -> {
+            this.setSpeed(0.08);
         });
     }
 

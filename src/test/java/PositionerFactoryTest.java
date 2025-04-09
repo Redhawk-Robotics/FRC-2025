@@ -15,9 +15,9 @@ class PositionerFactoryTest {
     @Test // marks this method as a test
     void testTrajectory() {
         PositionerFactory.State start =
-                new PositionerFactory.State(0., 70., null, null, 1., null, null);
+                new PositionerFactory.State(0., 70., 1., null);
         PositionerFactory.State end =
-                new PositionerFactory.State(100., 100., null, null, null, null, null);
+                new PositionerFactory.State(100., 100., null, null);
         Optional<PositionerFactory.State[]> result =
                 PositionerFactory.GoToState.getMidList(start, end, null, null);
 

@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.Field;
 import frc.robot.Constants.Settings;
 
 // TODO set this up
@@ -41,7 +42,6 @@ public class Vision extends SubsystemBase {
     private final Supplier<Double> m_getRobotYawInDegrees;
     private final Consumer<Matrix<N3, N1>> m_setVisionMeasurementStdDevs;
     private final Consumer<Pair<Pose2d, Double>> m_addVisionMeasurement;
-    private final Field2d m_field = new Field2d();
     private LimelightHelpers.PoseEstimate visionInfo;
     private boolean seen;
 
@@ -92,9 +92,9 @@ public class Vision extends SubsystemBase {
             this.m_addVisionMeasurement.accept(new Pair<Pose2d, Double>(limelightMeasurement.pose,
                 limelightMeasurement.timestampSeconds));
             visionInfo = limelightMeasurement;
-            m_field.setRobotPose(visionInfo.pose);
+            Field.globalField.setRobotPose(visionInfo.pose);
             seen = true;
-            SmartDashboard.putData("Vision/Estimated pose", m_field);
+            SmartDashboard.putData("Vision/Estimated pose", Field.globalField);
 
         }
         seen = false;

@@ -4,6 +4,7 @@
 
 package frc.robot.Commands;
 
+
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -11,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.Field;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision;
 
@@ -64,21 +66,20 @@ public class RunToPose extends Command {
     System.out.println("WE ARE RUNNING!!!!!!!!!");
     PathPlannerPath path = vision.getDriveToPosePath();
     if (path != null) {
-        Field2d field = new Field2d();
-        SmartDashboard.putData("Auto/Field", field);
+        SmartDashboard.putData("Auto/Field", Field.globalField);
 
         PathPlannerLogging.setLogTargetPoseCallback(
         (pose) -> {
           // Do whatever you want with the pose here
           pathPlannerPose = pose;
-          field.getObject("target pose").setPose(pose);
+          Field.globalField.getObject("target pose").setPose(pose);
         });
 
     // Logging callback for the active path, this is sent as a list of poses
     PathPlannerLogging.setLogActivePathCallback(
         (poses) -> {
           // Do whatever you want with the poses here
-          field.getObject("path").setPoses(poses);
+          Field.globalField.getObject("path").setPoses(poses);
         });
 
         drive.followPathCommand(path).schedule();

@@ -33,6 +33,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.Field;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -120,8 +121,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Consumer<Pair<Rotation2d, SwerveModulePosition[]>> m_poseEstimatorUpdate = (p) -> {
         // default to no-op
     };
-
-    private final Field2d m_field = new Field2d();
 
     public enum speeds {
         NINETY_PERCENT(1), //
@@ -388,12 +387,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         this.getPigeon2().getRotation2d(), this.getState().ModulePositions));
 
         // ** Field
-        m_field.setRobotPose(getPose());
+        Field.globalField.setRobotPose(getPose());
 
         SmartDashboard.putString("Drive/speedMultiplier", this.m_speedMultiplier.toString());
         SmartDashboard.putNumber("Drive/speedMultiplierVal", this.m_speedMultiplier.mult());
         SmartDashboard.putNumber("Elastic/Match Time", DriverStation.getMatchTime());
-        SmartDashboard.putData("Drive/swerve field pose", m_field);
+        SmartDashboard.putData("Drive/swerve field pose", Field.globalField);
     }
 
     private void startSimThread() {
@@ -413,7 +412,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public void configureField() {
-        SmartDashboard.putData("Drive/swerve field pose", m_field);
+        SmartDashboard.putData("Drive/swerve field pose", Field.globalField);
     }
 
 

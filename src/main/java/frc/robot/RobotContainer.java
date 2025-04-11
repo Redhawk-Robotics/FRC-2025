@@ -65,16 +65,12 @@ public class RobotContainer {
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final SendableChooser<Command> autoChooser;
     private final Field2d field = new Field2d();
-    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
-            drivetrain.getKinematics(), drivetrain.getPigeon2().getRotation2d(),
-            drivetrain.getState().ModulePositions, new Pose2d()//*  merged with vision 
-    ); // TODO we set initialPoseMeters from the selected Auto
 
     //& SUBSYSTEM DECLARATION
     private final Vision sysVision = new Vision(//
-            () -> drivetrain.getPigeon2().getRotation2d().getDegrees(),
-            matrix -> poseEstimator.setVisionMeasurementStdDevs(matrix),
-            (pose, time) -> poseEstimator.addVisionMeasurement(//* vision overwritten here
+            () -> this.drivetrain.getPigeon2().getRotation2d().getDegrees(),
+            matrix -> this.drivetrain.setVisionMeasurementStdDevs(matrix),
+            (pose, time) -> this.drivetrain.addVisionMeasurement(//* vision overwritten here
                     pose, time)//
     ); // TODO verify Vision provides working MegaTag2 localization updates
     private final Elevator sysElevator = new Elevator();
@@ -110,9 +106,6 @@ public class RobotContainer {
 
         // misc
         this.enableSwitchChannelPDH();
-        this.drivetrain.setPoseUpdater(//
-                (rotation, swerveModulePosition) -> this.poseEstimator
-                        .updateWithTime(Timer.getFPGATimestamp(), rotation, swerveModulePosition));
         drivetrain.registerTelemetry(logger::telemeterize);
         SmartDashboard.putData("Field", this.field);
         this.setupPIDTuning();
@@ -382,8 +375,9 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        this.poseEstimator.resetPose(AutoBuilder.getCurrentPose());
+        this.drivetrain.resetPose(AutoBuilder.getCurrentPose());
         // return the autoChooser's selected Auto
+        
         return this.autoChooser.getSelected();
     }
 
@@ -400,11 +394,18 @@ public class RobotContainer {
                 PositionerFactory.L4(this.sysElevator, this.sysPivot, this.sysSpoiler));
         NamedCommands.registerCommand("Feed",
                 PositionerFactory.Feed(this.sysElevator, this.sysPivot, this.sysSpoiler));
+        NamedCommands.registerCommand("Barge",
+                PositionerFactory.Barge(this.sysElevator, this.sysPivot, this.sysSpoiler));
 
         NamedCommands.registerCommand("Run Coral Intake", this.sysCoralHandler.intake());
         NamedCommands.registerCommand("Run Coral Contain", this.sysCoralHandler.contain());
         NamedCommands.registerCommand("Run Coral Outake", this.sysCoralHandler.spitItOut());
         NamedCommands.registerCommand("Stop Coral", this.sysCoralHandler.stop());
+
+        // NamedCommands.registerCommand("Run Algae Intake", this.sysAlgaeHandler.rotateCW_Intake());
+        // NamedCommands.registerCommand("Run Algae Contain", this.sysAlgaeHandler.contain());
+        // NamedCommands.registerCommand("Run Algae Outake", this.sysAlgaeHandler.rotateCCW_Outtake());
+        // NamedCommands.registerCommand("Stop Algae", this.sysAlgaeHandler.stop());
 
         // TODO re-enable if using
         // NamedCommands.registerCommand("Align Reef Right",
@@ -418,7 +419,7 @@ public class RobotContainer {
     }
 
     public void updateField() {
-        this.field.setRobotPose(this.poseEstimator.getEstimatedPosition());
+        this.field.setRobotPose(this.drivetrain.getPose());
         this.field.getObject("swervePose").setPose(this.drivetrain.getPose());
         // can also set trajectories
         // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html#sending-trajectories-to-field2d
@@ -433,7 +434,6 @@ public class RobotContainer {
         this.sysElevator.resetElevatorPosition();
         this.sysSpoiler.resetArmPosition();
     }
-
 
     private void setupPIDTuning() {
         if (!this.enablePIDTuningMode) {

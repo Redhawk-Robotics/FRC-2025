@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import com.pathplanner.lib.path.GoalEndState;
@@ -12,7 +13,6 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -40,8 +40,8 @@ public class Vision extends SubsystemBase {
     // private final String LIMELIGHT_NUM_2 = "limelight-2";
 
     private final Supplier<Double> m_getRobotYawInDegrees;
+    private final BiConsumer<Pose2d, Double> m_addVisionMeasurement;
     private final Consumer<Matrix<N3, N1>> m_setVisionMeasurementStdDevs;
-    private final Consumer<Pair<Pose2d, Double>> m_addVisionMeasurement;
     private LimelightHelpers.PoseEstimate visionInfo;
     private boolean seen;
 
@@ -49,7 +49,7 @@ public class Vision extends SubsystemBase {
     /** Creates a new Vision Subsystem. */
     public Vision(Supplier<Double> getRobotYawInDegrees,
             Consumer<Matrix<N3, N1>> setVisionMeasurementStdDevs,
-            Consumer<Pair<Pose2d, Double>> addVisionMeasurement) {
+            BiConsumer<Pose2d, Double> addVisionMeasurement) {
         this.m_getRobotYawInDegrees = getRobotYawInDegrees;
         this.m_setVisionMeasurementStdDevs = setVisionMeasurementStdDevs;
         this.m_addVisionMeasurement = addVisionMeasurement;
@@ -89,13 +89,20 @@ public class Vision extends SubsystemBase {
             // m_poseEstimator.setVisionMeasurementStdDevs();
             this.m_setVisionMeasurementStdDevs.accept(VecBuilder.fill(0.7, 0.7, 9999999));
         // m_poseEstimator.addVisionMeasurement();
-            this.m_addVisionMeasurement.accept(new Pair<Pose2d, Double>(limelightMeasurement.pose,
-                limelightMeasurement.timestampSeconds));
+
+
+
+            // this.m_addVisionMeasurement.accept(new Pair<Pose2d, Double>(limelightMeasurement.pose,
+            //     limelightMeasurement.timestampSeconds));
+            
+            this.m_addVisionMeasurement.accept(limelightMeasurement.pose,
+                    limelightMeasurement.timestampSeconds);
             visionInfo = limelightMeasurement;
             Field.globalField.setRobotPose(visionInfo.pose);
             seen = true;
             SmartDashboard.putData("Vision/Estimated pose", Field.globalField);
 
+            // m_poseEstimator.addVisionMeasurement();
         }
         seen = false;
         SmartDashboard.putBoolean("Vision/Seen", seen);

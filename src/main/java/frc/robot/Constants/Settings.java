@@ -14,30 +14,17 @@ public final class Settings {
         // looking at the front of the robot
         public static final class CAN {
             public static final int ID_TOP_RIGHT = 1;
-            public static final int ID_BOTTOM_RIGHT = 2;
+            // public static final int ID_BOTTOM_RIGHT = 2;
             public static final int ID_TOP_LEFT = 3;
             public static final int ID_BOTTOM_LEFT = 4;
         }
 
-        public static final MotorType TOP_RIGHT_MOTORTYPE = MotorType.kBrushless;
-        public static final MotorType BOTTOM_RIGHT_MOTORTYPE = MotorType.kBrushless;
-        public static final MotorType TOP_LEFT_MOTORTYPE = MotorType.kBrushless;
-        public static final MotorType BOTTOM_LEFT_MOTORTYPE = MotorType.kBrushless;
-
-        public static final boolean TOP_LEFT_INVERT = true;
-        public static final boolean BOTTOM_LEFT_INVERT = true;
-
-        public static final int CURRENT_LIMIT = 60;
-        public static final IdleMode IDLE_MODE = IdleMode.kBrake;
-
-        // elevator max == 32
-        public static final double CONVERSION_FACTOR = 100. / 32.;
-        public static final double kP_UP = 0.050;
-        public static final double kI_UP = 0.;
-        public static final double kD_UP = 0.;
-        public static final double kP_DOWN = 0.0199;
-        public static final double kI_DOWN = 0.;
-        public static final double kD_DOWN = 0.;
+        // TODO tune these (and kG and kS)
+        public static final double kG = 28;
+        public static final double kS = 15;
+        public static final double kP = 15;
+        public static final double kI = 0;
+        public static final double kD = 0;
     }
 
     public static final class Pivot {

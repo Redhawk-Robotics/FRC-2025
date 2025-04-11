@@ -38,8 +38,8 @@ public final class PositionerFactory {
                         + maxPositionWhereElevatorDoesNotBlockPivot) / 2; // (4.5+80)/2 = 42.25
 
         public static final double minElevatorPosition = 0;
-        public static final double maxElevatorPosition = 110;
-        public static final double allowedElevatorError = 0.25;
+        public static final double maxElevatorPosition = 11.5;
+        public static final double allowedElevatorError = 0.05;
 
         public static final double minPivotPosition = 0.01;
         public static final double maxPivotPosition = 0.62;
@@ -54,11 +54,11 @@ public final class PositionerFactory {
         public static final double ELEVATOR_ATTACK_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L1_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L2_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L3_POSITION = 37.4;
-        public static final double ELEVATOR_L4_POSITION = 109.7;
+        public static final double ELEVATOR_L3_POSITION = 3.74;
+        public static final double ELEVATOR_L4_POSITION = 10.97;
         public static final double ELEVATOR_BARGE_POSITION = ELEVATOR_L4_POSITION;
         public static final double ELEVATOR_ALGAE_L2_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_ALGAE_L3_POSITION = 57.2;
+        public static final double ELEVATOR_ALGAE_L3_POSITION = 5.72;
         public static final double ELEVATOR_ALGAE_GROUND_POSITION = 0;
         public static final double ELEVATOR_ALGAE_TRANSFER_POSITION = 0;
 

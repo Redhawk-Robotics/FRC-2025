@@ -76,15 +76,14 @@ public class RobotContainer {
             matrix -> poseEstimator.setVisionMeasurementStdDevs(matrix),
             (pose, time) -> poseEstimator.addVisionMeasurement(//* vision overwritten here
                     pose, time)//
-    );
+    ); // TODO verify Vision provides working MegaTag2 localization updates
     private final Elevator sysElevator = new Elevator();
     private final Pivot sysPivot = new Pivot();
     private final AlgaeArm sysSpoiler = new AlgaeArm();
-    // private final Climber m_climber = new Climber();
     private final CoralHandler sysCoralHandler = new CoralHandler();
-    private final AlgaeHandler sysAlgaeHandler = new AlgaeHandler();
+    // private final AlgaeHandler sysAlgaeHandler = new AlgaeHandler(); // TODO re-enable
     private final AlgaeRoller sysRoller = new AlgaeRoller();
-    private final CANRanges sysCANRanges = new CANRanges();
+    // private final CANRanges sysCANRanges = new CANRanges(); // TODO re-enable (if using)
 
     private final ControlBoard LAPTOP =
             new ControlBoard(this.sysElevator, this.sysPivot, this.sysSpoiler);
@@ -95,11 +94,8 @@ public class RobotContainer {
     private final boolean allowMusic = false;
     private final boolean enablePIDTuningMode = false;
     private final SendablePID elevatorUpPID =
-            new SendablePID("Elevator.Up", (float) Settings.Elevator.kP_UP,
-                    (float) Settings.Elevator.kI_UP, (float) Settings.Elevator.kD_UP, 20);
-    private final SendablePID elevatorDownPID =
-            new SendablePID("Elevator.Down", (float) Settings.Elevator.kP_DOWN,
-                    (float) Settings.Elevator.kI_DOWN, (float) Settings.Elevator.kD_DOWN, 20);
+            new SendablePID("Elevator.Up", (float) Settings.Elevator.kP,
+                    (float) Settings.Elevator.kI, (float) Settings.Elevator.kD, 4);
     private final SendablePID pivotPID = new SendablePID("Pivot", (float) Settings.Pivot.kP,
             (float) Settings.Pivot.kI, (float) Settings.Pivot.kD, 0.3f);
 
@@ -202,14 +198,6 @@ public class RobotContainer {
         }).withName("increase speed mult (DRIVER.start)"));
         // TODO -- we can implement "zoned" speeds using the pose estimator
 
-        /* Configure Climb */
-        // DRIVER.a().onTrue(this.m_climber.releaseClimbWinch());
-        // DRIVER.rightBumper().whileTrue(this.m_climber.commandSetClimbSpeed(-1))
-        //         .onFalse(this.m_climber.commandSetClimbSpeed(0));
-        // DRIVER.rightTrigger().whileTrue(this.m_climber.commandSetClimbSpeed(0.5))
-        //         .onFalse(this.m_climber.commandSetClimbSpeed(0));
-
-        // 0.6 0.6
         this.DRIVER.povDown()
                 .onTrue(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0.6))
                         .alongWith(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(0.6))))
@@ -221,8 +209,9 @@ public class RobotContainer {
                 .onFalse(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0))
                         .alongWith(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(0))));
 
-        this.DRIVER.povLeft().whileTrue(AutoAlign.alignToLeftReef(drivetrain, sysCANRanges));
-        this.DRIVER.povRight().whileTrue(AutoAlign.alignToRightReef(drivetrain, sysCANRanges));
+        // TODO re-enable if using
+        // this.DRIVER.povLeft().whileTrue(AutoAlign.alignToLeftReef(drivetrain, sysCANRanges));
+        // this.DRIVER.povRight().whileTrue(AutoAlign.alignToRightReef(drivetrain, sysCANRanges));
 
         this.DRIVER.rightTrigger()
                 .onTrue(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0))
@@ -250,8 +239,6 @@ public class RobotContainer {
     }
 
     private void configureOperatorBindings() {
-        // TODO wrap this in
-        // if (this.enablePIDTuningMode) {}
         /* Configure Elevator */
         if (this.enablePIDTuningMode) {
             Command elevatorDefault = this.sysElevator.runOnce(//
@@ -298,9 +285,7 @@ public class RobotContainer {
             this.OPERATOR.a().whileTrue(//
                     this.sysElevator.runOnce(() -> {
                         this.sysElevator.configureMotors(this.elevatorUpPID.P(),
-                                this.elevatorUpPID.I(), this.elevatorUpPID.D(),
-                                this.elevatorDownPID.P(), this.elevatorDownPID.I(),
-                                this.elevatorDownPID.D());
+                                this.elevatorUpPID.I(), this.elevatorUpPID.D());
                     }).andThen(this.sysElevator.startEnd(
                             () -> this.sysElevator.setReference(this.elevatorUpPID.SetPoint()),
                             () -> this.sysElevator.stopElevator()))
@@ -355,26 +340,22 @@ public class RobotContainer {
 
         /* Configure AlgaeHandler */
 
+        // TODO re-enable
         //& RIGHT BUMPERS
         //* ALGAE HANDLER, N/A */
-        this.OPERATOR.rightBumper()
-                .onTrue(this.sysAlgaeHandler.rotateCW_Intake()
-                        .withName("algae clockwise (OPERATOR.rightBumper)"))
-                .onFalse(this.sysAlgaeHandler.contain()
-                        .withName("algae contain (OPERATOR.rightBumper off)"));
-        this.OPERATOR.rightTrigger()
-                .onTrue(this.sysAlgaeHandler.rotateCCW_Outtake()
-                        .withName("algae counterclockwise (OPERATOR.rightTrigger)"))
-                .onFalse(this.sysAlgaeHandler.stop()
-                        .withName("algae stop (OPERATOR.rightTrigger off)"));
+        // this.OPERATOR.rightBumper()
+        //         .onTrue(this.sysAlgaeHandler.rotateCW_Intake()
+        //                 .withName("algae clockwise (OPERATOR.rightBumper)"))
+        //         .onFalse(this.sysAlgaeHandler.contain()
+        //                 .withName("algae contain (OPERATOR.rightBumper off)"));
+        // this.OPERATOR.rightTrigger()
+        //         .onTrue(this.sysAlgaeHandler.rotateCCW_Outtake()
+        //                 .withName("algae counterclockwise (OPERATOR.rightTrigger)"))
+        //         .onFalse(this.sysAlgaeHandler.stop()
+        //                 .withName("algae stop (OPERATOR.rightTrigger off)"));
 
-        /* Algae Intake */
 
-        // on d-pad down, zero the current elevator position
-        // OPERATOR.povDown().onTrue(//
-        //         this.m_elevator.runOnce(() -> this.m_elevator.resetElevatorPosition()));
-
-        // on d-pad up, tell the elevator and pivot to use _speed_ control
+        // on start-button (right-center button), tell the elevator and pivot to use _speed_ control
         // with the joysticks, instead of PID position control
         this.OPERATOR.start().onTrue(//
                 Commands.parallel(//
@@ -425,10 +406,11 @@ public class RobotContainer {
         NamedCommands.registerCommand("Run Coral Outake", this.sysCoralHandler.spitItOut());
         NamedCommands.registerCommand("Stop Coral", this.sysCoralHandler.stop());
 
-        NamedCommands.registerCommand("Align Reef Right",
-                AutoAlign.alignToRightReef(this.drivetrain, this.sysCANRanges));
-        NamedCommands.registerCommand("Align Reef Left",
-                AutoAlign.alignToLeftReef(this.drivetrain, this.sysCANRanges));
+        // TODO re-enable if using
+        // NamedCommands.registerCommand("Align Reef Right",
+        //         AutoAlign.alignToRightReef(this.drivetrain, this.sysCANRanges));
+        // NamedCommands.registerCommand("Align Reef Left",
+        //         AutoAlign.alignToLeftReef(this.drivetrain, this.sysCANRanges));
 
         // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1));
         // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1));
@@ -459,10 +441,11 @@ public class RobotContainer {
         }
         SmartDashboard.putBoolean(SendablePID.prefix + "/Tuning Mode", false);
         SmartDashboard.putData(SendablePID.prefix, this.elevatorUpPID);
-        SmartDashboard.putData(SendablePID.prefix, this.elevatorDownPID);
+        // SmartDashboard.putData(SendablePID.prefix, this.elevatorDownPID);
         SmartDashboard.putData(SendablePID.prefix, this.pivotPID);
     }
 
+    // todo ?
     private boolean isTuningMode() {
         if (!this.enablePIDTuningMode) {
             return false;

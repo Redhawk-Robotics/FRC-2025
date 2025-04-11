@@ -13,7 +13,7 @@ public final class Field {
     public static final Field2d globalField = new Field2d();
 
     static {
-        SmartDashboard.putData(" Global Field", globalField);
+        SmartDashboard.putData("Global Field", globalField);
     }
 
 

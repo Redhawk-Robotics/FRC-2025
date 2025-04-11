@@ -111,10 +111,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
-    private BiConsumer<Rotation2d, SwerveModulePosition[]> m_poseEstimatorUpdate = (r, s) -> {
-        // default to no-op
-    };
-
     public enum speeds {
         NINETY_PERCENT(1), //
         EIGHTY_PERCENT(1), //
@@ -287,15 +283,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
-    public void setPoseUpdater(BiConsumer<Rotation2d, SwerveModulePosition[]> update) {
-        if (update == null) {
-            DriverStation.reportError("pose estimator update function is null -- programmer issue",
-                    true);
-            return;
-        }
-        this.m_poseEstimatorUpdate = update;
-    }
-
     public void increaseSpeedMultiplier() {
         switch (this.m_speedMultiplier) {
             case MIN:
@@ -371,10 +358,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-
-        // This causes a loop-overrun by about 0.01s for the first iteration
-        this.m_poseEstimatorUpdate.accept(//
-                this.getPigeon2().getRotation2d(), this.getState().ModulePositions);
 
         SmartDashboard.putString("Drive/speedMultiplier", this.m_speedMultiplier.toString());
         SmartDashboard.putNumber("Drive/speedMultiplierVal", this.m_speedMultiplier.mult());

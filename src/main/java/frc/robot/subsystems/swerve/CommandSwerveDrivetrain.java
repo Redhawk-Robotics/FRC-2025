@@ -233,7 +233,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                                     feedforwards.robotRelativeForcesYNewtons())),
                     new PPHolonomicDriveController( // TODO tune this! These are _okay_ for now
                             new PIDConstants(1.5, .5, 0.25), // PID constants for translation
-                            new PIDConstants(1.25, 0, 0)), // PID constants for rotation
+                            new PIDConstants(1.75, 0.1, 0.1)), // PID constants for rotation
                     config,
                     // Flip the path if Alliance is Red
                     () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red, //
@@ -354,6 +354,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
          */
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
+                // System.out.println("[drivetrain] setOperatorPerspectiveForward to " + allianceColor.toString());
                 setOperatorPerspectiveForward(
                         allianceColor == Alliance.Red ? kRedAlliancePerspectiveRotation
                                 : kBlueAlliancePerspectiveRotation);

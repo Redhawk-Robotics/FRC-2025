@@ -4,6 +4,7 @@
 
 package frc.robot.Commands;
 
+import static edu.wpi.first.units.Units.Rotations;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.function.BooleanSupplier;
@@ -82,6 +83,7 @@ public final class PositionerFactory {
     static class State {
         // null means that component in the State is unchanged
         // between transitions
+        // TODO these should be measures, not raw Doubles
         Double elevatorSetPoint = null, //
                 pivotSetPoint = null, //
                 spoilerSetPoint = null; //
@@ -368,7 +370,7 @@ public final class PositionerFactory {
             }
 
             // Get current state
-            State curr = new State(this.elevator.getPosition(), this.pivot.getPosition(),
+            State curr = new State(this.elevator.getPosition().in(Rotations), this.pivot.getPosition(),
                     this.spoiler.getPosition(), null); // done == null b/c we're already finished
             State fullGoal = goal.merge(curr);
 
@@ -431,7 +433,7 @@ public final class PositionerFactory {
             Pivot pivot, double pivotPosition) {
         BooleanSupplier done = () -> {
             return (Math
-                    .abs(elevator.getPosition() - elevatorPosition) < Settings.allowedElevatorError)
+                    .abs(elevator.getPosition().in(Rotations) - elevatorPosition) < Settings.allowedElevatorError)
                     && (Math.abs(pivot.getPosition() - pivotPosition) < Settings.allowedPivotError);
         };
         return new State(elevatorPosition, pivotPosition, null, done);
@@ -442,7 +444,7 @@ public final class PositionerFactory {
             Pivot pivot, double pivotPosition, AlgaeArm spoiler, double spoilerPosition) {
         BooleanSupplier done = () -> {
             return (Math
-                    .abs(elevator.getPosition() - elevatorPosition) < Settings.allowedElevatorError)
+                    .abs(elevator.getPosition().in(Rotations) - elevatorPosition) < Settings.allowedElevatorError)
                     && (Math.abs(pivot.getPosition() - pivotPosition) < Settings.allowedPivotError)
                     && (Math.abs(spoiler.getPosition() - spoilerPosition) < Settings.allowedSpoilerError);
         };

@@ -24,8 +24,8 @@
         "y": 3.771499999999999
       },
       "nextControl": {
-        "x": 6.273632010501537,
-        "y": 4.323197644345372
+        "x": 6.273632010501536,
+        "y": 4.323197644345373
       },
       "isLocked": false,
       "linkedName": null
@@ -68,7 +68,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "I LOVE TEXAS 1",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

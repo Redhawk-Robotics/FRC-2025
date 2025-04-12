@@ -15,7 +15,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Settings;
+import frc.robot.Constants.Settings;
 
 // An elevator created with three Krakens instead of 4 Neo/Spark.
 

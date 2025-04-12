@@ -177,7 +177,7 @@ public class RobotContainer {
         this.DRIVER.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric())
                 .withName("reset field-centric heading (DRIVER.leftBumper)"));
 
-        DRIVER.rightBumper().onTrue(new RunToPose(drivetrain, sysVision)).onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
+        // DRIVER.rightBumper().onTrue(new RunToPose(drivetrain, sysVision)).onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
 
         //& 
         // TODO -- if this is too cumbersome, we can move these to the OPERATOR

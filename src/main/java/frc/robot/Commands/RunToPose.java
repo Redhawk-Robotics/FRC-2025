@@ -17,30 +17,50 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class RunToPose extends Command {
+public final class RunToPose  {
+    /*
+     My reasoning for changing this to static:
+    I think we could make this static to return two commands -- going to the closest left reef (robot centric) or right reef. I.E. Calling a command such as
+    RunToPose.ClosestLeftReef(drivetrain), RunToPose.ClosestLeftReef(drivetrain).
+
+    This is also why I want to write two seperate enums.
+     */
+
     private Pose2d pathPlannerPose;
     CommandSwerveDrivetrain drive;
     Vision vision;
 
     // https://firstfrc.blob.core.windows.net/frc2025/Manual/2025GameManual.pdf 
     //page twenty four 
-    private enum REEF_POSES{
+    private enum LEFT_REEF_POSES{
         A(0.0, 0.0, 0),
         C(0, 0, 0),
-        D(0,0, 0),
         E(0,0,0),
-        F(0,0,0),
         G(0,0,0),
-        H(0,0,0),
         I(0,0,0),
+        K(0,0,0);
+
+        private final double x;
+        private final double y;
+
+        private LEFT_REEF_POSES( double x, double y, double rotation) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    private enum RIGHT_REEF_POSES{
+        B(0,0,0),
+        D(0,0, 0),
+        F(0,0,0),
+        H(0,0,0),
         J(0,0,0),
-        K(0,0,0),
         L(0,0,0);
 
         private final double x;
         private final double y;
 
-        private REEF_POSES( double x, double y, double rotation) {
+        private RIGHT_REEF_POSES( double x, double y, double rotation) {
             this.x = x;
             this.y = y;
         }
@@ -49,19 +69,25 @@ public class RunToPose extends Command {
 
 
   /** Creates a new RunToPose. */
-  public RunToPose(CommandSwerveDrivetrain drivetrain, Vision m_vision) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    this.drive = drivetrain;
-    this.vision = m_vision;
-    addRequirements(drive, vision);
-  }
+//   public RunToPose(CommandSwerveDrivetrain drivetrain, Vision m_vision) {
+//     // Use addRequirements() here to declare subsystem dependencies.
+//     this.drive = drivetrain;
+//     this.vision = m_vision;
+//     addRequirements(drive, vision);
+//   }
 
   // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {}
+//   @Override
+//   public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
-  @Override
+//   @Override
+
+
+
+
+
+
   public void execute() {
     System.out.println("WE ARE RUNNING!!!!!!!!!");
     PathPlannerPath path = vision.getDriveToPosePath();
@@ -86,13 +112,13 @@ public class RunToPose extends Command {
     }
   }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
+//   // Called once the command ends or is interrupted.
+//   @Override
+//   public void end(boolean interrupted) {}
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+//   // Returns true when the command should end.
+//   @Override
+//   public boolean isFinished() {
+//     return false;
+//   }
 }

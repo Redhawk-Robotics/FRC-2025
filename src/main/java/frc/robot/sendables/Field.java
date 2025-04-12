@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public final class Field {
-    public static final Field2d field = new Field2d();
+    public static final Field2d globalField = new Field2d();
     static {
-        SmartDashboard.putData("Field", field);
+        SmartDashboard.putData("Field", globalField);
     }
 }

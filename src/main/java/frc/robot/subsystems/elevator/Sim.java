@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
 class Sim { // extends Elevator
     Sim() {
-        DCMotor.getNEO(4);
-        new SparkMax(10, MotorType.kBrushless);
-        new SparkMaxSim(null, null);
+        // DCMotor.getNEO(4);
+        // new SparkMax(10, MotorType.kBrushless);
+        // new SparkMaxSim(null, null);
         // var sim = new ElevatorSim();
     }
 }

@@ -6,18 +6,13 @@ package frc.robot.commands;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.ApplyRobotSpeeds;
-import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
-import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.sendables.Field;
@@ -67,8 +62,8 @@ public class DriveToPose extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        Field.field.getObject("DriveToPose.start").setPose(this.drivetrain.getPose());
-        Field.field.getObject("DriveToPose.goal").setPose(this.target);
+        Field.globalField.getObject("DriveToPose.start").setPose(this.drivetrain.getPose());
+        Field.globalField.getObject("DriveToPose.goal").setPose(this.target);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -148,8 +143,8 @@ public class DriveToPose extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Field.field.getObject("DriveToPose.start").close();
-        Field.field.getObject("DriveToPose.goal").close();
+        Field.globalField.getObject("DriveToPose.start").close();
+        Field.globalField.getObject("DriveToPose.goal").close();
     }
 
     // Returns true when the command should end.

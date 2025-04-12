@@ -3,35 +3,42 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 14.5,
-        "y": 4.125
+        "x": 8.0,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 12.54705285209763,
-        "y": 4.125
+        "x": 7.0,
+        "y": 4.0
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 10.734749999999998,
-        "y": 4.960999999999999
+        "x": 5.75,
+        "y": 4.0
       },
       "prevControl": {
-        "x": 9.734749999999998,
-        "y": 4.960999999999999
+        "x": 6.75,
+        "y": 4.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Loriana1 End"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Run Algae Intake",
+      "waypointRelativePos": 0.6989384288747352,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -48,7 +55,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

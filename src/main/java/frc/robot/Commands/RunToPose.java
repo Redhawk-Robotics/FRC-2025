@@ -66,8 +66,45 @@ public final class RunToPose  {
         }
     }
 
+    public void getClosestPoseLeft() {
+        Pose2d[] blueReefSides =
+        new Pose2d[] {REEF_POSES.A.pose.interpolate(REEF_POSES.B.pose, 0.5),
+                REEF_POSES.C.pose.interpolate(REEF_POSES.D.pose, 0.5),
+        // ...
+            };
+        double minDistanceFoundSoFar = -1;
+        Pose2d closestPose = this.drive.getPose();
+        for (Pose2d pose2d : blueReefSides) {
+            double distance =
+                    this.drive.getPose().getTranslation().getDistance(pose2d.getTranslation());
+            if (minDistanceFoundSoFar == -1 || distance < minDistanceFoundSoFar) {
+                minDistanceFoundSoFar = distance;
+                closestPose = pose2d;
+        }
+    }
+
+    public void getClosestPoseLeft() {
+        Pose2d[] blueReefSides =
+        new Pose2d[] {REEF_POSES.A.pose.interpolate(REEF_POSES.B.pose, 0.5),
+                REEF_POSES.C.pose.interpolate(REEF_POSES.D.pose, 0.5),
+        // ...
+            };
+        double minDistanceFoundSoFar = -1;
+        Pose2d closestPose = this.drive.getPose();
+        for (Pose2d pose2d : blueReefSides) {
+            double distance =
+                    this.drive.getPose().getTranslation().getDistance(pose2d.getTranslation());
+            if (minDistanceFoundSoFar == -1 || distance < minDistanceFoundSoFar) {
+                minDistanceFoundSoFar = distance;
+                closestPose = pose2d;
+        }
+    }
+// drive to that pose
+
+    }
 
 
+    
   /** Creates a new RunToPose. */
 //   public RunToPose(CommandSwerveDrivetrain drivetrain, Vision m_vision) {
 //     // Use addRequirements() here to declare subsystem dependencies.

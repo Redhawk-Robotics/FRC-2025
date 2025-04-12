@@ -4,17 +4,15 @@
 
 package frc.robot.Constants;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/** Add your docs here. */
 public final class Field {
     public static final Field2d globalField = new Field2d();
 
-    static {
-        SmartDashboard.putData("Global Field", globalField);
-    }
-
-
+    // does this work?
+    // static {
+    //     System.out.println("#####################");
+    //     SmartDashboard.putData("Global Field", globalField);
+    // }
 }

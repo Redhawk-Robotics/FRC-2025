@@ -9,6 +9,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -21,9 +22,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Commands.RunToPose;
+import frc.robot.Commands.DriveToPose;
 import frc.robot.Commands.PlayMusic;
 // import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.PositionerFactory;
+import frc.robot.Constants.Field;
 import frc.robot.Constants.Settings;
 import frc.robot.subsystems.Pivot;
 import frc.robot.generated.TunerConstants;
@@ -61,7 +64,6 @@ public class RobotContainer {
 
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final SendableChooser<Command> autoChooser;
-    private final Field2d field = new Field2d();
 
     //& SUBSYSTEM DECLARATION
     private final Vision sysVision = new Vision(//
@@ -104,7 +106,7 @@ public class RobotContainer {
         // misc
         this.enableSwitchChannelPDH();
         drivetrain.registerTelemetry(logger::telemeterize);
-        SmartDashboard.putData("Field", this.field);
+        SmartDashboard.putData("Field", Field.globalField);
         this.setupPIDTuning();
     }
 
@@ -376,10 +378,13 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        this.drivetrain.resetPose(AutoBuilder.getCurrentPose());
-        // return the autoChooser's selected Auto
-        
-        return this.autoChooser.getSelected();
+        // TODO this is for testing
+        return new DriveToPose(this.drivetrain, new Pose2d(10,5,Rotation2d.k180deg));
+
+        // // reset the swerve's pose to the PP-selected
+        // this.drivetrain.resetPose(AutoBuilder.getCurrentPose());
+        // // return the autoChooser's selected Auto
+        // return this.autoChooser.getSelected();
     }
 
     private void configureNamedCommands() {
@@ -420,8 +425,8 @@ public class RobotContainer {
     }
 
     public void updateField() {
-        this.field.setRobotPose(this.drivetrain.getPose());
-        this.field.getObject("swervePose").setPose(this.drivetrain.getPose());
+        Field.globalField.setRobotPose(this.drivetrain.getPose());
+        Field.globalField.getObject("swervePose").setPose(this.drivetrain.getPose());
         // can also set trajectories
         // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html#sending-trajectories-to-field2d
     }

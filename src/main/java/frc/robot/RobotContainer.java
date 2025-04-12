@@ -11,7 +11,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -379,6 +378,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         // TODO this is for testing
+        this.drivetrain.resetPose(new Pose2d(0,0,Rotation2d.kZero));
         return new DriveToPose(this.drivetrain, new Pose2d(10,5,Rotation2d.k180deg));
 
         // // reset the swerve's pose to the PP-selected

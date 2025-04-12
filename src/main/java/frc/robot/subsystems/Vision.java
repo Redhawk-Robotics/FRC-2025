@@ -83,7 +83,7 @@ public class Vision extends SubsystemBase {
             seen = false;
         } else if (limelightMeasurement.tagCount >= 1) { // Only trust measurement if we see >=1 tags
             // m_poseEstimator.setVisionMeasurementStdDevs();
-            this.m_setVisionMeasurementStdDevs.accept(VecBuilder.fill(0.7, 0.7, 9999999));
+            this.m_setVisionMeasurementStdDevs.accept(VecBuilder.fill(0.7, 0.7, 2));
             // m_poseEstimator.addVisionMeasurement();
             this.m_addVisionMeasurement.accept(limelightMeasurement.pose,
                     limelightMeasurement.timestampSeconds);

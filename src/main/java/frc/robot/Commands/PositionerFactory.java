@@ -25,9 +25,9 @@ public final class PositionerFactory {
         // - pivot must be in range [min_p, max_p]
         // - spoiler must be in range [min_s, max_s]
 
-        public static final double minPositionWhereElevatorFreesPivotAndSpoiler = 4.5; // todo
-        public static final double minPositionWherePivotDoesNotCollideWithSpoiler = 10;
-        public static final double minPositionWhereSpoilerDoesNotCollideWithPivot = 5;
+        // public static final double minPositionWhereElevatorFreesPivotAndSpoiler = 4.5; // todo
+        // public static final double minPositionWherePivotDoesNotCollideWithSpoiler = 10;
+        // public static final double minPositionWhereSpoilerDoesNotCollideWithPivot = 5;
         public static final double minPositionWherePivotDoesNotCollideWithElevator = 0.38; // threshold_p_e (pivot blocks the elevator below this reference)
         public static final double minPositionWhereElevatorDoesNotBlockPivot = 4.5; // threshold_e_p1 (elevator blocks the pivot above this reference)
         public static final double maxPositionWhereElevatorDoesNotBlockPivot = 80; // threshold_e_p2 (elevator blocks the pivot below this reference)

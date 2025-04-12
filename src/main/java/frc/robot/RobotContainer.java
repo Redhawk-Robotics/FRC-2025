@@ -12,16 +12,15 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Commands.RunToPose;
+// import frc.robot.Commands.RunToPose;
 import frc.robot.Commands.DriveToPose;
 import frc.robot.Commands.PlayMusic;
 // import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -30,19 +29,16 @@ import frc.robot.sendables.Field;
 import frc.robot.Constants.Settings;
 import frc.robot.subsystems.Pivot;
 import frc.robot.sendables.ControlBoard;
-import frc.robot.sendables.Field;
 import frc.robot.sendables.SendablePID;
 import frc.robot.subsystems.AlgaeArm;
 import frc.robot.subsystems.AlgaeRoller;
 // import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.swerve.Telemetry;
+import frc.robot.subsystems.swerve.TunerConstants;
 import frc.robot.subsystems.CoralHandler;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import frc.robot.subsystems.swerve.Telemetry;
-import frc.robot.subsystems.swerve.TunerConstants;
-import edu.wpi.first.math.MathUtil;
 
 public class RobotContainer {
     // kSpeedAt12Volts desired top speed
@@ -181,7 +177,7 @@ public class RobotContainer {
         this.DRIVER.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric())
                 .withName("reset field-centric heading (DRIVER.leftBumper)"));
 
-        DRIVER.rightBumper().onTrue(new RunToPose(drivetrain, sysVision)).onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
+        // DRIVER.rightBumper().onTrue(new RunToPose(drivetrain, sysVision)).onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
 
         //& 
         // TODO -- if this is too cumbersome, we can move these to the OPERATOR
@@ -382,14 +378,16 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         var pose = AutoBuilder.getCurrentPose();
         this.drivetrain.resetPose(pose);
-        this.drivetrain.seedFieldCentric();
-        PathPlannerLogging
-                .setLogActivePathCallback(Field.globalField.getObject("pp-active-path")::setPoses);
+        // PathPlannerLogging
+        //         .setLogActivePathCallback(Field.globalField.getObject("pp-active-path")::setPoses);
+        // PathPlannerLogging
+        //         .setLogCurrentPoseCallback(Field.globalField.getObject("pp-current-pose")::setPose);
+        // PathPlannerLogging
+        //         .setLogTargetPoseCallback(Field.globalField.getObject("pp-target-pose")::setPose);
         // return the autoChooser's selected Auto
-        PathPlannerLogging.setLogCurrentPoseCallback(Field.globalField.getObject("pp-current-pose")::setPose);
-        PathPlannerLogging.setLogTargetPoseCallback(Field.globalField.getObject("pp-target-pose")::setPose);
-        // return this.autoChooser.getSelected();
-        return new DriveToPose(this.drivetrain, new Pose2d(12, 6, new Rotation2d(6)));
+        // return this.autoChooser.getSelected(); // todo uncomment
+        // just for testing
+        return new DriveToPose(this.drivetrain, new Pose2d(12, 6, new Rotation2d(6))); // todo delete
     }
 
     private void configureNamedCommands() {
@@ -413,6 +411,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Run Coral Outake", this.sysCoralHandler.spitItOut());
         NamedCommands.registerCommand("Stop Coral", this.sysCoralHandler.stop());
 
+        // TODO add in
         // NamedCommands.registerCommand("Run Algae Intake", this.sysAlgaeHandler.rotateCW_Intake());
         // NamedCommands.registerCommand("Run Algae Contain", this.sysAlgaeHandler.contain());
         // NamedCommands.registerCommand("Run Algae Outake", this.sysAlgaeHandler.rotateCCW_Outtake());
@@ -427,14 +426,6 @@ public class RobotContainer {
         // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1));
         // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1));
         // NamedCommands.registerCommand("Stop Climbter", m_climber.commandSetClimbSpeed(1));
-    }
-
-    public void updateField() {
-        Field.globalField.setRobotPose(this.drivetrain.getPose()); // this isn't necessary for AdvantageScope, but _is_ for Elastic
-        // AdvantageScope can read the  struct:Pose2d  in NetworkTables "/DriveState/Pose"
-
-        // can also set trajectories
-        // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html#sending-trajectories-to-field2d
     }
 
     public void zero() {

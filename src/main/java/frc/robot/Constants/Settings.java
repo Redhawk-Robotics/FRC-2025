@@ -1,7 +1,6 @@
 package frc.robot.Constants;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 public final class Settings {
     public static final class Gamepad {

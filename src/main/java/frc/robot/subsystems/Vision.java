@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.sendables.Field;
-import frc.robot.Constants.Settings;
+// import frc.robot.Constants.Settings;
 
 // TODO set this up
 // https://docs.limelightvision.io/docs/docs-limelight/getting-started/FRC/programming
@@ -89,7 +89,7 @@ public class Vision extends SubsystemBase {
                     limelightMeasurement.timestampSeconds);
 
             visionInfo = limelightMeasurement;
-            Field.globalField.getObject("limelight-est-pose").setPose(visionInfo.pose);
+            // Field.globalField.getObject("limelight-est-pose").setPose(visionInfo.pose);
             seen = true;
         }
         SmartDashboard.putBoolean("Vision/Seen", seen);

@@ -217,7 +217,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         configureAutoBuilder();
-        // configureField();
     }
 
     private void configureAutoBuilder() {
@@ -362,6 +361,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
+        // AdvantageScope can read the  struct:Pose2d  in NetworkTables "/DriveState/Pose"
+        // can also set trajectories
+        // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html#sending-trajectories-to-field2d
+        Field.globalField.setRobotPose(this.getPose());
+
         SmartDashboard.putString("Drive/speedMultiplier", this.m_speedMultiplier.toString());
         SmartDashboard.putNumber("Drive/speedMultiplierVal", this.m_speedMultiplier.mult());
     }
@@ -382,44 +386,36 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     }
 
-    public void configureField() {
-        SmartDashboard.putData("Drive/swerve field pose", Field.globalField);
-    }
-
 
     public Command followPathCommand(PathPlannerPath path) {
-    try{
-        RobotConfig config = RobotConfig.fromGUISettings();
-        return new FollowPathCommand(
-                path,
-                this::getPose, // Robot pose supplier
-                this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforwards) -> setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds)
+        try {
+            RobotConfig config = RobotConfig.fromGUISettings();
+            return new FollowPathCommand(path, this::getPose, // Robot pose supplier
+                    this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                    (speeds, feedforwards) -> setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds)
                             .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
                             .withWheelForceFeedforwardsY(
                                     feedforwards.robotRelativeForcesYNewtons())), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds, AND feedforwards
-                new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(.35, 0, 0.25), // PID constants for translation
-                    new PIDConstants(.35, 0, 0) // Rotation PID constants
-                ),
-                config, // The robot configuration
-                () -> {
-                  // Boolean supplier that controls when the path will be mirrored for the red alliance
-                  // This will flip the path being followed to the red side of the field.
-                  // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+                    new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+                            new PIDConstants(.35, 0, 0.25), // PID constants for translation
+                            new PIDConstants(.35, 0, 0) // Rotation PID constants
+                    ), config, // The robot configuration
+                    () -> {
+                        // Boolean supplier that controls when the path will be mirrored for the red alliance
+                        // This will flip the path being followed to the red side of the field.
+                        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                  var alliance = DriverStation.getAlliance();
-                  if (alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                  }
-                  return false;
-                },
-                this // Reference to this subsystem to set requirements
-        );
-    } catch (Exception e) {
-        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-        return Commands.none();
+                        var alliance = DriverStation.getAlliance();
+                        if (alliance.isPresent()) {
+                            return alliance.get() == DriverStation.Alliance.Red;
+                        }
+                        return false;
+                    }, this // Reference to this subsystem to set requirements
+            );
+        } catch (Exception e) {
+            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+            return Commands.none();
+        }
     }
-  }
 
 }

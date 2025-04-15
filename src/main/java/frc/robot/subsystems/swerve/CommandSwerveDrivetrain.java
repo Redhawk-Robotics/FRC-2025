@@ -1,7 +1,6 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.swerve;
 
 import static edu.wpi.first.units.Units.*;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -12,7 +11,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -24,15 +22,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.subsystems.swerve.TunerConstants.TunerSwerveDrivetrain;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
-import frc.robot.LimelightHelpers;
-import frc.robot.Constants.Field;
-import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.sendables.Field;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
@@ -220,7 +217,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         configureAutoBuilder();
-        // configureField();
     }
 
     private void configureAutoBuilder() {
@@ -237,7 +233,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                                     feedforwards.robotRelativeForcesYNewtons())),
                     new PPHolonomicDriveController( // TODO tune this! These are _okay_ for now
                             new PIDConstants(1.5, .5, 0.25), // PID constants for translation
-                            new PIDConstants(1.25, 0, 0)), // PID constants for rotation
+                            new PIDConstants(1.75, 0.1, 0.1)), // PID constants for rotation
                     config,
                     // Flip the path if Alliance is Red
                     () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red, //
@@ -358,12 +354,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
          */
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
+                // System.out.println("[drivetrain] setOperatorPerspectiveForward to " + allianceColor.toString());
                 setOperatorPerspectiveForward(
                         allianceColor == Alliance.Red ? kRedAlliancePerspectiveRotation
                                 : kBlueAlliancePerspectiveRotation);
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        // AdvantageScope can read the  struct:Pose2d  in NetworkTables "/DriveState/Pose"
+        // can also set trajectories
+        // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html#sending-trajectories-to-field2d
+        Field.globalField.setRobotPose(this.getPose());
 
         SmartDashboard.putString("Drive/speedMultiplier", this.m_speedMultiplier.toString());
         SmartDashboard.putNumber("Drive/speedMultiplierVal", this.m_speedMultiplier.mult());
@@ -385,44 +387,36 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     }
 
-    public void configureField() {
-        SmartDashboard.putData("Drive/swerve field pose", Field.globalField);
-    }
-
 
     public Command followPathCommand(PathPlannerPath path) {
-    try{
-        RobotConfig config = RobotConfig.fromGUISettings();
-        return new FollowPathCommand(
-                path,
-                this::getPose, // Robot pose supplier
-                this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforwards) -> setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds)
+        try {
+            RobotConfig config = RobotConfig.fromGUISettings();
+            return new FollowPathCommand(path, this::getPose, // Robot pose supplier
+                    this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                    (speeds, feedforwards) -> setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds)
                             .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
                             .withWheelForceFeedforwardsY(
                                     feedforwards.robotRelativeForcesYNewtons())), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds, AND feedforwards
-                new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(.35, 0, 0.25), // PID constants for translation
-                    new PIDConstants(.35, 0, 0) // Rotation PID constants
-                ),
-                config, // The robot configuration
-                () -> {
-                  // Boolean supplier that controls when the path will be mirrored for the red alliance
-                  // This will flip the path being followed to the red side of the field.
-                  // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+                    new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+                            new PIDConstants(.35, 0, 0.25), // PID constants for translation
+                            new PIDConstants(.35, 0, 0) // Rotation PID constants
+                    ), config, // The robot configuration
+                    () -> {
+                        // Boolean supplier that controls when the path will be mirrored for the red alliance
+                        // This will flip the path being followed to the red side of the field.
+                        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                  var alliance = DriverStation.getAlliance();
-                  if (alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                  }
-                  return false;
-                },
-                this // Reference to this subsystem to set requirements
-        );
-    } catch (Exception e) {
-        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-        return Commands.none();
+                        var alliance = DriverStation.getAlliance();
+                        if (alliance.isPresent()) {
+                            return alliance.get() == DriverStation.Alliance.Red;
+                        }
+                        return false;
+                    }, this // Reference to this subsystem to set requirements
+            );
+        } catch (Exception e) {
+            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+            return Commands.none();
+        }
     }
-  }
 
 }

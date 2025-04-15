@@ -9,34 +9,40 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
+import com.pathplanner.lib.util.FlippingUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Commands.RunToPose;
+// import frc.robot.Commands.RunToPose;
+import frc.robot.Commands.DriveToPose;
 import frc.robot.Commands.PlayMusic;
 // import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.PositionerFactory;
+import frc.robot.sendables.Field;
 import frc.robot.Constants.Settings;
 import frc.robot.subsystems.Pivot;
-import frc.robot.generated.TunerConstants;
 import frc.robot.sendables.ControlBoard;
 import frc.robot.sendables.SendablePID;
 import frc.robot.subsystems.AlgaeArm;
 import frc.robot.subsystems.AlgaeRoller;
 // import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.swerve.Telemetry;
+import frc.robot.subsystems.swerve.TunerConstants;
 import frc.robot.subsystems.CoralHandler;
-import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Vision;
-import edu.wpi.first.math.MathUtil;
+import frc.robot.subsystems.elevator.Elevator;
 
 public class RobotContainer {
     // kSpeedAt12Volts desired top speed
@@ -61,7 +67,6 @@ public class RobotContainer {
 
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final SendableChooser<Command> autoChooser;
-    private final Field2d field = new Field2d();
 
     //& SUBSYSTEM DECLARATION
     private final Vision sysVision = new Vision(//
@@ -70,7 +75,7 @@ public class RobotContainer {
             (pose, time) -> this.drivetrain.addVisionMeasurement(//* vision overwritten here
                     pose, time)//
     ); // TODO verify Vision provides working MegaTag2 localization updates
-    private final Elevator sysElevator = new Elevator();
+    private final Elevator sysElevator = Elevator.getInstance();
     private final Pivot sysPivot = new Pivot();
     private final AlgaeArm sysSpoiler = new AlgaeArm();
     private final CoralHandler sysCoralHandler = new CoralHandler();
@@ -96,15 +101,14 @@ public class RobotContainer {
         // auto
         this.configureNamedCommands();
         this.autoChooser = AutoBuilder.buildAutoChooser("I LOVE NYC");
-        SmartDashboard.putData("Auto Mode", autoChooser);
+        this.configureAutoChooser();
 
         // teleop
         this.configureBindings();
 
         // misc
         this.enableSwitchChannelPDH();
-        drivetrain.registerTelemetry(logger::telemeterize);
-        SmartDashboard.putData("Field", this.field);
+        this.drivetrain.registerTelemetry(logger::telemeterize);
         this.setupPIDTuning();
     }
 
@@ -278,12 +282,13 @@ public class RobotContainer {
             // todo other subsystems
             this.OPERATOR.a().whileTrue(//
                     this.sysElevator.runOnce(() -> {
-                        this.sysElevator.configureMotors(this.elevatorUpPID.P(),
+                        // TODO add kG and kS
+                        this.sysElevator.configureMotors(0, 0, this.elevatorUpPID.P(),
                                 this.elevatorUpPID.I(), this.elevatorUpPID.D());
                     }).andThen(this.sysElevator.startEnd(
                             () -> this.sysElevator.setReference(this.elevatorUpPID.SetPoint()),
                             () -> this.sysElevator.stopElevator()))
-                            .withName("Elevator PID or L1 (OPERATOR.a)"))
+                            .withName("Elevator PID (OPERATOR.a)"))
                     .onFalse(
                             PositionerFactory.Stop(this.sysElevator, this.sysPivot, this.sysSpoiler)
                                     .withName("stop all (OPERATOR.a off)"));
@@ -294,8 +299,7 @@ public class RobotContainer {
                                 this.pivotPID.D());
                     }).andThen(this.sysPivot.startEnd(
                             () -> this.sysPivot.setReference(this.pivotPID.SetPoint()),
-                            () -> this.sysPivot.stopPivot()))
-                            .withName("Pivot PID or L2 (OPERATOR.b)"))
+                            () -> this.sysPivot.stopPivot())).withName("Pivot PID (OPERATOR.b)"))
                     .onFalse(
                             PositionerFactory.Stop(this.sysElevator, this.sysPivot, this.sysSpoiler)
                                     .withName("stop all (OPERATOR.b off)"));
@@ -376,15 +380,16 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        this.drivetrain.resetPose(AutoBuilder.getCurrentPose());
+        // TODO remove
+        // return new DriveToPose(this.drivetrain, new Pose2d(12, 6, new Rotation2d(6)));
+
+        // TODO uncomment
         // return the autoChooser's selected Auto
-        
         return this.autoChooser.getSelected();
     }
 
     private void configureNamedCommands() {
-        // && POSITIONS
-        // TODO -- what happens if we use the same command instance twice?
+        // && NamedCommands
         NamedCommands.registerCommand("L1 Position",
                 PositionerFactory.L1(this.sysElevator, this.sysPivot, this.sysSpoiler));
         NamedCommands.registerCommand("L2 Position",
@@ -397,33 +402,55 @@ public class RobotContainer {
                 PositionerFactory.Feed(this.sysElevator, this.sysPivot, this.sysSpoiler));
         NamedCommands.registerCommand("Barge",
                 PositionerFactory.Barge(this.sysElevator, this.sysPivot, this.sysSpoiler));
-
         NamedCommands.registerCommand("Run Coral Intake", this.sysCoralHandler.intake());
         NamedCommands.registerCommand("Run Coral Contain", this.sysCoralHandler.contain());
         NamedCommands.registerCommand("Run Coral Outake", this.sysCoralHandler.spitItOut());
         NamedCommands.registerCommand("Stop Coral", this.sysCoralHandler.stop());
-
+        // TODO add in
         // NamedCommands.registerCommand("Run Algae Intake", this.sysAlgaeHandler.rotateCW_Intake());
         // NamedCommands.registerCommand("Run Algae Contain", this.sysAlgaeHandler.contain());
         // NamedCommands.registerCommand("Run Algae Outake", this.sysAlgaeHandler.rotateCCW_Outtake());
         // NamedCommands.registerCommand("Stop Algae", this.sysAlgaeHandler.stop());
-
         // TODO re-enable if using
         // NamedCommands.registerCommand("Align Reef Right",
         //         AutoAlign.alignToRightReef(this.drivetrain, this.sysCANRanges));
         // NamedCommands.registerCommand("Align Reef Left",
         //         AutoAlign.alignToLeftReef(this.drivetrain, this.sysCANRanges));
 
-        // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1));
-        // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1));
-        // NamedCommands.registerCommand("Stop Climbter", m_climber.commandSetClimbSpeed(1));
+        // NOTE -- we effectively cannot use these _and_ NamedCommands at the same time
+        // https://pathplanner.dev/pplib-triggers.html
+        // If an event-trigger schedules a command with the same requirements as
+        // a command listed in a PP Auto, then the Auto is canceled.
+        // This would be a more legitimate use-case for .asProxy()
+        // && Event waypoint triggers
+        // new EventTrigger("Run Algae Intake").onTrue(this.sysAlgaeHandler.rotateCW_Intake());
+        new EventTrigger("L2 Position")
+                .onTrue(PositionerFactory.L2(this.sysElevator, this.sysPivot, this.sysSpoiler));
+        new EventTrigger("L4 Position")
+                .onTrue(PositionerFactory.L4(this.sysElevator, this.sysPivot, this.sysSpoiler));
+        new EventTrigger("Barge")
+                .onTrue(PositionerFactory.Barge(this.sysElevator, this.sysPivot, this.sysSpoiler));
     }
 
-    public void updateField() {
-        this.field.setRobotPose(this.drivetrain.getPose());
-        this.field.getObject("swervePose").setPose(this.drivetrain.getPose());
-        // can also set trajectories
-        // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html#sending-trajectories-to-field2d
+    private void configureAutoChooser() {
+        this.autoChooser.onChange(cmd -> {
+            try {
+                // PathPlanner does this for us at command start.
+                // This helps with visualizing the pose on the Field in dashboards.
+                //
+                // This code just pulls the currently-selected PathPlanner Auto's starting pose
+                // and resets the drivetrain to that pose.
+                Pose2d pose = ((PathPlannerAuto) cmd).getStartingPose();
+                var alliance = DriverStation.getAlliance();
+                if (!alliance.isEmpty() && alliance.get() == Alliance.Red) {
+                    pose = FlippingUtil.flipFieldPose(pose);
+                }
+                this.drivetrain.resetPose(pose);
+            } catch (Exception e) {
+                // nothing to do
+            }
+        });
+        SmartDashboard.putData("Auto Mode", this.autoChooser);
     }
 
     public void zero() {
@@ -444,15 +471,6 @@ public class RobotContainer {
         SmartDashboard.putData(SendablePID.prefix, this.elevatorUpPID);
         // SmartDashboard.putData(SendablePID.prefix, this.elevatorDownPID);
         SmartDashboard.putData(SendablePID.prefix, this.pivotPID);
-    }
-
-    // todo ?
-    private boolean isTuningMode() {
-        if (!this.enablePIDTuningMode) {
-            return false;
-        }
-        // System.out.printf("tuning mode: %b\n", SmartDashboard.getBoolean(SendablePID.prefix + "/Tuning Mode", false));
-        return SmartDashboard.getBoolean(SendablePID.prefix + "/Tuning Mode", false);
     }
 
     private void enableSwitchChannelPDH() {

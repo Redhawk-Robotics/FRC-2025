@@ -8,6 +8,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
@@ -18,6 +19,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.sendables.Field;
+import frc.robot.util.Elastic;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -28,6 +31,9 @@ public class Robot extends TimedRobot {
     public Robot() {
         this.m_robotContainer = new RobotContainer();
         this.m_robotContainer.resetRelativeEncoders();
+        if (!isReal()) {
+            DriverStation.silenceJoystickConnectionWarning(true);
+        }
 
         SmartDashboard.putData("CommandScheduler Instance", CommandScheduler.getInstance());
         // https://docs.wpilib.org/en/stable/docs/software/vision-processing/roborio/using-the-cameraserver-on-the-roborio.html
@@ -57,8 +63,7 @@ public class Robot extends TimedRobot {
                     continue;
                 }
                 // Put a line on the image
-                Imgproc.line(mat, new Point(80,0), new Point(80,60),
-                        new Scalar(0, 255, 0), 1); // green
+                Imgproc.line(mat, new Point(80, 0), new Point(80, 60), new Scalar(0, 255, 0), 1); // green
                 // Give the output stream a new image to display
                 outputStream.putFrame(mat);
             }
@@ -73,7 +78,6 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
 
-        this.m_robotContainer.updateField();
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     }
 
@@ -95,6 +99,13 @@ public class Robot extends TimedRobot {
         } else {
             System.out.println("autonomous command was null!");
         }
+
+        PathPlannerLogging
+                .setLogActivePathCallback(Field.globalField.getObject("pp-active-path")::setPoses);
+        PathPlannerLogging
+                .setLogCurrentPoseCallback(Field.globalField.getObject("pp-current-pose")::setPose);
+        PathPlannerLogging
+                .setLogTargetPoseCallback(Field.globalField.getObject("pp-target-pose")::setPose);
     }
 
     @Override
@@ -111,6 +122,10 @@ public class Robot extends TimedRobot {
         // this.m_robotContainer.zero();
         Elastic.selectTab("Teleoperated");
         // this.m_robotContainer. // reset ControlBoard
+
+        PathPlannerLogging.setLogActivePathCallback(null);
+        PathPlannerLogging.setLogCurrentPoseCallback(null);
+        PathPlannerLogging.setLogTargetPoseCallback(null);
     }
 
     @Override

@@ -85,8 +85,8 @@ public final class RunToPose  {
 
     public void getClosestPoseLeft() {
         Pose2d[] blueReefSides =
-        new Pose2d[] {REEF_POSES.A.pose.interpolate(REEF_POSES.B.pose, 0.5),
-                REEF_POSES.C.pose.interpolate(REEF_POSES.D.pose, 0.5),
+        new Pose2d[] {LEFT_REEF_POSES.A.pose.interpolate(LEFT_REEF_POSES.C.pose, 0.5),
+                LEFT_REEF_POSES.C.pose.interpolate(LEFT_REEF_POSES.G.pose, 0.5),
         // ...
             };
         double minDistanceFoundSoFar = -1;

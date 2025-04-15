@@ -42,6 +42,12 @@
       "waypointRelativePos": 0.11634819532908464,
       "endWaypointRelativePos": null,
       "command": null
+    },
+    {
+      "name": "Barge",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -57,7 +63,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "I LOVE TEXAS 1",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

@@ -1,8 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
-package frc.robot.subsystems;
+package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -13,16 +9,16 @@ import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.Constants.Settings;
 
 // An elevator created with three Krakens instead of 4 Neo/Spark.
-
 // https://v6.docs.ctr-electronics.com/en/latest/docs/migration/migration-guide/control-requests-guide.html
 
-public class Elevator extends SubsystemBase {
+class Impl extends Elevator {
     /** Creates a new krakenElevator. */
+
     private final TalonFX m_topRightElevatorMotor = new TalonFX(Settings.Elevator.CAN.ID_TOP_RIGHT); // leader
     private final TalonFX m_topLeftElevatorMotor = new TalonFX(Settings.Elevator.CAN.ID_TOP_LEFT);
     private final TalonFX m_bottomLeftElevatorMotor =
@@ -36,14 +32,15 @@ public class Elevator extends SubsystemBase {
 
     private boolean usePosition = false;
 
-    public Elevator() {
+    Impl() {
         this.configureMotors(//
+                Settings.Elevator.kG, Settings.Elevator.kS, //
                 Settings.Elevator.kP, Settings.Elevator.kI, Settings.Elevator.kD);
         this.resetElevatorPosition();
     }
 
-    // Parameters take in values to be configured
-    public void configureMotors(double kP1, double kI1, double kD1) {
+    @Override
+    public void configureMotors(double kG, double kS, double kP, double kI, double kD) {
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration();
         motorConfig.CurrentLimits.withStatorCurrentLimitEnable(true)
@@ -64,7 +61,7 @@ public class Elevator extends SubsystemBase {
                 (new TalonFXConfiguration().Slot0.withGravityType(GravityTypeValue.Elevator_Static))
                         .withKG(Settings.Elevator.kG)
                         .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
-                        .withKS(Settings.Elevator.kS).withKP(kP1).withKI(kI1).withKD(kD1));
+                        .withKS(Settings.Elevator.kS).withKP(kP).withKI(kI).withKD(kD));
 
         this.m_topLeftElevatorMotor
                 .setControl(new Follower(Settings.Elevator.CAN.ID_TOP_RIGHT, true));
@@ -74,45 +71,54 @@ public class Elevator extends SubsystemBase {
         System.out.println("Done configuring Kraken Elevator motors.");
     }
 
-
-    public double getPosition() {
-        return this.m_topRightElevatorMotor.getPosition().getValueAsDouble();
-    }
-
-    public void setReference(double reference) {
-        // System.out.printf("Setting Elevator reference to %f (current %f)\n", reference,
-        //         this.getPosition());
-
-        this.setPoint = reference;
-        this.usePosition = true;
-    }
-
-    public void setSpeed(double speed) {
-        this.speed = speed;
-    }
-
-    public void useSpeed() {
-        this.usePosition = false;
-    }
-
-    public void stopElevator() {
-        this.useSpeed();
-        this.setSpeed(0);
-    }
-
+    @Override
     public void resetElevatorPosition() {
         this.m_topRightElevatorMotor.setPosition(0);
     }
 
     @Override
+    public Angle getPosition() {
+        return this.m_topRightElevatorMotor.getPosition().getValue();
+    }
+
+    @Override
+    public AngularVelocity getVelocity() {
+        return this.m_topRightElevatorMotor.getVelocity().getValue();
+    }
+
+    @Override
+    public void setReference(double reference) {
+        this.setPoint = reference;
+        this.usePosition = true;
+    }
+
+    @Override
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
+    @Override
+    public void useSpeed() {
+        this.usePosition = false;
+    }
+
+    @Override
+    public void stopElevator() {
+        this.useSpeed();
+        this.setSpeed(0);
+    }
+
+
+    @Override
     public void periodic() {
+        super.periodic();
+
         if (this.usePosition) {
             this.m_topRightElevatorMotor
                     .setControl(this.positionControl.withPosition(this.setPoint));
         } else {
             this.m_topRightElevatorMotor.setControl(this.speedControl.withOutput(this.speed));
         }
-
         // SmartDashboard.putBoolean("KrakenElevator/use PID", this.shouldUsePIDControl());
         // SmartDashboard.putNumber("KrakenElevator/PID setPoint", this.setPoint);
         // SmartDashboard.putNumber("KrakenElevator/PID slot", this.slotIndex);
@@ -128,9 +134,5 @@ public class Elevator extends SubsystemBase {
         // SmartDashboard.putNumber("KrakenElevator/Motor2/voltage", bottomRightMotor.getBusVoltage());
         // SmartDashboard.putNumber("KrakenElevator/Motor3/voltage", topLeftMotor.getBusVoltage());
         // SmartDashboard.putNumber("KrakenElevator/Motor4/voltage", bottomLeftMotor.getBusVoltage());
-
-        SmartDashboard.putNumber("KrakenElevator/Position", this.getPosition());
-        SmartDashboard.putNumber("KrakenElevator/Velocity",
-                this.m_topRightElevatorMotor.getVelocity().getValueAsDouble());
     }
 }

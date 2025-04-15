@@ -4,6 +4,7 @@
 
 package frc.robot.Commands;
 
+import static edu.wpi.first.units.Units.Rotations;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.function.BooleanSupplier;
@@ -11,10 +12,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.AlgaeArm;
-import frc.robot.subsystems.AlgaeHandler;
-import frc.robot.subsystems.CoralHandler;
-import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.elevator.Elevator;
 
 public final class PositionerFactory {
 
@@ -27,9 +26,9 @@ public final class PositionerFactory {
         // - pivot must be in range [min_p, max_p]
         // - spoiler must be in range [min_s, max_s]
 
-        public static final double minPositionWhereElevatorFreesPivotAndSpoiler = 4.5; // todo
-        public static final double minPositionWherePivotDoesNotCollideWithSpoiler = 10;
-        public static final double minPositionWhereSpoilerDoesNotCollideWithPivot = 5;
+        // public static final double minPositionWhereElevatorFreesPivotAndSpoiler = 4.5; // todo
+        // public static final double minPositionWherePivotDoesNotCollideWithSpoiler = 10;
+        // public static final double minPositionWhereSpoilerDoesNotCollideWithPivot = 5;
         public static final double minPositionWherePivotDoesNotCollideWithElevator = 0.38; // threshold_p_e (pivot blocks the elevator below this reference)
         public static final double minPositionWhereElevatorDoesNotBlockPivot = 4.5; // threshold_e_p1 (elevator blocks the pivot above this reference)
         public static final double maxPositionWhereElevatorDoesNotBlockPivot = 80; // threshold_e_p2 (elevator blocks the pivot below this reference)
@@ -84,6 +83,7 @@ public final class PositionerFactory {
     static class State {
         // null means that component in the State is unchanged
         // between transitions
+        // TODO these should be measures, not raw Doubles
         Double elevatorSetPoint = null, //
                 pivotSetPoint = null, //
                 spoilerSetPoint = null; //
@@ -370,7 +370,7 @@ public final class PositionerFactory {
             }
 
             // Get current state
-            State curr = new State(this.elevator.getPosition(), this.pivot.getPosition(),
+            State curr = new State(this.elevator.getPosition().in(Rotations), this.pivot.getPosition(),
                     this.spoiler.getPosition(), null); // done == null b/c we're already finished
             State fullGoal = goal.merge(curr);
 
@@ -433,7 +433,7 @@ public final class PositionerFactory {
             Pivot pivot, double pivotPosition) {
         BooleanSupplier done = () -> {
             return (Math
-                    .abs(elevator.getPosition() - elevatorPosition) < Settings.allowedElevatorError)
+                    .abs(elevator.getPosition().in(Rotations) - elevatorPosition) < Settings.allowedElevatorError)
                     && (Math.abs(pivot.getPosition() - pivotPosition) < Settings.allowedPivotError);
         };
         return new State(elevatorPosition, pivotPosition, null, done);
@@ -444,7 +444,7 @@ public final class PositionerFactory {
             Pivot pivot, double pivotPosition, AlgaeArm spoiler, double spoilerPosition) {
         BooleanSupplier done = () -> {
             return (Math
-                    .abs(elevator.getPosition() - elevatorPosition) < Settings.allowedElevatorError)
+                    .abs(elevator.getPosition().in(Rotations) - elevatorPosition) < Settings.allowedElevatorError)
                     && (Math.abs(pivot.getPosition() - pivotPosition) < Settings.allowedPivotError)
                     && (Math.abs(spoiler.getPosition() - spoilerPosition) < Settings.allowedSpoilerError);
         };

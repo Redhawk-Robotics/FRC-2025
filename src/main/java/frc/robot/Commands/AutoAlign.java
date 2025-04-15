@@ -4,47 +4,65 @@
 
 package frc.robot.Commands;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Vision;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.CANRanges;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 
 // notes
 // let's turn this into a Factory?
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class AutoAlign extends Command {
-  /** Creates a new AutoAlign. */
+/*
+ * You should consider using the more terse Command factories API instead
+ * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#
+ * defining-commands
+ */
+public class AutoAlign {
+    /** Creates a new AutoAlign. We use time of flight sensors here */
 
-  //! EMPTY EMPTY EMPTY EMPTY EMPTY EMPTY EMPTY
-  //TODO CONFIRM
-  private CommandSwerveDrivetrain drivetrain;
-  private Vision vision;
+    private static final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric();//
+    private static final SwerveRequest.SwerveDriveBrake brake =
+            new SwerveRequest.SwerveDriveBrake();
+    private static double DRIVE_RATE = 0.3;
 
-  public AutoAlign(CommandSwerveDrivetrain m_drivetrain, Vision m_vision) {
-    this.drivetrain = m_drivetrain;
-    this.vision = m_vision;
+    /*
+     * First, the swerve needs to rotate to become paralell to the reef, but given that we're going
+     * to be flush against the reef, I guess we can skip this step for now.
+     * 
+     * Goal - depending on a button the driver presses, the swerve base begins going left / right
+     * until the boolean isAlignedLeft() / isAlignedRight() from the CoralAligner subsystem is
+     * satisfied.
+     */
 
-    addRequirements(drivetrain, vision);
-  }
+    public static Command alignToLeftReef(CommandSwerveDrivetrain m_drivetrain,
+            CANRanges m_CANRanges) {
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {}
+        return stopDrive(m_drivetrain).raceWith(Commands.waitSeconds(0.1))
+                .andThen(applySwerveRequest(m_drivetrain, -DRIVE_RATE)
+                        .raceWith(Commands.waitUntil(m_CANRanges::isAlignedLeft)))
+                .andThen(stopDrive(m_drivetrain).raceWith(Commands.waitSeconds(0.1)))
+                .withName("Aligning Left...");
+    }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    
-  }
+    public static Command alignToRightReef(CommandSwerveDrivetrain m_drivetrain,
+            CANRanges m_CANRanges) {
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
+        return stopDrive(m_drivetrain).raceWith(Commands.waitSeconds(0.1))
+                .andThen(applySwerveRequest(m_drivetrain, DRIVE_RATE)
+                        .raceWith(Commands.waitUntil(m_CANRanges::isAlignedRight)))
+                .andThen(stopDrive(m_drivetrain).raceWith(Commands.waitSeconds(0.1)))
+                .withName("Aligning Right...");
+    }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+    //! not sure about this
+    public static Command stopDrive(CommandSwerveDrivetrain m_drivetrain) {
+        return m_drivetrain.applyRequest(() -> AutoAlign.brake);
+    }
+
+    //todo test these values
+    public static Command applySwerveRequest(CommandSwerveDrivetrain m_drivetrain, double speeds) {
+        return m_drivetrain.applyRequest(
+                () -> drive.withVelocityY(speeds).withVelocityX(0).withRotationalRate(0));
+    }
 }

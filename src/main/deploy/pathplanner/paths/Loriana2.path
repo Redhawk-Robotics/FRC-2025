@@ -1,0 +1,77 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.75,
+        "y": 4.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.132750000000001,
+        "y": 3.8592499999999994
+      },
+      "isLocked": false,
+      "linkedName": "Loriana1 End"
+    },
+    {
+      "anchor": {
+        "x": 6.38625,
+        "y": 4.1
+      },
+      "prevControl": {
+        "x": 6.5520000000000005,
+        "y": 3.771499999999999
+      },
+      "nextControl": {
+        "x": 6.273632010501536,
+        "y": 4.323197644345373
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.75,
+        "y": 4.18
+      },
+      "prevControl": {
+        "x": 6.1425,
+        "y": 4.210249999999999
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Loriana2 End"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "L4 Position",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 0.75,
+    "maxAcceleration": 0.75,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "I LOVE TEXAS 1",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": false
+}

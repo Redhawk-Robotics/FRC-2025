@@ -9,9 +9,11 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.Field;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision;
@@ -33,42 +35,23 @@ public final class RunToPose  {
     // https://firstfrc.blob.core.windows.net/frc2025/Manual/2025GameManual.pdf 
     //page twenty four 
     private enum LEFT_REEF_POSES{
-        A(0.0, 0.0, 0),
-        C(0, 0, 0),
-        E(0,0,0),
-        G(0,0,0),
-        I(0,0,0),
-        K(0,0,0);
+        A( new Pose2d(2, 2, new Rotation2d())),
+        C(new Pose2d(2, 2, new Rotation2d())),
+        E(new Pose2d(2, 2, new Rotation2d())),
+        G(new Pose2d(2, 2, new Rotation2d())),
+        I(new Pose2d(2, 2, new Rotation2d())),
+        K(new Pose2d(2, 2, new Rotation2d()));
 
-        private final double pose;
+        private final Pose2d pose;
 
         private LEFT_REEF_POSES( Pose2d pose) {
             this.pose = pose;
         }
     }
 
-    private enum RIGHT_REEF_POSES{
-        B(0,0,0),
-        D(0,0, 0),
-        F(0,0,0),
-        H(0,0,0),
-        J(0,0,0),
-        L(0,0,0);
-
-        private final double x;
-        private final double y;
-
-        private RIGHT_REEF_POSES( double x, double y, double rotation) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    // ! BUG
-    // ? What does interpolate accomplish in this context?
     public Pose2d getClosestPoseLeft() {
         Pose2d[] blueReefSides =
-        new Pose2d[] {LEFT_REEF_POSES.A.x.interpolate(LEFT_REEF_POSES.A.pose, 0.5),
+        new Pose2d[] {LEFT_REEF_POSES.A.pose.interpolate(LEFT_REEF_POSES.A.pose, 0.5),
                 LEFT_REEF_POSES.C.pose.interpolate(LEFT_REEF_POSES.G.pose, 0.5),
         // ...
             };
@@ -87,9 +70,12 @@ public final class RunToPose  {
 
     }
 
-
     public static Command runToClosestRightReef() {
+        return Commands.none();
+    }
 
+    public static Command runToClosestLeftReef() {
+        return Commands.none();
     }
 
 

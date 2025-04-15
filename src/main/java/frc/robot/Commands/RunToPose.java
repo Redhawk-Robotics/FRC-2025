@@ -40,12 +40,10 @@ public final class RunToPose  {
         I(0,0,0),
         K(0,0,0);
 
-        private final double x;
-        private final double y;
+        private final double pose;
 
-        private LEFT_REEF_POSES( double x, double y, double rotation) {
-            this.x = x;
-            this.y = y;
+        private LEFT_REEF_POSES( Pose2d pose) {
+            this.pose = pose;
         }
     }
 
@@ -66,26 +64,11 @@ public final class RunToPose  {
         }
     }
 
-    public void getClosestPoseLeft() {
+    // ! BUG
+    // ? What does interpolate accomplish in this context?
+    public Pose2d getClosestPoseLeft() {
         Pose2d[] blueReefSides =
-        new Pose2d[] {REEF_POSES.A.pose.interpolate(REEF_POSES.B.pose, 0.5),
-                REEF_POSES.C.pose.interpolate(REEF_POSES.D.pose, 0.5),
-        // ...
-            };
-        double minDistanceFoundSoFar = -1;
-        Pose2d closestPose = this.drive.getPose();
-        for (Pose2d pose2d : blueReefSides) {
-            double distance =
-                    this.drive.getPose().getTranslation().getDistance(pose2d.getTranslation());
-            if (minDistanceFoundSoFar == -1 || distance < minDistanceFoundSoFar) {
-                minDistanceFoundSoFar = distance;
-                closestPose = pose2d;
-        }
-    }
-
-    public void getClosestPoseLeft() {
-        Pose2d[] blueReefSides =
-        new Pose2d[] {LEFT_REEF_POSES.A.pose.interpolate(LEFT_REEF_POSES.C.pose, 0.5),
+        new Pose2d[] {LEFT_REEF_POSES.A.x.interpolate(LEFT_REEF_POSES.A.pose, 0.5),
                 LEFT_REEF_POSES.C.pose.interpolate(LEFT_REEF_POSES.G.pose, 0.5),
         // ...
             };
@@ -97,9 +80,15 @@ public final class RunToPose  {
             if (minDistanceFoundSoFar == -1 || distance < minDistanceFoundSoFar) {
                 minDistanceFoundSoFar = distance;
                 closestPose = pose2d;
+            }   
         }
+
+        return closestPose;
+
     }
-// drive to that pose
+
+
+    public static Command runToClosestRightReef() {
 
     }
 

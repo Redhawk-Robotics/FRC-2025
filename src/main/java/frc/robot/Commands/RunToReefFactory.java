@@ -8,6 +8,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,9 +39,9 @@ public final class RunToReefFactory  {
     //page twenty four 
     private enum LEFT_REEF_POSES{
         //todo fill in coordinates with meters & radians
-        A( new Pose2d(0, 0, new Rotation2d())),
-        C(new Pose2d(0, 0, new Rotation2d())),
-        E(new Pose2d(0, 0, new Rotation2d())),
+        A(new Pose2d(3.191, 4.185, new Rotation2d(Units.degreesToRadians(180)))),
+        C(new Pose2d(3.719, 2.998, new Rotation2d(Units.degreesToRadians(-120.069)))), //pp says negatve...? not sure about this one
+        E(new Pose2d(4.966, 2.898, new Rotation2d(Units.degreesToRadians(-58.299)))),
         G(new Pose2d(0, 0, new Rotation2d())),
         I(new Pose2d(0, 0, new Rotation2d())),
         K(new Pose2d(0, 0, new Rotation2d()));

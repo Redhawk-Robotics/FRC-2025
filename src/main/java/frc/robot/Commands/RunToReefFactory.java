@@ -31,8 +31,8 @@ public final class RunToReefFactory  {
      */
 
     private Pose2d pathPlannerPose;
-    CommandSwerveDrivetrain drive;
-    Vision vision;
+    // public static CommandSwerveDrivetrain drive;
+    // Vision vision;
 
     // https://firstfrc.blob.core.windows.net/frc2025/Manual/2025GameManual.pdf 
     //page twenty four 
@@ -53,12 +53,12 @@ public final class RunToReefFactory  {
     }
 
     private enum RIGHT_REEF_POSES{
-        B( new Pose2d(2, 2, new Rotation2d())),
-        D(new Pose2d(2, 2, new Rotation2d())),
-        F(new Pose2d(2, 2, new Rotation2d())),
-        H(new Pose2d(2, 2, new Rotation2d())),
-        J(new Pose2d(2, 2, new Rotation2d())),
-        L(new Pose2d(2, 2, new Rotation2d()));
+        B( new Pose2d(0, 0, new Rotation2d())),
+        D(new Pose2d(0, 0, new Rotation2d())),
+        F(new Pose2d(0, 0, new Rotation2d())),
+        H(new Pose2d(0, 0, new Rotation2d())),
+        J(new Pose2d(0, 0, new Rotation2d())),
+        L(new Pose2d(0, 0, new Rotation2d()));
 
         private final Pose2d pose;
 
@@ -69,17 +69,17 @@ public final class RunToReefFactory  {
 
     // TODO properly use interpolate
     //TODO if left alignment works implement for right reefs
-    public Pose2d getClosestPoseLeft() {
+    public static Pose2d getClosestPoseLeft( CommandSwerveDrivetrain drive) {
         Pose2d[] blueReefSides =
         new Pose2d[] {LEFT_REEF_POSES.A.pose.interpolate(LEFT_REEF_POSES.C.pose, 0.5),
                 LEFT_REEF_POSES.E.pose.interpolate(LEFT_REEF_POSES.G.pose, 0.5),
         // ...
             };
         double minDistanceFoundSoFar = -1;
-        Pose2d closestPose = this.drive.getPose();
+        Pose2d closestPose = drive.getPose(); //this already gets the robot's estimated position 
         for (Pose2d pose2d : blueReefSides) {
             double distance =
-                    this.drive.getPose().getTranslation().getDistance(pose2d.getTranslation());
+                    drive.getPose().getTranslation().getDistance(pose2d.getTranslation());
             if (minDistanceFoundSoFar == -1 || distance < minDistanceFoundSoFar) {
                 minDistanceFoundSoFar = distance;
                 closestPose = pose2d;
@@ -90,11 +90,11 @@ public final class RunToReefFactory  {
 
     }
 
-    public static Command runToClosestRightReef() {
-        return Commands.none();
+    public static Command runToClosestLeftReef( CommandSwerveDrivetrain drivetrain) {
+        return new DriveToPose(drivetrain, getClosestPoseLeft(drivetrain));
     }
 
-    public static Command runToClosestLeftReef() {
+    public static Command runToClosestRightReef() {
         return Commands.none();
     }
 
@@ -116,33 +116,29 @@ public final class RunToReefFactory  {
 //   @Override
 
 
+//   public void execute() {
+//     System.out.println("WE ARE RUNNING!!!!!!!!!");
+//     PathPlannerPath path = vision.getDriveToPosePath();
+//     if (path != null) {
+//         SmartDashboard.putData("Auto/Field", Field.globalField);
 
+//         PathPlannerLogging.setLogTargetPoseCallback(
+//         (pose) -> {
+//           // Do whatever you want with the pose here
+//           pathPlannerPose = pose;
+//           Field.globalField.getObject("target pose").setPose(pose);
+//         });
 
+//     // Logging callback for the active path, this is sent as a list of poses
+//     PathPlannerLogging.setLogActivePathCallback(
+//         (poses) -> {
+//           // Do whatever you want with the poses here
+//           Field.globalField.getObject("path").setPoses(poses);
+//         });
 
-
-  public void execute() {
-    System.out.println("WE ARE RUNNING!!!!!!!!!");
-    PathPlannerPath path = vision.getDriveToPosePath();
-    if (path != null) {
-        SmartDashboard.putData("Auto/Field", Field.globalField);
-
-        PathPlannerLogging.setLogTargetPoseCallback(
-        (pose) -> {
-          // Do whatever you want with the pose here
-          pathPlannerPose = pose;
-          Field.globalField.getObject("target pose").setPose(pose);
-        });
-
-    // Logging callback for the active path, this is sent as a list of poses
-    PathPlannerLogging.setLogActivePathCallback(
-        (poses) -> {
-          // Do whatever you want with the poses here
-          Field.globalField.getObject("path").setPoses(poses);
-        });
-
-        drive.followPathCommand(path).schedule();
-    }
-  }
+//         drive.followPathCommand(path).schedule();
+//     }
+//   }
 
 //   // Called once the command ends or is interrupted.
 //   @Override

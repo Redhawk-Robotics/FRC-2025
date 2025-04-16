@@ -4,11 +4,12 @@
 
 package frc.robot.sendables;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class SendablePID implements Sendable {
-    public static final String prefix  = "PID-Tuner";
+    public static final String prefix = "PID-Tuner";
 
     private String name;
     private float kP;
@@ -26,14 +27,6 @@ public class SendablePID implements Sendable {
 
     public SendablePID(String name) {
         this(name, 0f, 0f, 0f, 0f);
-    }
-
-    private static float clamp(float val, float low, float high) {
-        if (val < low)
-            return low;
-        if (val > high)
-            return high;
-        return val;
     }
 
     public float P() {
@@ -58,11 +51,11 @@ public class SendablePID implements Sendable {
         // getter = SmartDashboard is requesting the current value
 
         builder.addFloatProperty(this.name + "/P", () -> this.kP,
-                val -> this.kP = SendablePID.clamp(val, 0, 1000));
+                val -> this.kP = (float) MathUtil.clamp(val, 0, 1000));
         builder.addFloatProperty(this.name + "/I", () -> this.kI,
-                val -> this.kI = SendablePID.clamp(val, 0, 1000));
+                val -> this.kI = (float) MathUtil.clamp(val, 0, 1000));
         builder.addFloatProperty(this.name + "/D", () -> this.kD,
-                val -> this.kD = SendablePID.clamp(val, 0, 1000));
+                val -> this.kD = (float) MathUtil.clamp(val, 0, 1000));
         builder.addFloatProperty(this.name + "/set-point", () -> this.setpoint,
                 val -> this.setpoint = val);
     }

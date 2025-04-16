@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.Settings;
 
 // An elevator created with three Krakens instead of 4 Neo/Spark.
@@ -27,10 +28,6 @@ class Impl extends Elevator {
     private final PositionTorqueCurrentFOC positionControl = new PositionTorqueCurrentFOC(0);
     private final DutyCycleOut speedControl = new DutyCycleOut(0);
 
-    private double setPoint = 0;
-    private double speed = 0;
-
-    private boolean usePosition = false;
 
     Impl() {
         this.configureMotors(//
@@ -87,37 +84,20 @@ class Impl extends Elevator {
     }
 
     @Override
-    public void setReference(double reference) {
-        this.setPoint = reference;
-        this.usePosition = true;
-    }
-
-    @Override
-    public void setSpeed(double speed) {
-        this.speed = speed;
-    }
-
-    @Override
-    public void useSpeed() {
-        this.usePosition = false;
-    }
-
-    @Override
-    public void stopElevator() {
-        this.useSpeed();
-        this.setSpeed(0);
-    }
-
-
-    @Override
     public void periodic() {
         super.periodic();
-
-        if (this.usePosition) {
-            this.m_topRightElevatorMotor
-                    .setControl(this.positionControl.withPosition(this.setPoint));
-        } else {
-            this.m_topRightElevatorMotor.setControl(this.speedControl.withOutput(this.speed));
+        switch (this.mControlMode) {
+            case kManualSpeed:
+                this.m_topRightElevatorMotor
+                        .setControl(this.speedControl.withOutput(this.mSetPoint));
+                break;
+            case kManualPosition:
+            case kPosition:
+                this.m_topRightElevatorMotor
+                        .setControl(this.positionControl.withPosition(this.mSetPoint));
+                break;
+            default:
+                break;
         }
         // SmartDashboard.putBoolean("KrakenElevator/use PID", this.shouldUsePIDControl());
         // SmartDashboard.putNumber("KrakenElevator/PID setPoint", this.setPoint);
@@ -134,5 +114,9 @@ class Impl extends Elevator {
         // SmartDashboard.putNumber("KrakenElevator/Motor2/voltage", bottomRightMotor.getBusVoltage());
         // SmartDashboard.putNumber("KrakenElevator/Motor3/voltage", topLeftMotor.getBusVoltage());
         // SmartDashboard.putNumber("KrakenElevator/Motor4/voltage", bottomLeftMotor.getBusVoltage());
+
+        SmartDashboard.putNumber("Elevator/Differential-Output", this.m_topRightElevatorMotor.getDifferentialOutput().getValueAsDouble());
+        SmartDashboard.putNumber("Elevator/Motor-Voltage", this.m_topRightElevatorMotor.getMotorVoltage().getValueAsDouble());
+        SmartDashboard.putNumber("Elevator/Torque-Current", this.m_topRightElevatorMotor.getTorqueCurrent().getValueAsDouble());
     }
 }

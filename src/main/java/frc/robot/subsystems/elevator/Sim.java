@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 // since our drivetrain CAN IDs overlap with the Elevator CAN IDs
 
 class Sim extends Elevator { // extends Elevator
+
     Sim() {
         System.out.println("Constructing simulated Elevator.");
         // DCMotor.getNEO(4);
@@ -57,25 +58,5 @@ class Sim extends Elevator { // extends Elevator
     @Override
     public AngularVelocity getVelocity() {
         return RotationsPerSecond.of(0);
-    }
-
-    @Override
-    public void setReference(double reference) {
-
-    }
-
-    @Override
-    public void setSpeed(double speed) {
-
-    }
-
-    @Override
-    public void useSpeed() {
-
-    }
-
-    @Override
-    public void stopElevator() {
-
     }
 }

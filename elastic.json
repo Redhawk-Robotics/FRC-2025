@@ -8,18 +8,6 @@
         "layouts": [],
         "containers": [
           {
-            "title": "CommandScheduler Instance",
-            "x": 1280.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 384.0,
-            "type": "Scheduler",
-            "properties": {
-              "topic": "/SmartDashboard/CommandScheduler Instance",
-              "period": 0.06
-            }
-          },
-          {
             "title": "Auto Mode",
             "x": 0.0,
             "y": 128.0,
@@ -30,22 +18,6 @@
               "topic": "/SmartDashboard/Auto Mode",
               "period": 0.06,
               "sort_options": false
-            }
-          },
-          {
-            "title": "Match Time",
-            "x": 1408.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Match Time",
-            "properties": {
-              "topic": "/SmartDashboard/Match Time",
-              "period": 0.06,
-              "data_type": "double",
-              "time_display_mode": "Minutes and Seconds",
-              "red_start_time": 15,
-              "yellow_start_time": 30
             }
           },
           {
@@ -117,73 +89,6 @@
         "layouts": [],
         "containers": [
           {
-            "title": "CommandScheduler Instance",
-            "x": 1280.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 384.0,
-            "type": "Scheduler",
-            "properties": {
-              "topic": "/SmartDashboard/CommandScheduler Instance",
-              "period": 0.06
-            }
-          },
-          {
-            "title": "Match Time",
-            "x": 1408.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Match Time",
-            "properties": {
-              "topic": "/SmartDashboard/Match Time",
-              "period": 0.06,
-              "data_type": "double",
-              "time_display_mode": "Minutes and Seconds",
-              "red_start_time": 15,
-              "yellow_start_time": 30
-            }
-          },
-          {
-            "title": "Deselect",
-            "x": 1280.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/SmartDashboard/control-states/Deselect",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "Coral.Feed",
-            "x": 1024.0,
-            "y": 640.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/SmartDashboard/control-states/Coral.Feed",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "Default",
-            "x": 1280.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/SmartDashboard/control-states/Default",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "Match Time",
             "x": 0.0,
             "y": 0.0,
@@ -239,76 +144,7 @@
       "grid_layout": {
         "layouts": [
           {
-            "title": "piv",
-            "x": 512.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 320.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "P",
-                "x": 896.0,
-                "y": 192.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/PID-Tuner/Pivot/P",
-                  "period": 0.06,
-                  "data_type": "float",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "I",
-                "x": 832.0,
-                "y": 256.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/PID-Tuner/Pivot/I",
-                  "period": 0.06,
-                  "data_type": "float",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "D",
-                "x": 896.0,
-                "y": 320.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/PID-Tuner/Pivot/D",
-                  "period": 0.06,
-                  "data_type": "float",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "set-point",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/PID-Tuner/Pivot/set-point",
-                  "period": 0.06,
-                  "data_type": "float",
-                  "show_submit_button": false
-                }
-              }
-            ]
-          },
-          {
-            "title": "Elevator.Up",
+            "title": "Elevator",
             "x": 0.0,
             "y": 0.0,
             "width": 256.0,
@@ -319,65 +155,65 @@
             },
             "children": [
               {
-                "title": "D",
+                "title": "Control-Mode",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/PID-Tuner/Elevator.Up/D",
+                  "topic": "/SmartDashboard/Elevator/Control-Mode",
                   "period": 0.06,
-                  "data_type": "float",
+                  "data_type": "string",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "I",
+                "title": "Position",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/PID-Tuner/Elevator.Up/I",
+                  "topic": "/SmartDashboard/Elevator/Position",
                   "period": 0.06,
-                  "data_type": "float",
+                  "data_type": "double",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "P",
+                "title": "Set-Point",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/PID-Tuner/Elevator.Up/P",
+                  "topic": "/SmartDashboard/Elevator/Set-Point",
                   "period": 0.06,
-                  "data_type": "float",
+                  "data_type": "double",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "set-point",
+                "title": "Velocity",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/PID-Tuner/Elevator.Up/set-point",
+                  "topic": "/SmartDashboard/Elevator/Velocity",
                   "period": 0.06,
-                  "data_type": "float",
+                  "data_type": "double",
                   "show_submit_button": false
                 }
               }
             ]
           },
           {
-            "title": "Elevator.Down",
+            "title": "Pivot",
             "x": 256.0,
             "y": 0.0,
             "width": 256.0,
@@ -388,58 +224,58 @@
             },
             "children": [
               {
-                "title": "D",
+                "title": "Control-Mode",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/PID-Tuner/Elevator.Down/D",
+                  "topic": "/SmartDashboard/Pivot/Control-Mode",
                   "period": 0.06,
-                  "data_type": "float",
+                  "data_type": "string",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "I",
+                "title": "Position",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/PID-Tuner/Elevator.Down/I",
+                  "topic": "/SmartDashboard/Pivot/Position",
                   "period": 0.06,
-                  "data_type": "float",
+                  "data_type": "double",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "P",
+                "title": "Set-Point",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/PID-Tuner/Elevator.Down/P",
+                  "topic": "/SmartDashboard/Pivot/Set-Point",
                   "period": 0.06,
-                  "data_type": "float",
+                  "data_type": "double",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "set-point",
+                "title": "Velocity",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/PID-Tuner/Elevator.Down/set-point",
+                  "topic": "/SmartDashboard/Pivot/Velocity",
                   "period": 0.06,
-                  "data_type": "float",
+                  "data_type": "double",
                   "show_submit_button": false
                 }
               }
@@ -447,19 +283,6 @@
           }
         ],
         "containers": [
-          {
-            "title": "Tuning Mode",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 96.0,
-            "type": "Toggle Switch",
-            "properties": {
-              "topic": "/SmartDashboard/PID-Tuner/Tuning Mode",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
           {
             "title": "CommandScheduler Instance",
             "x": 1024.0,
@@ -470,62 +293,6 @@
             "properties": {
               "topic": "/SmartDashboard/CommandScheduler Instance",
               "period": 0.06
-            }
-          },
-          {
-            "title": "Position",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Pivot/Position",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "set-point",
-            "x": 768.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/PID-Tuner/Elevator.Up/set-point",
-              "period": 0.06,
-              "data_type": "float",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Position",
-            "x": 896.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Elevator/Position",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Position",
-            "x": 896.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Elevator/Position",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
             }
           }
         ]

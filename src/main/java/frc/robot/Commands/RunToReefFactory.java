@@ -21,7 +21,7 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public final class RunToPose  {
+public final class RunToReefFactory  {
     /*
      My reasoning for changing this to static:
     I think we could make this static to return two commands -- going to the closest left reef (robot centric) or right reef. I.E. Calling a command such as
@@ -37,12 +37,13 @@ public final class RunToPose  {
     // https://firstfrc.blob.core.windows.net/frc2025/Manual/2025GameManual.pdf 
     //page twenty four 
     private enum LEFT_REEF_POSES{
-        A( new Pose2d(2, 2, new Rotation2d())),
-        C(new Pose2d(2, 2, new Rotation2d())),
-        E(new Pose2d(2, 2, new Rotation2d())),
-        G(new Pose2d(2, 2, new Rotation2d())),
-        I(new Pose2d(2, 2, new Rotation2d())),
-        K(new Pose2d(2, 2, new Rotation2d()));
+        //todo fill in coordinates with meters & radians
+        A( new Pose2d(0, 0, new Rotation2d())),
+        C(new Pose2d(0, 0, new Rotation2d())),
+        E(new Pose2d(0, 0, new Rotation2d())),
+        G(new Pose2d(0, 0, new Rotation2d())),
+        I(new Pose2d(0, 0, new Rotation2d())),
+        K(new Pose2d(0, 0, new Rotation2d()));
 
         private final Pose2d pose;
 
@@ -51,10 +52,27 @@ public final class RunToPose  {
         }
     }
 
+    private enum RIGHT_REEF_POSES{
+        B( new Pose2d(2, 2, new Rotation2d())),
+        D(new Pose2d(2, 2, new Rotation2d())),
+        F(new Pose2d(2, 2, new Rotation2d())),
+        H(new Pose2d(2, 2, new Rotation2d())),
+        J(new Pose2d(2, 2, new Rotation2d())),
+        L(new Pose2d(2, 2, new Rotation2d()));
+
+        private final Pose2d pose;
+
+        private RIGHT_REEF_POSES( Pose2d pose) {
+            this.pose = pose;
+        }
+    }
+
+    // TODO properly use interpolate
+    //TODO if left alignment works implement for right reefs
     public Pose2d getClosestPoseLeft() {
         Pose2d[] blueReefSides =
-        new Pose2d[] {LEFT_REEF_POSES.A.pose.interpolate(LEFT_REEF_POSES.A.pose, 0.5),
-                LEFT_REEF_POSES.C.pose.interpolate(LEFT_REEF_POSES.G.pose, 0.5),
+        new Pose2d[] {LEFT_REEF_POSES.A.pose.interpolate(LEFT_REEF_POSES.C.pose, 0.5),
+                LEFT_REEF_POSES.E.pose.interpolate(LEFT_REEF_POSES.G.pose, 0.5),
         // ...
             };
         double minDistanceFoundSoFar = -1;

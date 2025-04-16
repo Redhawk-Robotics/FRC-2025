@@ -29,6 +29,7 @@ import frc.robot.Commands.DriveToPose;
 import frc.robot.Commands.PlayMusic;
 // import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.PositionerFactory;
+import frc.robot.Commands.RunToReefFactory;
 import frc.robot.sendables.Field;
 import frc.robot.Constants.Settings;
 import frc.robot.subsystems.Pivot;
@@ -231,9 +232,14 @@ public class RobotContainer {
                         .AlgaeTransfer(this.sysElevator, this.sysPivot, this.sysSpoiler)
                         .withName("AlgaeTransfer (DRIVER.a)"));
 
+        this.DRIVER.a().and( () -> this.DRIVER.getLeftX() < 0 )
+                .onTrue(RunToReefFactory
+                        .runToClosestLeftReef(this.drivetrain));
+
         if (this.allowMusic) {
             this.DRIVER.y().whileTrue(new PlayMusic("c-maj-test.chrp", this.drivetrain));
         }
+
     }
 
     private void configureOperatorBindings() {

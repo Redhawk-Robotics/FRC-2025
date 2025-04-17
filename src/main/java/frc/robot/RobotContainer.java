@@ -229,10 +229,9 @@ public class RobotContainer {
         //                 .AlgaeTransfer(this.sysElevator, this.sysPivot, this.sysSpoiler)
         //                 .withName("AlgaeTransfer (DRIVER.b)"));
 
-        this.DRIVER.a().and( () -> this.DRIVER.getLeftX() < 0 )
-                .onTrue(RunToReefFactory
-                        .runToClosestLeftReef(this.drivetrain));
-
+        this.DRIVER.povLeft().whileTrue(RunToReefFactory.runToClosestLeftReef(drivetrain).withName("Running To Closest Left Reef"));
+        this.DRIVER.povRight().whileTrue(RunToReefFactory.runToClosestRightReef(drivetrain).withName("Running To Closest Right Reef"));
+        
         if (this.allowMusic) {
             this.DRIVER.y().whileTrue(new PlayMusic("c-maj-test.chrp", this.drivetrain));
         }

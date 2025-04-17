@@ -38,13 +38,12 @@ public final class RunToReefFactory  {
     // https://firstfrc.blob.core.windows.net/frc2025/Manual/2025GameManual.pdf
     //page twenty four
     private enum LEFT_REEF_POSES{
-        //todo fill in coordinates with meters & radians
-        A(new Pose2d(3.191, 4.185, new Rotation2d(Units.degreesToRadians(180)))),
-        C(new Pose2d(3.719, 2.998, new Rotation2d(Units.degreesToRadians(-120.069)))), //pp says negatve...? not sure about this one
-        E(new Pose2d(4.966, 2.898, new Rotation2d(Units.degreesToRadians(-58.299)))),
-        G(new Pose2d(0, 0, new Rotation2d())),
-        I(new Pose2d(0, 0, new Rotation2d())),
-        K(new Pose2d(0, 0, new Rotation2d()));
+        A(new Pose2d(3.232, 4.185, new Rotation2d(Units.degreesToRadians(180)))),
+        C(new Pose2d(3.233, 2.998, new Rotation2d(Units.degreesToRadians(-120)))), //pp says negatve...? not sure about this one
+        E(new Pose2d(4.966, 2.898, new Rotation2d(Units.degreesToRadians(-60)))),
+        G(new Pose2d(5.747, 0, new Rotation2d(Units.degreesToRadians(0)))),
+        I(new Pose2d(5.26, 5.033, new Rotation2d(Units.degreesToRadians(60)))),
+        K(new Pose2d(4.003, 5.197, new Rotation2d(Units.degreesToRadians(120))));
 
         private final Pose2d pose;
 
@@ -54,12 +53,12 @@ public final class RunToReefFactory  {
     }
 
     private enum RIGHT_REEF_POSES{
-        B( new Pose2d(0, 0, new Rotation2d())),
-        D(new Pose2d(0, 0, new Rotation2d())),
-        F(new Pose2d(0, 0, new Rotation2d())),
-        H(new Pose2d(0, 0, new Rotation2d())),
-        J(new Pose2d(0, 0, new Rotation2d())),
-        L(new Pose2d(0, 0, new Rotation2d()));
+        B( new Pose2d(3.233, 3.862, new Rotation2d(Units.degreesToRadians(180)))),
+        D(new Pose2d(4.003, 2.855, new Rotation2d(Units.degreesToRadians(-120)))),
+        F(new Pose2d(5.26, 3.02, new Rotation2d(Units.degreesToRadians(-60)))),
+        H(new Pose2d(5.747, 4.19, new Rotation2d(Units.degreesToRadians(0)))),
+        J(new Pose2d(4.975, 5.196, new Rotation2d(Units.degreesToRadians(60)))),
+        L(new Pose2d(3.718, 3.033, new Rotation2d(Units.degreesToRadians(120))));
 
         private final Pose2d pose;
 
@@ -74,7 +73,7 @@ public final class RunToReefFactory  {
         double minDistanceFoundSoFar = -1;
 
         Pose2d closestPose = drive.getPose(); //this already gets the robot's estimated position 
-        for (RIGHT_REEF_POSES pose2d : RIGHT_REEF_POSES.values()) {
+        for (LEFT_REEF_POSES pose2d : LEFT_REEF_POSES.values()) {
             double distance =
                     drive.getPose().getTranslation().getDistance(pose2d.pose.getTranslation());
             if (minDistanceFoundSoFar == -1 || distance < minDistanceFoundSoFar) {
@@ -82,7 +81,7 @@ public final class RunToReefFactory  {
                 closestPose = pose2d.pose;
             }   
         }
-
+        System.out.println("[CLOSEST POSE IDENTIFIED] " + closestPose.toString());
         return closestPose;
 
     }
@@ -100,7 +99,7 @@ public final class RunToReefFactory  {
                 closestPose = pose2d.pose;
             }   
         }
-
+        System.out.println("[CLOSEST POSE IDENTIFIED] " + closestPose.toString());
         return closestPose;
     }
 
@@ -109,7 +108,7 @@ public final class RunToReefFactory  {
     }
 
     public static Command runToClosestRightReef(CommandSwerveDrivetrain drivetrain) {
-        return new DriveToPose(drivetrain, getClosestPoseLeft(drivetrain));
+        return new DriveToPose(drivetrain, getClosestPoseRight(drivetrain));
     }
 
     

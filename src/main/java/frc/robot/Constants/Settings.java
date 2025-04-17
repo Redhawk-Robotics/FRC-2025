@@ -116,9 +116,9 @@ public final class Settings {
         // public static final double minPositionWhereElevatorFreesPivotAndSpoiler = 4.5; // todo
         // public static final double minPositionWherePivotDoesNotCollideWithSpoiler = 10;
         // public static final double minPositionWhereSpoilerDoesNotCollideWithPivot = 5;
-        public static final double minPositionWherePivotDoesNotCollideWithElevator = 0.38; // threshold_p_e (pivot blocks the elevator below this reference)
-        public static final double minPositionWhereElevatorDoesNotBlockPivot = 4.5; // threshold_e_p1 (elevator blocks the pivot above this reference)
-        public static final double maxPositionWhereElevatorDoesNotBlockPivot = 80; // threshold_e_p2 (elevator blocks the pivot below this reference)
+        public static final double minPositionWherePivotDoesNotCollideWithElevator = 0.35; // threshold_p_e (pivot blocks the elevator below this reference)
+        public static final double minPositionWhereElevatorDoesNotBlockPivot = 3; //3.3 // threshold_e_p1 (elevator blocks the pivot above this reference)
+        public static final double maxPositionWhereElevatorDoesNotBlockPivot = 23; // threshold_e_p2 (elevator blocks the pivot below this reference)
         public static final double midpointPositionWhereElevatorBlocksPivot =
                 (minPositionWhereElevatorDoesNotBlockPivot
                         + maxPositionWhereElevatorDoesNotBlockPivot) / 2; // (4.5+80)/2 = 42.25
@@ -140,8 +140,8 @@ public final class Settings {
         public static final double ELEVATOR_ATTACK_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L1_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L2_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L3_POSITION = 9;
-        public static final double ELEVATOR_L4_POSITION = 33;
+        public static final double ELEVATOR_L3_POSITION = 7.16;
+        public static final double ELEVATOR_L4_POSITION = 34;
         public static final double ELEVATOR_BARGE_POSITION = ELEVATOR_L4_POSITION;
         public static final double ELEVATOR_ALGAE_L2_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_ALGAE_L3_POSITION = 5.72;
@@ -151,9 +151,9 @@ public final class Settings {
         public static final double PIVOT_FEED_POSITION = 0.055;
         public static final double PIVOT_ATTACK_POSITION = 0.600;
         public static final double PIVOT_L1_POSITION = PIVOT_FEED_POSITION;
-        public static final double PIVOT_L2_POSITION = 0.58;
-        public static final double PIVOT_L3_POSITION = 0.609;
-        public static final double PIVOT_L4_POSITION = 0.58;
+        public static final double PIVOT_L2_POSITION = 0.495;
+        public static final double PIVOT_L3_POSITION = 0.575;
+        public static final double PIVOT_L4_POSITION = 0.568;
         public static final double PIVOT_BARGE_POSITION = 0.505;
         public static final double PIVOT_ALGAE_L2_POSITION = 0.320;
         public static final double PIVOT_ALGAE_L3_POSITION = 0.28;

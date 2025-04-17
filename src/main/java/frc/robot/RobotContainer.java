@@ -377,13 +377,13 @@ public class RobotContainer {
         this.OPERATOR.back().onTrue(//
                 Commands.parallel(//
                         this.sysElevator.runOnce(() -> this.sysElevator.useControlMode(
-                                Elevator.Mode.kManualPosition, this.sysPivot.getPosition(),
+                                Elevator.Mode.kManualPosition, this.sysElevator.getPosition(),
                                 () -> MathUtil.applyDeadband((-1. * this.OPERATOR.getLeftY()), 0.1)
                                         / 1.25)), //
                         this.sysPivot.runOnce(() -> this.sysPivot.useControlMode(
                                 Pivot.Mode.kManualPosition, this.sysPivot.getPosition(),
                                 () -> MathUtil.applyDeadband((-1. * this.OPERATOR.getRightY()), 0.1)
-                                        / 50.))));
+                                        / 60.))));
 
         this.OPERATOR.povLeft()
                 .onTrue(PositionerFactory.AlgaeL2(this.sysElevator, this.sysPivot, this.sysSpoiler)

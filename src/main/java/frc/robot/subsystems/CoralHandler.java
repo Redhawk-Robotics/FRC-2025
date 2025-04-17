@@ -8,7 +8,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Settings;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class CoralHandler extends SubsystemBase {
 
@@ -19,6 +22,13 @@ public class CoralHandler extends SubsystemBase {
         this.coralIntakeMotor = new SparkMax(Settings.CoralHandler.CAN.ID_WHEEL_INTAKE,
                 Settings.CoralHandler.CORAL_INTAKE_MOTORTYPE);
         // TODO set smart current limit
+
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.smartCurrentLimit(40);
+        config.limitSwitch.forwardLimitSwitchEnabled(false).reverseLimitSwitchEnabled(false);
+
+        this.coralIntakeMotor.configure(config, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
     }
 
     // If this isn't enough, here's a "smarter" way

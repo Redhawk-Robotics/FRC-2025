@@ -123,7 +123,7 @@ public class RobotContainer {
                         Math.pow(MathUtil.applyDeadband(-1. * this.DRIVER.getLeftY(), 0.05), 3)//
                                 * this.MaxSpeed * this.drivetrain.speedMultiplier())
                 .withVelocityY( // Drive left with positive X (left)
-                        Math.pow(MathUtil.applyDeadband(this.DRIVER.getLeftX(), 0.05), 3)//
+                        Math.pow(MathUtil.applyDeadband(-1. * this.DRIVER.getLeftX(), 0.05), 3)//
                                 * this.MaxSpeed * this.drivetrain.speedMultiplier())
                 .withRotationalRate( // Drive counterclockwise with negative X (left)
                         MathUtil.applyDeadband(-this.DRIVER.getRightX(), 0.05)//
@@ -219,14 +219,14 @@ public class RobotContainer {
                 .onFalse(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0))
                         .alongWith(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(0))));
 
-        this.DRIVER.a()
-                .onTrue(PositionerFactory
-                        .AlgaeGround(this.sysElevator, this.sysPivot, this.sysSpoiler)
-                        .withName("AlgaeGround (DRIVER.a)"));
-        this.DRIVER.b()
-                .onTrue(PositionerFactory
-                        .AlgaeTransfer(this.sysElevator, this.sysPivot, this.sysSpoiler)
-                        .withName("AlgaeTransfer (DRIVER.b)"));
+        // this.DRIVER.a()
+        //         .onTrue(PositionerFactory
+        //                 .AlgaeGround(this.sysElevator, this.sysPivot, this.sysSpoiler)
+        //                 .withName("AlgaeGround (DRIVER.a)"));
+        // this.DRIVER.b()
+        //         .onTrue(PositionerFactory
+        //                 .AlgaeTransfer(this.sysElevator, this.sysPivot, this.sysSpoiler)
+        //                 .withName("AlgaeTransfer (DRIVER.b)"));
 
         if (this.allowMusic) {
             this.DRIVER.y().whileTrue(new PlayMusic("c-maj-test.chrp", this.drivetrain));
@@ -433,6 +433,9 @@ public class RobotContainer {
                 PositionerFactory.Feed(this.sysElevator, this.sysPivot, this.sysSpoiler));
         NamedCommands.registerCommand("Barge",
                 PositionerFactory.Barge(this.sysElevator, this.sysPivot, this.sysSpoiler));
+
+        NamedCommands.registerCommand("Algae Reef Low",
+                PositionerFactory.AlgaeL2(this.sysElevator, this.sysPivot, this.sysSpoiler));
 
         NamedCommands.registerCommand("Run Coral Intake", this.sysCoralHandler.intake());
         NamedCommands.registerCommand("Run Coral Contain", this.sysCoralHandler.contain());

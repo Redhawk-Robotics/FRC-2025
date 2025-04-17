@@ -19,11 +19,16 @@ public final class Settings {
         }
 
         // TODO tune these (and kG and kS)
-        public static final double kG = 28;
-        public static final double kS = 15;
-        public static final double kP = 15;
+        public static final double kG = 21;
+        public static final double kS = 4.5;
+        public static final double kP = 3.5;
         public static final double kI = 0;
-        public static final double kD = 0;
+        public static final double kD = 1.25;
+        // public static final double kG = 0;
+        // public static final double kS = 0;
+        // public static final double kP = 0.5;
+        // public static final double kI = 0;
+        // public static final double kD = 0;
     }
 
     public static final class Pivot {
@@ -119,8 +124,8 @@ public final class Settings {
                         + maxPositionWhereElevatorDoesNotBlockPivot) / 2; // (4.5+80)/2 = 42.25
 
         public static final double minElevatorPosition = 0;
-        public static final double maxElevatorPosition = 11.5;
-        public static final double allowedElevatorError = 0.05;
+        public static final double maxElevatorPosition = 34.5;
+        public static final double allowedElevatorError = 0.5;
 
         public static final double minPivotPosition = 0.01;
         public static final double maxPivotPosition = 0.62;
@@ -135,8 +140,8 @@ public final class Settings {
         public static final double ELEVATOR_ATTACK_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L1_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_L2_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L3_POSITION = 3.74;
-        public static final double ELEVATOR_L4_POSITION = 10.97;
+        public static final double ELEVATOR_L3_POSITION = 9;
+        public static final double ELEVATOR_L4_POSITION = 33;
         public static final double ELEVATOR_BARGE_POSITION = ELEVATOR_L4_POSITION;
         public static final double ELEVATOR_ALGAE_L2_POSITION = ELEVATOR_FEED_POSITION;
         public static final double ELEVATOR_ALGAE_L3_POSITION = 5.72;

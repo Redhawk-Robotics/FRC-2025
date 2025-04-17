@@ -14,6 +14,7 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -35,6 +36,7 @@ import frc.robot.sendables.Field;
 
 // TODO establish what we want from the vision system
 
+@Logged
 public class Vision extends SubsystemBase {
 
     private final String LIMELIGHT_NUM_1 = "limelight";

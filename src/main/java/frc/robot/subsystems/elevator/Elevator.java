@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
@@ -30,7 +31,8 @@ public class Elevator extends SubsystemBase {
     // private final TalonFX m_bottomLeftElevatorMotor =
     //         new TalonFX(Settings.Elevator.CAN.ID_BOTTOM_LEFT);
 
-    private final PositionTorqueCurrentFOC positionControl = new PositionTorqueCurrentFOC(0);
+    // private final PositionTorqueCurrentFOC positionControl = new PositionTorqueCurrentFOC(0);
+    private final PositionVoltage positionControl = new PositionVoltage(0);
     private final DutyCycleOut speedControl = new DutyCycleOut(0);
 
     private double setPoint = 0;
@@ -63,11 +65,22 @@ public class Elevator extends SubsystemBase {
         this.m_topLeftElevatorMotor.getConfigurator().apply(motorConfig);
         // this.m_bottomLeftElevatorMotor.getConfigurator().apply(motorConfig);
 
+        // this.m_topRightElevatorMotor.getConfigurator().apply(
+        //         (new TalonFXConfiguration().Slot0.withGravityType(GravityTypeValue.Elevator_Static))
+        //                 .withKG(Settings.Elevator.kG)
+        //                 .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
+        //                 .withKS(Settings.Elevator.kS).withKP(kP1).withKI(kI1).withKD(kD1));
+
         this.m_topRightElevatorMotor.getConfigurator().apply(
                 (new TalonFXConfiguration().Slot0.withGravityType(GravityTypeValue.Elevator_Static))
-                        .withKG(Settings.Elevator.kG)
+                        .withKG(0)
                         .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
-                        .withKS(Settings.Elevator.kS).withKP(kP1).withKI(kI1).withKD(kD1));
+                        .withKS(0).withKP(0.7).withKI(0).withKD(0));
+        this.m_topRightElevatorMotor.getConfigurator().apply(
+                (new TalonFXConfiguration().Slot1.withGravityType(GravityTypeValue.Elevator_Static))
+                        .withKG(0)
+                        .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
+                        .withKS(0).withKP(0.25).withKI(0).withKD(0));
 
         this.m_topLeftElevatorMotor
                 .setControl(new Follower(Settings.Elevator.CAN.ID_TOP_RIGHT, true));
@@ -110,8 +123,12 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         if (this.usePosition) {
+            int slot = 0;
+            if (this.setPoint < this.getPosition()) {
+                slot = 1;
+            }
             this.m_topRightElevatorMotor
-                    .setControl(this.positionControl.withPosition(this.setPoint));
+                    .setControl(this.positionControl.withPosition(this.setPoint).withSlot(slot));
         } else {
             this.m_topRightElevatorMotor.setControl(this.speedControl.withOutput(this.speed));
         }

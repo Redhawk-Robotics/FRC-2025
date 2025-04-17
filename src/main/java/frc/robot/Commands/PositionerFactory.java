@@ -250,7 +250,7 @@ public final class PositionerFactory {
             State curr = this.currentGoalState();
             // now actually go to the state
             if (curr.elevatorSetPoint != null) {
-                this.elevator.setReference(curr.elevatorSetPoint);
+                this.elevator.useControlMode(Elevator.Mode.kPosition, curr.elevatorSetPoint, () -> curr.elevatorSetPoint);
             }
             if (curr.pivotSetPoint != null) {
                 this.pivot.useControlMode(Pivot.Mode.kPosition, curr.pivotSetPoint, () -> curr.pivotSetPoint);

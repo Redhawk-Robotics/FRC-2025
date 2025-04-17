@@ -236,12 +236,12 @@ public class RobotContainer {
     private void configureOperatorBindings() {
         /* Configure Elevator */
         if (this.enablePIDTuningMode) {
-            Command elevatorDefault = this.sysElevator.runOnce(//
-                    () -> this.sysElevator
-                            .setSpeed(MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1)));
-            elevatorDefault.addRequirements(sysElevator);
-            elevatorDefault.setName("elevatorDefault");
-            this.sysElevator.setDefaultCommand(elevatorDefault);
+            // Command elevatorDefault = this.sysElevator.runOnce(//
+            //         () -> this.sysElevator
+            //                 .setSpeed(MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1)));
+            // elevatorDefault.addRequirements(sysElevator);
+            // elevatorDefault.setName("elevatorDefault");
+            // this.sysElevator.setDefaultCommand(elevatorDefault);
             // on the controller: up == -1, down == 1
 
             /* Configure Pivot */
@@ -254,12 +254,12 @@ public class RobotContainer {
             // this.sysPivot.setDefaultCommand(pivotDefault);
             // on the controller: up == -1, down == 1
         } else {
-            Command elevatorDefault = this.sysElevator.runOnce(//
-                    () -> this.sysElevator.setSpeed(
-                            MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1) / 2.));
-            elevatorDefault.addRequirements(sysElevator);
-            elevatorDefault.setName("elevatorDefault");
-            this.sysElevator.setDefaultCommand(elevatorDefault);
+            // Command elevatorDefault = this.sysElevator.runOnce(//
+            //         () -> this.sysElevator.setSpeed(
+            //                 MathUtil.applyDeadband((-1. * OPERATOR.getLeftY()), 0.1) / 2.));
+            // elevatorDefault.addRequirements(sysElevator);
+            // elevatorDefault.setName("elevatorDefault");
+            // this.sysElevator.setDefaultCommand(elevatorDefault);
             // on the controller: up == -1, down == 1
 
             /* Configure Pivot */
@@ -284,7 +284,8 @@ public class RobotContainer {
                         this.sysElevator.configureMotors(this.elevatorUpPID.P(),
                                 this.elevatorUpPID.I(), this.elevatorUpPID.D());
                     }).andThen(this.sysElevator.startEnd(
-                            () -> this.sysElevator.setReference(this.elevatorUpPID.SetPoint()),
+                            () -> this.sysElevator.useControlMode(Elevator.Mode.kPosition,
+                                    this.elevatorUpPID.SetPoint(), this.elevatorUpPID::SetPoint),
                             () -> this.sysElevator.stopElevator()))
                             .withName("Elevator PID or L1 (OPERATOR.a)"))
                     .onFalse(
@@ -364,7 +365,10 @@ public class RobotContainer {
         // with the joysticks, instead of PID position control
         this.OPERATOR.start().onTrue(//
                 Commands.parallel(//
-                        this.sysElevator.runOnce(() -> this.sysElevator.useSpeed()), //
+                        this.sysElevator.runOnce(() -> this.sysElevator.useControlMode(
+                                Elevator.Mode.kManualSpeed, 0,
+                                () -> MathUtil.applyDeadband((-1. * this.OPERATOR.getLeftY()), 0.1)
+                                        / 2.)), //
                         this.sysPivot.runOnce(() -> this.sysPivot.useControlMode(
                                 Pivot.Mode.kManualSpeed, 0,
                                 () -> MathUtil.applyDeadband((-1. * this.OPERATOR.getRightY()), 0.1)
@@ -372,7 +376,10 @@ public class RobotContainer {
 
         this.OPERATOR.back().onTrue(//
                 Commands.parallel(//
-                        this.sysElevator.runOnce(() -> this.sysElevator.useSpeed()), //
+                        this.sysElevator.runOnce(() -> this.sysElevator.useControlMode(
+                                Elevator.Mode.kManualPosition, this.sysPivot.getPosition(),
+                                () -> MathUtil.applyDeadband((-1. * this.OPERATOR.getLeftY()), 0.1)
+                                        / 1.25)), //
                         this.sysPivot.runOnce(() -> this.sysPivot.useControlMode(
                                 Pivot.Mode.kManualPosition, this.sysPivot.getPosition(),
                                 () -> MathUtil.applyDeadband((-1. * this.OPERATOR.getRightY()), 0.1)

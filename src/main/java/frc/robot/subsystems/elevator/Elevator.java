@@ -5,7 +5,7 @@
 package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.*;
-
+import java.util.function.DoubleSupplier;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
@@ -14,7 +14,10 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Settings;
@@ -35,10 +38,13 @@ public class Elevator extends SubsystemBase {
     private final PositionVoltage positionControl = new PositionVoltage(0);
     private final DutyCycleOut speedControl = new DutyCycleOut(0);
 
-    private double setPoint = 0;
-    private double speed = 0;
+    public enum Mode {
+        kManualSpeed, kManualPosition, kPosition;
+    }
 
-    private boolean usePosition = false;
+    Mode mControlMode = Mode.kManualSpeed;
+    private DoubleSupplier mInput = () -> 0.;
+    double mSetPoint;
 
     public Elevator() {
         // RobotBase.isReal()
@@ -75,12 +81,12 @@ public class Elevator extends SubsystemBase {
                 (new TalonFXConfiguration().Slot0.withGravityType(GravityTypeValue.Elevator_Static))
                         .withKG(0)
                         .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
-                        .withKS(0).withKP(0.7).withKI(0).withKD(0));
+                        .withKS(0).withKP(0.75).withKI(0).withKD(0));
         this.m_topRightElevatorMotor.getConfigurator().apply(
                 (new TalonFXConfiguration().Slot1.withGravityType(GravityTypeValue.Elevator_Static))
                         .withKG(0)
                         .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
-                        .withKS(0).withKP(0.25).withKI(0).withKD(0));
+                        .withKS(0).withKP(0.35).withKI(0).withKD(0));
 
         this.m_topLeftElevatorMotor
                 .setControl(new Follower(Settings.Elevator.CAN.ID_TOP_RIGHT, true));
@@ -95,25 +101,16 @@ public class Elevator extends SubsystemBase {
         return this.m_topRightElevatorMotor.getPosition().getValueAsDouble();
     }
 
-    public void setReference(double reference) {
-        // System.out.printf("Setting Elevator reference to %f (current %f)\n", reference,
-        //         this.getPosition());
-
-        this.setPoint = reference;
-        this.usePosition = true;
-    }
-
-    public void setSpeed(double speed) {
-        this.speed = speed;
-    }
-
-    public void useSpeed() {
-        this.usePosition = false;
+    public void useControlMode(Mode mode, double initialState, DoubleSupplier input) {
+        this.mControlMode = mode;
+        this.mSetPoint = initialState;
+        if (input != null) {
+            this.mInput = input;
+        }
     }
 
     public void stopElevator() {
-        this.useSpeed();
-        this.setSpeed(0);
+        this.useControlMode(Mode.kManualSpeed, 0, () -> 0.);
     }
 
     public void resetElevatorPosition() {
@@ -122,15 +119,38 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (this.usePosition) {
-            int slot = 0;
-            if (this.setPoint < this.getPosition()) {
-                slot = 1;
-            }
-            this.m_topRightElevatorMotor
-                    .setControl(this.positionControl.withPosition(this.setPoint).withSlot(slot));
-        } else {
-            this.m_topRightElevatorMotor.setControl(this.speedControl.withOutput(this.speed));
+        SmartDashboard.putNumber("Elevator/setpoint-input", this.mInput.getAsDouble());
+        int slot = 0;
+        switch (this.mControlMode) {
+            case kManualSpeed:
+                // interpret the input func as directly setting the speed
+                this.mSetPoint = MathUtil.clamp(this.mInput.getAsDouble(), -1., 1.);
+                this.m_topRightElevatorMotor
+                        .setControl(this.speedControl.withOutput(this.mSetPoint));
+                break;
+            case kManualPosition:
+                // interpet the input func as an addition to the setpoint
+                this.mSetPoint = MathUtil.clamp(this.mSetPoint + this.mInput.getAsDouble(),
+                        Settings.Positioner.minElevatorPosition,
+                        Settings.Positioner.maxElevatorPosition);
+                if (this.mSetPoint < this.getPosition()) {
+                    slot = 1;
+                }
+                this.m_topRightElevatorMotor.setControl(
+                        this.positionControl.withPosition(this.mSetPoint).withSlot(slot));
+                break;
+            case kPosition:
+                // interpet the input func as directly setting the position setpoint
+                this.mSetPoint = MathUtil.clamp(this.mInput.getAsDouble(),
+                        Settings.Positioner.minElevatorPosition, Settings.Positioner.maxElevatorPosition);
+                if (this.mSetPoint < this.getPosition()) {
+                    slot = 1;
+                }
+                this.m_topRightElevatorMotor.setControl(
+                        this.positionControl.withPosition(this.mSetPoint).withSlot(slot));
+                break;
+            default:
+                break;
         }
 
         // SmartDashboard.putBoolean("KrakenElevator/use PID", this.shouldUsePIDControl());

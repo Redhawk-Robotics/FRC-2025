@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
@@ -18,11 +19,11 @@ import frc.robot.Constants.Settings;
 
 public class AlgaeHandler extends SubsystemBase {
 
-    private final SparkMax algaeHandlerMotor;
+    private final SparkFlex algaeHandlerMotor;
 
     /** Creates a new AlgaeHandler. */
     public AlgaeHandler() {
-        this.algaeHandlerMotor = new SparkMax(Settings.AlgaeHandler.CAN.ID_MOTOR,
+        this.algaeHandlerMotor = new SparkFlex(Settings.AlgaeHandler.CAN.ID_MOTOR,
                 Settings.AlgaeHandler.ALGAE_INTAKE_MOTORTYPE);
 
         SparkMaxConfig globalConfig = new SparkMaxConfig();
@@ -36,7 +37,7 @@ public class AlgaeHandler extends SubsystemBase {
 
     public Command rotateCW_Intake() {
         return this.runOnce(() -> {
-            this.setSpeed(0.73);
+            this.setSpeed(0.8);
         });
     }
 
@@ -48,7 +49,7 @@ public class AlgaeHandler extends SubsystemBase {
 
     public Command contain() {
         return this.runOnce(() -> {
-            this.setSpeed(0.08);
+            this.setSpeed(0.1);
         });
     }
 

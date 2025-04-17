@@ -25,8 +25,8 @@ public class Elevator extends SubsystemBase {
     /** Creates a new krakenElevator. */
     private final TalonFX m_topRightElevatorMotor = new TalonFX(Settings.Elevator.CAN.ID_TOP_RIGHT); // leader
     private final TalonFX m_topLeftElevatorMotor = new TalonFX(Settings.Elevator.CAN.ID_TOP_LEFT);
-    private final TalonFX m_bottomLeftElevatorMotor =
-            new TalonFX(Settings.Elevator.CAN.ID_BOTTOM_LEFT);
+    // private final TalonFX m_bottomLeftElevatorMotor =
+    //         new TalonFX(Settings.Elevator.CAN.ID_BOTTOM_LEFT);
 
     private final PositionTorqueCurrentFOC positionControl = new PositionTorqueCurrentFOC(0);
     private final DutyCycleOut speedControl = new DutyCycleOut(0);
@@ -48,7 +48,7 @@ public class Elevator extends SubsystemBase {
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration();
         motorConfig.CurrentLimits.withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(Amps.of(40));
+                .withStatorCurrentLimit(Amps.of(50));
 
         //Volts need to be confirmed
         // motorConfig.Voltage.withPeakForwardVoltage(0).withPeakReverseVoltage(0);
@@ -59,7 +59,7 @@ public class Elevator extends SubsystemBase {
 
         this.m_topRightElevatorMotor.getConfigurator().apply(motorConfig);
         this.m_topLeftElevatorMotor.getConfigurator().apply(motorConfig);
-        this.m_bottomLeftElevatorMotor.getConfigurator().apply(motorConfig);
+        // this.m_bottomLeftElevatorMotor.getConfigurator().apply(motorConfig);
 
         this.m_topRightElevatorMotor.getConfigurator().apply(
                 (new TalonFXConfiguration().Slot0.withGravityType(GravityTypeValue.Elevator_Static))
@@ -69,8 +69,8 @@ public class Elevator extends SubsystemBase {
 
         this.m_topLeftElevatorMotor
                 .setControl(new Follower(Settings.Elevator.CAN.ID_TOP_RIGHT, true));
-        this.m_bottomLeftElevatorMotor
-                .setControl(new Follower(Settings.Elevator.CAN.ID_TOP_RIGHT, true));
+        // this.m_bottomLeftElevatorMotor
+        //         .setControl(new Follower(Settings.Elevator.CAN.ID_TOP_RIGHT, true));
 
         System.out.println("Done configuring Kraken Elevator motors.");
     }

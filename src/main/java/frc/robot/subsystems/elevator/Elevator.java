@@ -5,14 +5,19 @@
 package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.*;
-
+import java.util.function.DoubleSupplier;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Settings;
@@ -21,20 +26,25 @@ import frc.robot.Constants.Settings;
 
 // https://v6.docs.ctr-electronics.com/en/latest/docs/migration/migration-guide/control-requests-guide.html
 
+@Logged
 public class Elevator extends SubsystemBase {
     /** Creates a new krakenElevator. */
     private final TalonFX m_topRightElevatorMotor = new TalonFX(Settings.Elevator.CAN.ID_TOP_RIGHT); // leader
     private final TalonFX m_topLeftElevatorMotor = new TalonFX(Settings.Elevator.CAN.ID_TOP_LEFT);
-    private final TalonFX m_bottomLeftElevatorMotor =
-            new TalonFX(Settings.Elevator.CAN.ID_BOTTOM_LEFT);
+    // private final TalonFX m_bottomLeftElevatorMotor =
+    //         new TalonFX(Settings.Elevator.CAN.ID_BOTTOM_LEFT);
 
-    private final PositionTorqueCurrentFOC positionControl = new PositionTorqueCurrentFOC(0);
+    // private final PositionTorqueCurrentFOC positionControl = new PositionTorqueCurrentFOC(0);
+    private final PositionVoltage positionControl = new PositionVoltage(0);
     private final DutyCycleOut speedControl = new DutyCycleOut(0);
 
-    private double setPoint = 0;
-    private double speed = 0;
+    public enum Mode {
+        kManualSpeed, kManualPosition, kPosition;
+    }
 
-    private boolean usePosition = false;
+    Mode mControlMode = Mode.kManualSpeed;
+    private DoubleSupplier mInput = () -> 0.;
+    double mSetPoint;
 
     public Elevator() {
         // RobotBase.isReal()
@@ -48,7 +58,7 @@ public class Elevator extends SubsystemBase {
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration();
         motorConfig.CurrentLimits.withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(Amps.of(40));
+                .withStatorCurrentLimit(Amps.of(60));
 
         //Volts need to be confirmed
         // motorConfig.Voltage.withPeakForwardVoltage(0).withPeakReverseVoltage(0);
@@ -59,18 +69,29 @@ public class Elevator extends SubsystemBase {
 
         this.m_topRightElevatorMotor.getConfigurator().apply(motorConfig);
         this.m_topLeftElevatorMotor.getConfigurator().apply(motorConfig);
-        this.m_bottomLeftElevatorMotor.getConfigurator().apply(motorConfig);
+        // this.m_bottomLeftElevatorMotor.getConfigurator().apply(motorConfig);
+
+        // this.m_topRightElevatorMotor.getConfigurator().apply(
+        //         (new TalonFXConfiguration().Slot0.withGravityType(GravityTypeValue.Elevator_Static))
+        //                 .withKG(Settings.Elevator.kG)
+        //                 .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
+        //                 .withKS(Settings.Elevator.kS).withKP(kP1).withKI(kI1).withKD(kD1));
 
         this.m_topRightElevatorMotor.getConfigurator().apply(
                 (new TalonFXConfiguration().Slot0.withGravityType(GravityTypeValue.Elevator_Static))
-                        .withKG(Settings.Elevator.kG)
+                        .withKG(0)
                         .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
-                        .withKS(Settings.Elevator.kS).withKP(kP1).withKI(kI1).withKD(kD1));
+                        .withKS(0).withKP(0.75).withKI(0).withKD(0));
+        this.m_topRightElevatorMotor.getConfigurator().apply(
+                (new TalonFXConfiguration().Slot1.withGravityType(GravityTypeValue.Elevator_Static))
+                        .withKG(0)
+                        .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
+                        .withKS(0).withKP(0.35).withKI(0).withKD(0));
 
         this.m_topLeftElevatorMotor
                 .setControl(new Follower(Settings.Elevator.CAN.ID_TOP_RIGHT, true));
-        this.m_bottomLeftElevatorMotor
-                .setControl(new Follower(Settings.Elevator.CAN.ID_TOP_RIGHT, true));
+        // this.m_bottomLeftElevatorMotor
+        //         .setControl(new Follower(Settings.Elevator.CAN.ID_TOP_RIGHT, true));
 
         System.out.println("Done configuring Kraken Elevator motors.");
     }
@@ -80,25 +101,16 @@ public class Elevator extends SubsystemBase {
         return this.m_topRightElevatorMotor.getPosition().getValueAsDouble();
     }
 
-    public void setReference(double reference) {
-        // System.out.printf("Setting Elevator reference to %f (current %f)\n", reference,
-        //         this.getPosition());
-
-        this.setPoint = reference;
-        this.usePosition = true;
-    }
-
-    public void setSpeed(double speed) {
-        this.speed = speed;
-    }
-
-    public void useSpeed() {
-        this.usePosition = false;
+    public void useControlMode(Mode mode, double initialState, DoubleSupplier input) {
+        this.mControlMode = mode;
+        this.mSetPoint = initialState;
+        if (input != null) {
+            this.mInput = input;
+        }
     }
 
     public void stopElevator() {
-        this.useSpeed();
-        this.setSpeed(0);
+        this.useControlMode(Mode.kManualSpeed, 0, () -> 0.);
     }
 
     public void resetElevatorPosition() {
@@ -107,11 +119,38 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (this.usePosition) {
-            this.m_topRightElevatorMotor
-                    .setControl(this.positionControl.withPosition(this.setPoint));
-        } else {
-            this.m_topRightElevatorMotor.setControl(this.speedControl.withOutput(this.speed));
+        SmartDashboard.putNumber("Elevator/setpoint-input", this.mInput.getAsDouble());
+        int slot = 0;
+        switch (this.mControlMode) {
+            case kManualSpeed:
+                // interpret the input func as directly setting the speed
+                this.mSetPoint = MathUtil.clamp(this.mInput.getAsDouble(), -1., 1.);
+                this.m_topRightElevatorMotor
+                        .setControl(this.speedControl.withOutput(this.mSetPoint));
+                break;
+            case kManualPosition:
+                // interpet the input func as an addition to the setpoint
+                this.mSetPoint = MathUtil.clamp(this.mSetPoint + this.mInput.getAsDouble(),
+                        Settings.Positioner.minElevatorPosition,
+                        Settings.Positioner.maxElevatorPosition);
+                if (this.mSetPoint < this.getPosition()) {
+                    slot = 1;
+                }
+                this.m_topRightElevatorMotor.setControl(
+                        this.positionControl.withPosition(this.mSetPoint).withSlot(slot));
+                break;
+            case kPosition:
+                // interpet the input func as directly setting the position setpoint
+                this.mSetPoint = MathUtil.clamp(this.mInput.getAsDouble(),
+                        Settings.Positioner.minElevatorPosition, Settings.Positioner.maxElevatorPosition);
+                if (this.mSetPoint < this.getPosition()) {
+                    slot = 1;
+                }
+                this.m_topRightElevatorMotor.setControl(
+                        this.positionControl.withPosition(this.mSetPoint).withSlot(slot));
+                break;
+            default:
+                break;
         }
 
         // SmartDashboard.putBoolean("KrakenElevator/use PID", this.shouldUsePIDControl());

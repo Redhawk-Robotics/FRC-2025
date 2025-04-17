@@ -13,71 +13,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.AlgaeArm;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.Constants.Settings;
 
 public final class PositionerFactory {
-
-    private static final class Settings {
-        // conflicts:
-        // - if elevator is below [threshold_e_s] (near the bottom), then the spoiler and pivot can collide
-        //     when spoiler is below [threshold_s_p] and pivot is below [threshold_p_s]
-        // - pivot cannot be below [threshold_p_e] if elevator is, or moves, between [threshold_e_p1, threshold_e_p2]
-        // - elevator must be in range [min_e, max_e]
-        // - pivot must be in range [min_p, max_p]
-        // - spoiler must be in range [min_s, max_s]
-
-        // public static final double minPositionWhereElevatorFreesPivotAndSpoiler = 4.5; // todo
-        // public static final double minPositionWherePivotDoesNotCollideWithSpoiler = 10;
-        // public static final double minPositionWhereSpoilerDoesNotCollideWithPivot = 5;
-        public static final double minPositionWherePivotDoesNotCollideWithElevator = 0.38; // threshold_p_e (pivot blocks the elevator below this reference)
-        public static final double minPositionWhereElevatorDoesNotBlockPivot = 4.5; // threshold_e_p1 (elevator blocks the pivot above this reference)
-        public static final double maxPositionWhereElevatorDoesNotBlockPivot = 80; // threshold_e_p2 (elevator blocks the pivot below this reference)
-        public static final double midpointPositionWhereElevatorBlocksPivot =
-                (minPositionWhereElevatorDoesNotBlockPivot
-                        + maxPositionWhereElevatorDoesNotBlockPivot) / 2; // (4.5+80)/2 = 42.25
-
-        public static final double minElevatorPosition = 0;
-        public static final double maxElevatorPosition = 11.5;
-        public static final double allowedElevatorError = 0.05;
-
-        public static final double minPivotPosition = 0.01;
-        public static final double maxPivotPosition = 0.62;
-        public static final double allowedPivotError = 0.005;
-
-        public static final double minSpoilerPosition = 0;
-        // ground position 16
-        public static final double maxSpoilerPosition = 28;
-        public static final double allowedSpoilerError = 0.1;
-
-        public static final double ELEVATOR_FEED_POSITION = 0;
-        public static final double ELEVATOR_ATTACK_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L1_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L2_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_L3_POSITION = 3.74;
-        public static final double ELEVATOR_L4_POSITION = 10.97;
-        public static final double ELEVATOR_BARGE_POSITION = ELEVATOR_L4_POSITION;
-        public static final double ELEVATOR_ALGAE_L2_POSITION = ELEVATOR_FEED_POSITION;
-        public static final double ELEVATOR_ALGAE_L3_POSITION = 5.72;
-        public static final double ELEVATOR_ALGAE_GROUND_POSITION = 0;
-        public static final double ELEVATOR_ALGAE_TRANSFER_POSITION = 0;
-
-        public static final double PIVOT_FEED_POSITION = 0.055;
-        public static final double PIVOT_ATTACK_POSITION = 0.600;
-        public static final double PIVOT_L1_POSITION = PIVOT_FEED_POSITION;
-        public static final double PIVOT_L2_POSITION = 0.58;
-        public static final double PIVOT_L3_POSITION = 0.609;
-        public static final double PIVOT_L4_POSITION = 0.58;
-        public static final double PIVOT_BARGE_POSITION = 0.505;
-        public static final double PIVOT_ALGAE_L2_POSITION = 0.320;
-        public static final double PIVOT_ALGAE_L3_POSITION = 0.28;
-        public static final double PIVOT_ALGAE_GROUND_POSITION = 0.02;
-        public static final double PIVOT_ALGAE_TRANSFER_POSITION = 0.02;
-
-        public static final double SPOILER_ALGAE_FEED_POSITION = 1;
-        public static final double SPOILER_ALGAE_GROUND_POSITION = 16;
-        public static final double SPOILER_ALGAE_TRANSFER_POSITION = 6;
-
-        public static final boolean Verbose = false;
-    }
 
     static class State {
         // null means that component in the State is unchanged
@@ -111,7 +49,7 @@ public final class PositionerFactory {
 
         //todo look over this, may be causing slow performance
         public String toString() {
-            if (Settings.Verbose) {
+            if (Settings.Positioner.Verbose) {
                 return String.format("State(e:%s, p:%s, s:%s)",
                         this.elevatorSetPoint == null ? "null" : this.elevatorSetPoint,
                         this.pivotSetPoint == null ? "null" : this.pivotSetPoint,
@@ -148,9 +86,9 @@ public final class PositionerFactory {
                 return 0;
             }
             // else returns oneOf(1,2,3,4)
-            if (s.pivotSetPoint < Settings.minPositionWherePivotDoesNotCollideWithElevator) {
+            if (s.pivotSetPoint < Settings.Positioner.minPositionWherePivotDoesNotCollideWithElevator) {
                 // Z1 or Z4
-                if (s.elevatorSetPoint < Settings.midpointPositionWhereElevatorBlocksPivot) {
+                if (s.elevatorSetPoint < Settings.Positioner.midpointPositionWhereElevatorBlocksPivot) {
                     // Z1
                     return 1;
                 } else {
@@ -159,7 +97,7 @@ public final class PositionerFactory {
                 }
             } else {
                 // Z2 or Z3
-                if (s.elevatorSetPoint < Settings.midpointPositionWhereElevatorBlocksPivot) {
+                if (s.elevatorSetPoint < Settings.Positioner.midpointPositionWhereElevatorBlocksPivot) {
                     // Z2
                     return 2;
                 } else {
@@ -228,11 +166,11 @@ public final class PositionerFactory {
                         // Z1 -> Z3
                         // Z2 intermediate (goal.pivot, elevator.minBlocking)
                         pivotPos = end.pivotSetPoint;
-                        elevatorPos = Settings.minPositionWhereElevatorDoesNotBlockPivot;
+                        elevatorPos = Settings.Positioner.minPositionWhereElevatorDoesNotBlockPivot;
                     } else {
                         // Z2 -> Z4
                         // Z3 intermediate (pivot.minBlocking, goal.elevator)
-                        pivotPos = Settings.minPositionWherePivotDoesNotCollideWithElevator;
+                        pivotPos = Settings.Positioner.minPositionWherePivotDoesNotCollideWithElevator;
                         elevatorPos = end.elevatorSetPoint;
                     }
                 } else {
@@ -240,11 +178,11 @@ public final class PositionerFactory {
                         // Z4 -> Z2
                         // Z3 intermediate (goal.pivot, elevator.maxBlocking)
                         pivotPos = end.pivotSetPoint;
-                        elevatorPos = Settings.maxPositionWhereElevatorDoesNotBlockPivot;
+                        elevatorPos = Settings.Positioner.maxPositionWhereElevatorDoesNotBlockPivot;
                     } else {
                         // Z3 -> Z1
                         // Z2 intermediate (pivot.minBlocking, goal.elevator)
-                        pivotPos = Settings.minPositionWherePivotDoesNotCollideWithElevator;
+                        pivotPos = Settings.Positioner.minPositionWherePivotDoesNotCollideWithElevator;
                         elevatorPos = end.elevatorSetPoint;
                     }
                 }
@@ -257,14 +195,14 @@ public final class PositionerFactory {
                 // Z1->Z2 or Z3->Z2
                 // (pivot.minBlocking, elevator.minBlocking)
                 State firstMid = PositionerFactory.ElevatorAndPivotToPosition(elevator,
-                        Settings.minPositionWhereElevatorDoesNotBlockPivot, pivot,
-                        Settings.minPositionWherePivotDoesNotCollideWithElevator);
+                        Settings.Positioner.minPositionWhereElevatorDoesNotBlockPivot, pivot,
+                        Settings.Positioner.minPositionWherePivotDoesNotCollideWithElevator);
 
                 // Z2->Z3 or Z4->Z3
                 // (pivot.minBlocking, elevator.maxBlocking)
                 State secondMid = PositionerFactory.ElevatorAndPivotToPosition(elevator,
-                        Settings.maxPositionWhereElevatorDoesNotBlockPivot, pivot,
-                        Settings.minPositionWherePivotDoesNotCollideWithElevator);
+                        Settings.Positioner.maxPositionWhereElevatorDoesNotBlockPivot, pivot,
+                        Settings.Positioner.minPositionWherePivotDoesNotCollideWithElevator);
 
                 if (startZone < endZone) {
                     // Z1->Z2->Z3->Z4
@@ -299,7 +237,7 @@ public final class PositionerFactory {
 
         private void proceedToNextState() {
             State next = this.trajectory.pop();
-            if (Settings.Verbose) {
+            if (Settings.Positioner.Verbose) {
                 System.out.printf("[GoToState] finished state: %s\n", next.toString());
             }
             this.runCurrentState();
@@ -312,10 +250,10 @@ public final class PositionerFactory {
             State curr = this.currentGoalState();
             // now actually go to the state
             if (curr.elevatorSetPoint != null) {
-                this.elevator.setReference(curr.elevatorSetPoint);
+                this.elevator.useControlMode(Elevator.Mode.kPosition, curr.elevatorSetPoint, () -> curr.elevatorSetPoint);
             }
             if (curr.pivotSetPoint != null) {
-                this.pivot.setReference(curr.pivotSetPoint);
+                this.pivot.useControlMode(Pivot.Mode.kPosition, curr.pivotSetPoint, () -> curr.pivotSetPoint);
             }
             if (curr.spoilerSetPoint != null) {
                 this.spoiler.setReference(curr.spoilerSetPoint);
@@ -339,8 +277,8 @@ public final class PositionerFactory {
             }
 
             if (goal.elevatorSetPoint != null
-                    && (goal.elevatorSetPoint < Settings.minElevatorPosition
-                            || goal.elevatorSetPoint > Settings.maxElevatorPosition)) {
+                    && (goal.elevatorSetPoint < Settings.Positioner.minElevatorPosition
+                            || goal.elevatorSetPoint > Settings.Positioner.maxElevatorPosition)) {
                 DriverStation.reportError("[GoToState] cannot put Elevator out of bounds", true);
                 // make this command a no-op
                 this.trajectory.clear();
@@ -348,8 +286,8 @@ public final class PositionerFactory {
                 this.runCurrentState();
                 return;
             }
-            if (goal.pivotSetPoint != null && (goal.pivotSetPoint < Settings.minPivotPosition
-                    || goal.pivotSetPoint > Settings.maxPivotPosition)) {
+            if (goal.pivotSetPoint != null && (goal.pivotSetPoint < Settings.Positioner.minPivotPosition
+                    || goal.pivotSetPoint > Settings.Positioner.maxPivotPosition)) {
                 DriverStation.reportError("[GoToState] cannot put Pivot out of bounds", true);
                 // make this command a no-op
                 this.trajectory.clear();
@@ -357,8 +295,8 @@ public final class PositionerFactory {
                 this.runCurrentState();
                 return;
             }
-            if (goal.spoilerSetPoint != null && (goal.spoilerSetPoint < Settings.minSpoilerPosition
-                    || goal.spoilerSetPoint > Settings.maxSpoilerPosition)) {
+            if (goal.spoilerSetPoint != null && (goal.spoilerSetPoint < Settings.Positioner.minSpoilerPosition
+                    || goal.spoilerSetPoint > Settings.Positioner.maxSpoilerPosition)) {
                 DriverStation.reportError("[GoToState] cannot put Spoiler out of bounds", true);
                 // make this command a no-op
                 this.trajectory.clear();
@@ -385,7 +323,7 @@ public final class PositionerFactory {
             for (int i = list.length - 1; i >= 0; i--) {
                 this.trajectory.push(list[i]);
             }
-            if (Settings.Verbose) {
+            if (Settings.Positioner.Verbose) {
                 System.out.printf("[GoToState] generated trajectory:\n%s\n", this.trajectory);
             }
             this.runCurrentState();
@@ -400,7 +338,7 @@ public final class PositionerFactory {
 
         @Override
         public void end(boolean interrupted) {
-            if (Settings.Verbose) {
+            if (Settings.Positioner.Verbose) {
                 System.out.printf("[GoToState] ended (interrupted:%b)\n", interrupted);
             }
             if (!interrupted) {
@@ -431,8 +369,8 @@ public final class PositionerFactory {
             Pivot pivot, double pivotPosition) {
         BooleanSupplier done = () -> {
             return (Math
-                    .abs(elevator.getPosition() - elevatorPosition) < Settings.allowedElevatorError)
-                    && (Math.abs(pivot.getPosition() - pivotPosition) < Settings.allowedPivotError);
+                    .abs(elevator.getPosition() - elevatorPosition) < Settings.Positioner.allowedElevatorError)
+                    && (Math.abs(pivot.getPosition() - pivotPosition) < Settings.Positioner.allowedPivotError);
         };
         return new State(elevatorPosition, pivotPosition, null, done);
     }
@@ -442,9 +380,9 @@ public final class PositionerFactory {
             Pivot pivot, double pivotPosition, AlgaeArm spoiler, double spoilerPosition) {
         BooleanSupplier done = () -> {
             return (Math
-                    .abs(elevator.getPosition() - elevatorPosition) < Settings.allowedElevatorError)
-                    && (Math.abs(pivot.getPosition() - pivotPosition) < Settings.allowedPivotError)
-                    && (Math.abs(spoiler.getPosition() - spoilerPosition) < Settings.allowedSpoilerError);
+                    .abs(elevator.getPosition() - elevatorPosition) < Settings.Positioner.allowedElevatorError)
+                    && (Math.abs(pivot.getPosition() - pivotPosition) < Settings.Positioner.allowedPivotError)
+                    && (Math.abs(spoiler.getPosition() - spoilerPosition) < Settings.Positioner.allowedSpoilerError);
         };
         return new State(elevatorPosition, pivotPosition, spoilerPosition, done);
     }
@@ -452,69 +390,69 @@ public final class PositionerFactory {
     public static Command Feed(Elevator elevator, Pivot pivot, AlgaeArm spoiler) {
         // also default position w/o Coral
         State goal = PositionerFactory.ElevatorAndPivotAndSpoilerToPosition(elevator,
-                Settings.ELEVATOR_FEED_POSITION, pivot, Settings.PIVOT_FEED_POSITION ,spoiler, Settings.SPOILER_ALGAE_FEED_POSITION);
+                Settings.Positioner.ELEVATOR_FEED_POSITION, pivot, Settings.Positioner.PIVOT_FEED_POSITION ,spoiler, Settings.Positioner.SPOILER_ALGAE_FEED_POSITION);
         return new GoToState(goal, elevator, pivot, spoiler).withName("Feed");
     }
 
     public static Command Attack(Elevator elevator, Pivot pivot, AlgaeArm spoiler) {
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
-                Settings.ELEVATOR_ATTACK_POSITION, pivot, Settings.PIVOT_ATTACK_POSITION);
+                Settings.Positioner.ELEVATOR_ATTACK_POSITION, pivot, Settings.Positioner.PIVOT_ATTACK_POSITION);
         return new GoToState(goal, elevator, pivot, spoiler).withName("Attack");
     }
 
     public static Command L1(Elevator elevator, Pivot pivot, AlgaeArm spoiler) {
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
-                Settings.ELEVATOR_L1_POSITION, pivot, Settings.PIVOT_L1_POSITION);
+                Settings.Positioner.ELEVATOR_L1_POSITION, pivot, Settings.Positioner.PIVOT_L1_POSITION);
         return new GoToState(goal, elevator, pivot, spoiler).withName("L1");
     }
 
     public static Command L2(Elevator elevator, Pivot pivot, AlgaeArm spoiler) {
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
-                Settings.ELEVATOR_L2_POSITION, pivot, Settings.PIVOT_L2_POSITION);
+                Settings.Positioner.ELEVATOR_L2_POSITION, pivot, Settings.Positioner.PIVOT_L2_POSITION);
         return new GoToState(goal, elevator, pivot, spoiler).withName("L2");
     }
 
     public static Command L3(Elevator elevator, Pivot pivot, AlgaeArm spoiler) {
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
-                Settings.ELEVATOR_L3_POSITION, pivot, Settings.PIVOT_L3_POSITION);
+                Settings.Positioner.ELEVATOR_L3_POSITION, pivot, Settings.Positioner.PIVOT_L3_POSITION);
         return new GoToState(goal, elevator, pivot, spoiler).withName("L3");
     }
 
     public static Command L4(Elevator elevator, Pivot pivot, AlgaeArm spoiler) {
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
-                Settings.ELEVATOR_L4_POSITION, pivot, Settings.PIVOT_L4_POSITION);
+                Settings.Positioner.ELEVATOR_L4_POSITION, pivot, Settings.Positioner.PIVOT_L4_POSITION);
         return new GoToState(goal, elevator, pivot, spoiler).withName("L4");
     }
 
     public static Command Barge(Elevator elevator, Pivot pivot, AlgaeArm spoiler) {
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
-                Settings.ELEVATOR_BARGE_POSITION, pivot, Settings.PIVOT_BARGE_POSITION);
+                Settings.Positioner.ELEVATOR_BARGE_POSITION, pivot, Settings.Positioner.PIVOT_BARGE_POSITION);
         return new GoToState(goal, elevator, pivot, spoiler).withName("Barge");
     }
 
     public static Command AlgaeL2(Elevator elevator, Pivot pivot, AlgaeArm spoiler) {
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
-                Settings.ELEVATOR_ALGAE_L2_POSITION, pivot, Settings.PIVOT_ALGAE_L2_POSITION);
+                Settings.Positioner.ELEVATOR_ALGAE_L2_POSITION, pivot, Settings.Positioner.PIVOT_ALGAE_L2_POSITION);
         return new GoToState(goal, elevator, pivot, spoiler).withName("Algae.L2");
     }
 
     public static Command AlgaeL3(Elevator elevator, Pivot pivot, AlgaeArm spoiler) {
         State goal = PositionerFactory.ElevatorAndPivotToPosition(elevator,
-                Settings.ELEVATOR_ALGAE_L3_POSITION, pivot, Settings.PIVOT_ALGAE_L3_POSITION);
+                Settings.Positioner.ELEVATOR_ALGAE_L3_POSITION, pivot, Settings.Positioner.PIVOT_ALGAE_L3_POSITION);
         return new GoToState(goal, elevator, pivot, spoiler).withName("Algae.L3");
     }
 
     public static Command AlgaeGround(Elevator elevator, Pivot pivot, AlgaeArm spoiler) {
         State goal = PositionerFactory.ElevatorAndPivotAndSpoilerToPosition(elevator,
-                Settings.ELEVATOR_ALGAE_GROUND_POSITION, pivot,
-                Settings.PIVOT_ALGAE_GROUND_POSITION, spoiler, Settings.SPOILER_ALGAE_GROUND_POSITION);
+                Settings.Positioner.ELEVATOR_ALGAE_GROUND_POSITION, pivot,
+                Settings.Positioner.PIVOT_ALGAE_GROUND_POSITION, spoiler, Settings.Positioner.SPOILER_ALGAE_GROUND_POSITION);
         return new GoToState(goal, elevator, pivot, spoiler).withName("Algae.Ground");
     }
 
     public static Command AlgaeTransfer(Elevator elevator, Pivot pivot, AlgaeArm spoiler) {
         State goal = PositionerFactory.ElevatorAndPivotAndSpoilerToPosition(elevator,
-                Settings.ELEVATOR_ALGAE_TRANSFER_POSITION, pivot,
-                Settings.PIVOT_ALGAE_TRANSFER_POSITION, spoiler, Settings.SPOILER_ALGAE_TRANSFER_POSITION);
+                Settings.Positioner.ELEVATOR_ALGAE_TRANSFER_POSITION, pivot,
+                Settings.Positioner.PIVOT_ALGAE_TRANSFER_POSITION, spoiler, Settings.Positioner.SPOILER_ALGAE_TRANSFER_POSITION);
         return new GoToState(goal, elevator, pivot, spoiler).withName("Algae.Transfer");
     }
 

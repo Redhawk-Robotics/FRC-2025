@@ -71,33 +71,48 @@ public final class RunToReefFactory  {
     // TODO properly use interpolate
     //TODO if left alignment works implement for right reefs
     public static Pose2d getClosestPoseLeft( CommandSwerveDrivetrain drive) {
-        Pose2d[] blueReefSides =
-        new Pose2d[] {LEFT_REEF_POSES.A.pose.interpolate(LEFT_REEF_POSES.C.pose, 0.5),
-                LEFT_REEF_POSES.E.pose.interpolate(LEFT_REEF_POSES.G.pose, 0.5),
-        // ...
-            };
         double minDistanceFoundSoFar = -1;
-        Pose2d closestPose = drive.getPose(); //this already gets the robot's estimated position
-        for (Pose2d pose2d : blueReefSides) {
+
+        Pose2d closestPose = drive.getPose(); //this already gets the robot's estimated position 
+        for (RIGHT_REEF_POSES pose2d : RIGHT_REEF_POSES.values()) {
             double distance =
-                    drive.getPose().getTranslation().getDistance(pose2d.getTranslation());
+                    drive.getPose().getTranslation().getDistance(pose2d.pose.getTranslation());
             if (minDistanceFoundSoFar == -1 || distance < minDistanceFoundSoFar) {
                 minDistanceFoundSoFar = distance;
-                closestPose = pose2d;
-            }
+                closestPose = pose2d.pose;
+            }   
         }
 
         return closestPose;
 
     }
 
+    public static Pose2d getClosestPoseRight( CommandSwerveDrivetrain drive) {
+
+        double minDistanceFoundSoFar = -1;
+
+        Pose2d closestPose = drive.getPose(); //this already gets the robot's estimated position 
+        for (RIGHT_REEF_POSES pose2d : RIGHT_REEF_POSES.values()) {
+            double distance =
+                    drive.getPose().getTranslation().getDistance(pose2d.pose.getTranslation());
+            if (minDistanceFoundSoFar == -1 || distance < minDistanceFoundSoFar) {
+                minDistanceFoundSoFar = distance;
+                closestPose = pose2d.pose;
+            }   
+        }
+
+        return closestPose;
+    }
+
     public static Command runToClosestLeftReef( CommandSwerveDrivetrain drivetrain) {
         return new DriveToPose(drivetrain, getClosestPoseLeft(drivetrain));
     }
 
-    public static Command runToClosestRightReef() {
-        return Commands.none();
+    public static Command runToClosestRightReef(CommandSwerveDrivetrain drivetrain) {
+        return new DriveToPose(drivetrain, getClosestPoseLeft(drivetrain));
     }
+
+    
 
 
 

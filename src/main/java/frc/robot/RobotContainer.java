@@ -223,10 +223,10 @@ public class RobotContainer {
                 .onTrue(PositionerFactory
                         .AlgaeGround(this.sysElevator, this.sysPivot, this.sysSpoiler)
                         .withName("AlgaeGround (DRIVER.a)"));
-        this.DRIVER.a()
+        this.DRIVER.b()
                 .onTrue(PositionerFactory
                         .AlgaeTransfer(this.sysElevator, this.sysPivot, this.sysSpoiler)
-                        .withName("AlgaeTransfer (DRIVER.a)"));
+                        .withName("AlgaeTransfer (DRIVER.b)"));
 
         if (this.allowMusic) {
             this.DRIVER.y().whileTrue(new PlayMusic("c-maj-test.chrp", this.drivetrain));

@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Settings;
@@ -21,6 +22,7 @@ import frc.robot.Constants.Settings;
 
 // https://v6.docs.ctr-electronics.com/en/latest/docs/migration/migration-guide/control-requests-guide.html
 
+@Logged
 public class Elevator extends SubsystemBase {
     /** Creates a new krakenElevator. */
     private final TalonFX m_topRightElevatorMotor = new TalonFX(Settings.Elevator.CAN.ID_TOP_RIGHT); // leader
@@ -48,7 +50,7 @@ public class Elevator extends SubsystemBase {
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration();
         motorConfig.CurrentLimits.withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(Amps.of(50));
+                .withStatorCurrentLimit(Amps.of(60));
 
         //Volts need to be confirmed
         // motorConfig.Voltage.withPeakForwardVoltage(0).withPeakReverseVoltage(0);

@@ -120,7 +120,7 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         return this.drive//
                 .withVelocityX( // Drive forward with positive Y (forward)
-                        Math.pow(MathUtil.applyDeadband(this.DRIVER.getLeftY(), 0.05), 3)//
+                        Math.pow(MathUtil.applyDeadband(-1. * this.DRIVER.getLeftY(), 0.05), 3)//
                                 * this.MaxSpeed * this.drivetrain.speedMultiplier())
                 .withVelocityY( // Drive left with positive X (left)
                         Math.pow(MathUtil.applyDeadband(this.DRIVER.getLeftX(), 0.05), 3)//
@@ -323,18 +323,21 @@ public class RobotContainer {
         //& OPERATOR LEFT BUMPER
         //* Intakes coral
         this.OPERATOR.leftBumper()
-                .onTrue(this.sysCoralHandler.intake()
-                        .withName("coral intake (OPERATOR.leftBumper)"))
+                .onTrue(this.sysCoralHandler.intake().withName("coral intake (OPERATOR.leftBumper)")
+                        .andThen(this.logPositions("coral intake")))
                 .onFalse(this.sysCoralHandler.contain()
-                        .withName("coral contain (OPERATOR.leftBumper off)"));
+                        .withName("coral contain (OPERATOR.leftBumper off)")
+                        .andThen(this.logPositions("coral contain")));
 
         //& OPERATOR LEFT TRIGGER
         //* Spits out coral 
         this.OPERATOR.leftTrigger()
                 .onTrue(this.sysCoralHandler.spitItOut()
-                        .withName("coral outtake (OPERATOR.leftTrigger)"))
+                        .withName("coral outtake (OPERATOR.leftTrigger)")
+                        .andThen(this.logPositions("coral outtake")))
                 .onFalse(this.sysCoralHandler.stop()
-                        .withName("coral stop (OPERATOR.leftTrigger off)"));
+                        .withName("coral stop (OPERATOR.leftTrigger off)")
+                        .andThen(this.logPositions("coral stop")));
 
         /* Configure AlgaeHandler */
 
@@ -343,14 +346,18 @@ public class RobotContainer {
         //* ALGAE HANDLER, N/A */
         this.OPERATOR.rightBumper()
                 .onTrue(this.sysAlgaeHandler.rotateCW_Intake()
-                        .withName("algae clockwise (OPERATOR.rightBumper)"))
+                        .withName("algae clockwise (OPERATOR.rightBumper)")
+                        .andThen(this.logPositions("algae intake")))
                 .onFalse(this.sysAlgaeHandler.contain()
-                        .withName("algae contain (OPERATOR.rightBumper off)"));
+                        .withName("algae contain (OPERATOR.rightBumper off)")
+                        .andThen(this.logPositions("algae contain")));
         this.OPERATOR.rightTrigger()
                 .onTrue(this.sysAlgaeHandler.rotateCCW_Outtake()
-                        .withName("algae counterclockwise (OPERATOR.rightTrigger)"))
+                        .withName("algae counterclockwise (OPERATOR.rightTrigger)")
+                        .andThen(this.logPositions("algae outtake")))
                 .onFalse(this.sysAlgaeHandler.stop()
-                        .withName("algae stop (OPERATOR.rightTrigger off)"));
+                        .withName("algae stop (OPERATOR.rightTrigger off)")
+                        .andThen(this.logPositions("algae stop")));
 
 
         // on start-button (right-center button), tell the elevator and pivot to use _speed_ control
@@ -390,19 +397,25 @@ public class RobotContainer {
         SmartDashboard.putData("control-states", this.LAPTOP);
     }
 
+    private Command logPositions(String name) {
+        return Commands
+                .print(String.format("[%s] E:%f, P:%f, S:%f", name, this.sysElevator.getPosition(),
+                        this.sysPivot.getPosition(), this.sysSpoiler.getPosition()));
+    }
+
     public Command getAutonomousCommand() {
         var pose = AutoBuilder.getCurrentPose();
         this.drivetrain.resetPose(pose);
-        // PathPlannerLogging
-        //         .setLogActivePathCallback(Field.globalField.getObject("pp-active-path")::setPoses);
-        // PathPlannerLogging
-        //         .setLogCurrentPoseCallback(Field.globalField.getObject("pp-current-pose")::setPose);
-        // PathPlannerLogging
-        //         .setLogTargetPoseCallback(Field.globalField.getObject("pp-target-pose")::setPose);
+        PathPlannerLogging
+                .setLogActivePathCallback(Field.globalField.getObject("pp-active-path")::setPoses);
+        PathPlannerLogging
+                .setLogCurrentPoseCallback(Field.globalField.getObject("pp-current-pose")::setPose);
+        PathPlannerLogging
+                .setLogTargetPoseCallback(Field.globalField.getObject("pp-target-pose")::setPose);
         // return the autoChooser's selected Auto
-        // return this.autoChooser.getSelected(); // todo uncomment
+        return this.autoChooser.getSelected(); // todo uncomment
         // just for testing
-        return new DriveToPose(this.drivetrain, new Pose2d(12, 6, new Rotation2d(6))); // todo delete
+        // return new DriveToPose(this.drivetrain, new Pose2d(12, 6, new Rotation2d(6))); // todo delete
     }
 
     private void configureNamedCommands() {
@@ -410,8 +423,8 @@ public class RobotContainer {
         // TODO -- what happens if we use the same command instance twice?
         NamedCommands.registerCommand("L1 Position",
                 PositionerFactory.L1(this.sysElevator, this.sysPivot, this.sysSpoiler));
-        NamedCommands.registerCommand("L2 Position",
-                PositionerFactory.L2(this.sysElevator, this.sysPivot, this.sysSpoiler));
+        NamedCommands.registerCommand("L2 Position", PositionerFactory
+                .L2(this.sysElevator, this.sysPivot, this.sysSpoiler).withTimeout(2));
         NamedCommands.registerCommand("L3 Position",
                 PositionerFactory.L3(this.sysElevator, this.sysPivot, this.sysSpoiler));
         NamedCommands.registerCommand("L4 Position",
@@ -426,21 +439,16 @@ public class RobotContainer {
         NamedCommands.registerCommand("Run Coral Outake", this.sysCoralHandler.spitItOut());
         NamedCommands.registerCommand("Stop Coral", this.sysCoralHandler.stop());
 
-        // TODO add in
-        // NamedCommands.registerCommand("Run Algae Intake", this.sysAlgaeHandler.rotateCW_Intake());
-        // NamedCommands.registerCommand("Run Algae Contain", this.sysAlgaeHandler.contain());
-        // NamedCommands.registerCommand("Run Algae Outake", this.sysAlgaeHandler.rotateCCW_Outtake());
-        // NamedCommands.registerCommand("Stop Algae", this.sysAlgaeHandler.stop());
+        NamedCommands.registerCommand("Run Algae Intake", this.sysAlgaeHandler.rotateCW_Intake());
+        NamedCommands.registerCommand("Run Algae Contain", this.sysAlgaeHandler.contain());
+        NamedCommands.registerCommand("Run Algae Outake", this.sysAlgaeHandler.rotateCCW_Outtake());
+        NamedCommands.registerCommand("Stop Algae", this.sysAlgaeHandler.stop());
 
         // TODO re-enable if using
         // NamedCommands.registerCommand("Align Reef Right",
         //         AutoAlign.alignToRightReef(this.drivetrain, this.sysCANRanges));
         // NamedCommands.registerCommand("Align Reef Left",
         //         AutoAlign.alignToLeftReef(this.drivetrain, this.sysCANRanges));
-
-        // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(-1));
-        // NamedCommands.registerCommand("Climb Inwards", m_climber.commandSetClimbSpeed(1));
-        // NamedCommands.registerCommand("Stop Climbter", m_climber.commandSetClimbSpeed(1));
     }
 
     public void zero() {

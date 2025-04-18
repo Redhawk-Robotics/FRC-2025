@@ -229,9 +229,11 @@ public class RobotContainer {
         //                 .AlgaeTransfer(this.sysElevator, this.sysPivot, this.sysSpoiler)
         //                 .withName("AlgaeTransfer (DRIVER.b)"));
 
-        this.DRIVER.povLeft().whileTrue(RunToReefFactory.runToClosestLeftReef(drivetrain).withName("Running To Closest Left Reef"));
-        this.DRIVER.povRight().whileTrue(RunToReefFactory.runToClosestRightReef(drivetrain).withName("Running To Closest Right Reef"));
-        
+        this.DRIVER.povLeft().whileTrue(RunToReefFactory.runToClosestLeftReef(drivetrain)
+                .withName("Running To Closest Left Reef"));
+        this.DRIVER.povRight().whileTrue(RunToReefFactory.runToClosestRightReef(drivetrain)
+                .withName("Running To Closest Right Reef"));
+
         if (this.allowMusic) {
             this.DRIVER.y().whileTrue(new PlayMusic("c-maj-test.chrp", this.drivetrain));
         }
@@ -460,10 +462,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("Stop Algae", this.sysAlgaeHandler.stop());
 
         // TODO re-enable if using
-        // NamedCommands.registerCommand("Align Reef Right",
-        //         AutoAlign.alignToRightReef(this.drivetrain, this.sysCANRanges));
-        // NamedCommands.registerCommand("Align Reef Left",
-        //         AutoAlign.alignToLeftReef(this.drivetrain, this.sysCANRanges));
+        NamedCommands.registerCommand("Align Reef Right",
+                RunToReefFactory.runToClosestRightReef(drivetrain).withTimeout(2));
+        NamedCommands.registerCommand("Align Reef Left",
+                RunToReefFactory.runToClosestLeftReef(drivetrain).withTimeout(2));
     }
 
     public void zero() {
@@ -474,6 +476,10 @@ public class RobotContainer {
     public void resetRelativeEncoders() {
         this.sysElevator.resetElevatorPosition();
         this.sysSpoiler.resetArmPosition();
+    }
+
+    public void setIsAutonomousForVision(boolean isAutonomous) {
+        this.sysVision.setAutonomous(isAutonomous);
     }
 
     private void setupPIDTuning() {

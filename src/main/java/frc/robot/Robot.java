@@ -100,6 +100,8 @@ public class Robot extends TimedRobot {
         } else {
             System.out.println("autonomous command was null!");
         }
+
+        m_robotContainer.setIsAutonomousForVision(true);
     }
 
     @Override
@@ -116,6 +118,8 @@ public class Robot extends TimedRobot {
         // this.m_robotContainer.zero();
         Elastic.selectTab("Teleoperated");
         // this.m_robotContainer. // reset ControlBoard
+
+        m_robotContainer.setIsAutonomousForVision(false);
     }
 
     @Override

@@ -104,11 +104,11 @@ public final class RunToReefFactory  {
     }
 
     public static Command runToClosestLeftReef( CommandSwerveDrivetrain drivetrain) {
-        return new DriveToPose(drivetrain, getClosestPoseLeft(drivetrain));
+        return new DriveToPose(drivetrain, () -> getClosestPoseLeft(drivetrain));
     }
 
     public static Command runToClosestRightReef(CommandSwerveDrivetrain drivetrain) {
-        return new DriveToPose(drivetrain, getClosestPoseRight(drivetrain));
+        return new DriveToPose(drivetrain, () -> getClosestPoseRight(drivetrain));
     }
 
     

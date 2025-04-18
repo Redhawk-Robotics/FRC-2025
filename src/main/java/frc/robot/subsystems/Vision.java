@@ -18,10 +18,13 @@ import com.pathplanner.lib.path.Waypoint;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LimelightHelpers;
@@ -48,6 +51,7 @@ public class Vision extends SubsystemBase {
     private final Consumer<Matrix<N3, N1>> m_setVisionMeasurementStdDevs;
     private LimelightHelpers.PoseEstimate visionInfo;
     private boolean seen;
+    private boolean isAutonomous = true;
 
 
     /** Creates a new Vision Subsystem. */
@@ -69,9 +73,18 @@ public class Vision extends SubsystemBase {
         // up == 8.7in
         // Inches.of(12).in(Meters)
 
-        // todo make this depend on alliance 
-        int[] validIDs = {6, 7};
+        int[] validIDs;
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
+            validIDs = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+        } else {
+            validIDs = new int[] {12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22};
+        }
         LimelightHelpers.SetFiducialIDFiltersOverride(LIMELIGHT_NUM_1, validIDs);
+    }
+
+    public void setAutonomous(boolean isAutonomous) {
+        this.isAutonomous = isAutonomous;
     }
 
     @Override
@@ -81,21 +94,29 @@ public class Vision extends SubsystemBase {
                 this.m_getRobotYawInDegrees.get(), 0.0, 0.0, 0.0, 0.0, 0.0);
         // TODO set the yawRate if measurements are bad; we don't pitch or roll :)
         LimelightHelpers.PoseEstimate limelightMeasurement =
-                LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(this.LIMELIGHT_NUM_1);
+                LimelightHelpers.getBotPoseEstimate_wpiBlue(this.LIMELIGHT_NUM_1);
+        // LimelightHelpers.getBotPoseEstimate_wpiBlue(LIMELIGHT_NUM_1)
         if (limelightMeasurement == null) {
             seen = false;
         } else if (limelightMeasurement.tagCount >= 1) { // Only trust measurement if we see >=1 tags
+            visionInfo = limelightMeasurement;
+            seen = true;
+            Field.globalField.getObject("limelight-est-pose").setPose(visionInfo.pose);
+
+            Vector<N3> stdDevs = VecBuilder.fill(0.7, 0.7, Units.degreesToRadians(10));
+            if (this.isAutonomous) {
+                // trust it less
+                stdDevs = VecBuilder.fill(7,7, Units.degreesToRadians(45));
+            } else if (limelightMeasurement.tagCount >= 2) {
+                // trust it more
+                stdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(2));
+            }
+
             // m_poseEstimator.setVisionMeasurementStdDevs();
-            this.m_setVisionMeasurementStdDevs.accept(VecBuilder.fill(0.7, 0.7, 2));
+            this.m_setVisionMeasurementStdDevs.accept(stdDevs);
             // m_poseEstimator.addVisionMeasurement();
             this.m_addVisionMeasurement.accept(limelightMeasurement.pose,
                     Utils.fpgaToCurrentTime(limelightMeasurement.timestampSeconds));
-
-            Field.globalField.getObject("LL-Pose").setPose(limelightMeasurement.pose);
-
-            visionInfo = limelightMeasurement;
-            // Field.globalField.getObject("limelight-est-pose").setPose(visionInfo.pose);
-            seen = true;
         } else {
             seen = false;
         }

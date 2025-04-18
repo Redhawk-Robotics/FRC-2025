@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ignore this"
+            "pathName": "[MOHAMMED] two meters"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align Reef Left"
           }
         }
       ]

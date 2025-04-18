@@ -4,6 +4,7 @@
 
 package frc.robot.Commands;
 
+import java.util.function.Supplier;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.ApplyRobotSpeeds;
 import edu.wpi.first.math.controller.HolonomicDriveController;
@@ -26,12 +27,13 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 public class DriveToPose extends Command {
 
     private CommandSwerveDrivetrain drivetrain;
+    private Supplier<Pose2d> getTarget;
     private Pose2d target;
 
     // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/trajectories/holonomic.html
     private final HolonomicDriveController controller = new HolonomicDriveController(//
-            new PIDController(1.5, .5, 0.25), // same as PathPlanner
-            new PIDController(1.5, .5, 0.25), //
+            new PIDController(1.5, .25, 0.25), // same as PathPlanner
+            new PIDController(1.5, .25, 0.25), //
             new ProfiledPIDController(1.25, 0, 0.25, //
                     new TrapezoidProfile.Constraints(360, 360)));
 
@@ -51,10 +53,9 @@ public class DriveToPose extends Command {
 
 
     /** Creates a new DriveToPose. */
-    public DriveToPose(CommandSwerveDrivetrain drivetrain, Pose2d target) {
+    public DriveToPose(CommandSwerveDrivetrain drivetrain, Supplier<Pose2d> target) {
         this.drivetrain = drivetrain;
-        this.target = target;
-
+        this.getTarget = target;
 
         this.addRequirements(drivetrain);
     }
@@ -62,6 +63,7 @@ public class DriveToPose extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        this.target = this.getTarget.get();
         Field.globalField.getObject("DriveToPose.start").setPose(this.drivetrain.getPose());
         Field.globalField.getObject("DriveToPose.goal").setPose(this.target);
     }

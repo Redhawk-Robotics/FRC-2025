@@ -33,7 +33,7 @@ public class AlgaeArm extends SubsystemBase {
         SparkMaxConfig globalConfig = new SparkMaxConfig();
         SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
 
-        globalConfig.smartCurrentLimit(40).idleMode(IdleMode.kCoast).inverted(true);
+        globalConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake).inverted(true);
 
         leftMotorConfig.apply(globalConfig).closedLoop
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder).maxOutput(.8).p(1);

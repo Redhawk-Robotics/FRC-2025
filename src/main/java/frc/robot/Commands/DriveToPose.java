@@ -30,9 +30,9 @@ public class DriveToPose extends Command {
 
     // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/trajectories/holonomic.html
     private final HolonomicDriveController controller = new HolonomicDriveController(//
-            new PIDController(20, 1, 2), // same as PathPlanner
-            new PIDController(20, 1, 2), //
-            new ProfiledPIDController(20, 1, 2, //
+            new PIDController(1.5, .5, 0.25), // same as PathPlanner
+            new PIDController(1.5, .5, 0.25), //
+            new ProfiledPIDController(1.25, 0, 0.25, //
                     new TrapezoidProfile.Constraints(360, 360)));
 
     private final ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds();

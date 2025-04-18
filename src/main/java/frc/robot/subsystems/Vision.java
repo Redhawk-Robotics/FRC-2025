@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -69,7 +70,7 @@ public class Vision extends SubsystemBase {
         // Inches.of(12).in(Meters)
 
         // todo make this depend on alliance 
-        int[] validIDs = {7};
+        int[] validIDs = {6, 7};
         LimelightHelpers.SetFiducialIDFiltersOverride(LIMELIGHT_NUM_1, validIDs);
     }
 
@@ -88,16 +89,23 @@ public class Vision extends SubsystemBase {
             this.m_setVisionMeasurementStdDevs.accept(VecBuilder.fill(0.7, 0.7, 2));
             // m_poseEstimator.addVisionMeasurement();
             this.m_addVisionMeasurement.accept(limelightMeasurement.pose,
-                    limelightMeasurement.timestampSeconds);
+                    Utils.fpgaToCurrentTime(limelightMeasurement.timestampSeconds));
+
+            Field.globalField.getObject("LL-Pose").setPose(limelightMeasurement.pose);
 
             visionInfo = limelightMeasurement;
             // Field.globalField.getObject("limelight-est-pose").setPose(visionInfo.pose);
             seen = true;
+        } else {
+            seen = false;
         }
         SmartDashboard.putBoolean("Vision/Seen", seen);
     }
 
     public Pose2d getRobotPose() {
+        if (visionInfo == null) {
+            return new Pose2d();
+        }
         return visionInfo.pose;
     }
 

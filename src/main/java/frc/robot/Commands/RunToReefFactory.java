@@ -144,6 +144,8 @@ public final class RunToReefFactory  {
 //           Field.globalField.getObject("target pose").setPose(pose);
 //         });
 
+//     }
+
 //     // Logging callback for the active path, this is sent as a list of poses
 //     PathPlannerLogging.setLogActivePathCallback(
 //         (poses) -> {

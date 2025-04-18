@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.*;
+
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkFlex;
@@ -20,22 +24,16 @@ import frc.robot.Constants.Settings;
 
 public class AlgaeHandler extends SubsystemBase {
 
-    private final SparkFlex algaeHandlerMotor;
-    // private final TalonFX algaeHandlerMotor = new TalonFX(Settings.AlgaeHandler.CAN.ID_MOTOR);
-
+    private final TalonFX algaeHandlerMotor = new TalonFX(Settings.AlgaeHandler.CAN.ID_MOTOR);
+    private final DutyCycleOut speedControl = new DutyCycleOut(0);
 
     /** Creates a new AlgaeHandler. */
     public AlgaeHandler() {
-        this.algaeHandlerMotor = new SparkFlex(Settings.AlgaeHandler.CAN.ID_MOTOR,
-                Settings.AlgaeHandler.ALGAE_INTAKE_MOTORTYPE);
+        TalonFXConfiguration motorConfig = new TalonFXConfiguration();
+        motorConfig.CurrentLimits.withStatorCurrentLimitEnable(true)
+                .withStatorCurrentLimit(Amps.of(40));
 
-        SparkMaxConfig globalConfig = new SparkMaxConfig();
-        globalConfig.smartCurrentLimit(70).idleMode(IdleMode.kCoast);
-
-        SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
-        leftMotorConfig.apply(globalConfig);
-        algaeHandlerMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+        this.algaeHandlerMotor.getConfigurator().apply(motorConfig);
     }
 
     public Command rotateCW_Intake() {
@@ -63,7 +61,7 @@ public class AlgaeHandler extends SubsystemBase {
     }
 
     public void setSpeed(double speed) {
-        this.algaeHandlerMotor.set(speed);
+        this.algaeHandlerMotor.setControl(this.speedControl.withOutput(speed));
     }
 
     public double getSpeed() {
@@ -73,6 +71,6 @@ public class AlgaeHandler extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Algae Handler/motor current",
-                this.algaeHandlerMotor.getOutputCurrent());
+                this.algaeHandlerMotor.getTorqueCurrent().getValueAsDouble());
     }
 }

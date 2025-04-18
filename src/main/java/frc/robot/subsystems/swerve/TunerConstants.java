@@ -186,7 +186,7 @@ public class TunerConstants {
      */
     public static CommandSwerveDrivetrain createDrivetrain() {
         return new CommandSwerveDrivetrain(DrivetrainConstants, 0,
-                MatBuilder.fill(Nat.N3(), Nat.N1(), 0.05, 0.05, Units.degreesToRadians(3)),
+                MatBuilder.fill(Nat.N3(), Nat.N1(), 0.5, 0.5, Units.degreesToRadians(3)),
                 MatBuilder.fill(Nat.N3(), Nat.N1(), 1, 1, Units.degreesToRadians(10)), // default trust
                 FrontLeft, FrontRight, BackLeft, BackRight);
     }

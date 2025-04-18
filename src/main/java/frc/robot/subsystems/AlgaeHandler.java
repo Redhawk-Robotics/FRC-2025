@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -20,6 +21,8 @@ import frc.robot.Constants.Settings;
 public class AlgaeHandler extends SubsystemBase {
 
     private final SparkFlex algaeHandlerMotor;
+    // private final TalonFX algaeHandlerMotor = new TalonFX(Settings.AlgaeHandler.CAN.ID_MOTOR);
+
 
     /** Creates a new AlgaeHandler. */
     public AlgaeHandler() {

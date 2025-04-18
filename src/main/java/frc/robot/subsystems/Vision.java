@@ -103,13 +103,13 @@ public class Vision extends SubsystemBase {
             seen = true;
             Field.globalField.getObject("limelight-est-pose").setPose(visionInfo.pose);
 
-            Vector<N3> stdDevs = VecBuilder.fill(0.7, 0.7, Units.degreesToRadians(10));
+            Vector<N3> stdDevs = VecBuilder.fill(4.5, 4.5, Units.degreesToRadians(90));
             if (this.isAutonomous) {
                 // trust it less
-                stdDevs = VecBuilder.fill(7,7, Units.degreesToRadians(45));
+                stdDevs = VecBuilder.fill(7,7, Units.degreesToRadians(180));
             } else if (limelightMeasurement.tagCount >= 2) {
                 // trust it more
-                stdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(2));
+                stdDevs = VecBuilder.fill(3, 3, Units.degreesToRadians(90));
             }
 
             // m_poseEstimator.setVisionMeasurementStdDevs();

@@ -142,7 +142,8 @@ public class Elevator extends SubsystemBase {
             case kPosition:
                 // interpet the input func as directly setting the position setpoint
                 this.mSetPoint = MathUtil.clamp(this.mInput.getAsDouble(),
-                        Settings.Positioner.minElevatorPosition, Settings.Positioner.maxElevatorPosition);
+                        Settings.Positioner.minElevatorPosition,
+                        Settings.Positioner.maxElevatorPosition);
                 if (this.mSetPoint < this.getPosition()) {
                     slot = 1;
                 }
@@ -153,24 +154,13 @@ public class Elevator extends SubsystemBase {
                 break;
         }
 
-        // SmartDashboard.putBoolean("KrakenElevator/use PID", this.shouldUsePIDControl());
-        // SmartDashboard.putNumber("KrakenElevator/PID setPoint", this.setPoint);
-        // SmartDashboard.putNumber("KrakenElevator/PID slot", this.slotIndex);
-        // SmartDashboard.putBoolean("KrakenElevator/use speed", !this.shouldUsePIDControl());
-        // SmartDashboard.putNumber("KrakenElevator/target speed", this.speed);
+        SmartDashboard.putString("Pivot/Control-Mode", this.mControlMode.toString());
+        SmartDashboard.putNumber("Pivot/Set-Point", this.mSetPoint);
 
-        // SmartDashboard.putNumber("KrakenElevator/Motor1/speed", topRightMotor.get());
-        // SmartDashboard.putNumber("KrakenElevator/Motor2/speed", bottomRightMotor.get());
-        // SmartDashboard.putNumber("KrakenElevator/Motor3/speed", topLeftMotor.get());
-        // SmartDashboard.putNumber("KrakenElevator/Motor4/speed", bottomLeftMotor.get());
-
-        // SmartDashboard.putNumber("KrakenElevator/Motor1/voltage", topRightMotor.getBusVoltage());
-        // SmartDashboard.putNumber("KrakenElevator/Motor2/voltage", bottomRightMotor.getBusVoltage());
-        // SmartDashboard.putNumber("KrakenElevator/Motor3/voltage", topLeftMotor.getBusVoltage());
-        // SmartDashboard.putNumber("KrakenElevator/Motor4/voltage", bottomLeftMotor.getBusVoltage());
-
-        SmartDashboard.putNumber("KrakenElevator/Position", this.getPosition());
-        SmartDashboard.putNumber("KrakenElevator/Velocity",
+        SmartDashboard.putNumber("Elevator/Position", this.getPosition());
+        SmartDashboard.putNumber("Elevator/Velocity",
                 this.m_topRightElevatorMotor.getVelocity().getValueAsDouble());
+
+        SmartDashboard.putNumber("Elevator/Motor/Current", this.m_topRightElevatorMotor.getTorqueCurrent().getValueAsDouble());
     }
 }

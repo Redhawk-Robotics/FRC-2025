@@ -38,9 +38,9 @@ public final class Settings {
 
         public static final MotorType LEFT_PIVOT_MOTORTYPE = MotorType.kBrushless;
 
-        public static final double ZERO_OFFSET = 0.5581007;
+        public static final double ZERO_OFFSET = 0.5248270;
         public static final double CONVERSION_FACTOR = 1.;
-        public static final double kP = 10.;
+        public static final double kP = 9;
         public static final double kI = 0.;
         public static final double kD = 0.;
     }
@@ -128,7 +128,7 @@ public final class Settings {
         public static final double allowedElevatorError = 0.5;
 
         public static final double minPivotPosition = 0.01;
-        public static final double maxPivotPosition = 0.62;
+        public static final double maxPivotPosition = 0.615;
         public static final double allowedPivotError = 0.005;
 
         public static final double minSpoilerPosition = 0;

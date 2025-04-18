@@ -195,30 +195,22 @@ public class RobotContainer {
         // TODO -- we can implement "zoned" speeds using the pose estimator
 
         this.DRIVER.povDown()
-                .onTrue(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0.6))
-                        .alongWith(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(0.6))))
-                .onFalse(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0))
-                        .alongWith(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(0))));
+                .onTrue(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0.6)))
+                .onFalse(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0)));
         this.DRIVER.povUp()
-                .onTrue(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(-0.6))
-                        .alongWith(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(0))))
-                .onFalse(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0))
-                        .alongWith(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(0))));
+                .onTrue(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(-0.6)))
+                .onFalse(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0)));
 
         // TODO re-enable if using
         // this.DRIVER.povLeft().whileTrue(AutoAlign.alignToLeftReef(drivetrain, sysCANRanges));
         // this.DRIVER.povRight().whileTrue(AutoAlign.alignToRightReef(drivetrain, sysCANRanges));
 
         this.DRIVER.rightTrigger()
-                .onTrue(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0))
-                        .alongWith(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(0.6))))
-                .onFalse(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0))
-                        .alongWith(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(0))));
+                .onTrue(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(1)))
+                .onFalse(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(0)));
         this.DRIVER.leftTrigger()
-                .onTrue(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0))
-                        .alongWith(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(-0.6))))
-                .onFalse(this.sysSpoiler.runOnce(() -> this.sysSpoiler.setSpeed(0))
-                        .alongWith(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(0))));
+                .onTrue(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(-1)))
+                .onFalse(this.sysRoller.runOnce(() -> this.sysRoller.setSpeed(0)));
 
         // this.DRIVER.a()
         //         .onTrue(PositionerFactory

@@ -12,10 +12,10 @@ public final class Settings {
         // looking at the elevator with the motors in view
         // looking at the front of the robot
         public static final class CAN {
-            public static final int ID_TOP_RIGHT = 1;
+            public static final int ID_TOP_RIGHT = 40;
             // public static final int ID_BOTTOM_RIGHT = 2;
-            public static final int ID_TOP_LEFT = 3;
-            public static final int ID_BOTTOM_LEFT = 4;
+            public static final int ID_TOP_LEFT = 41;
+            public static final int ID_BOTTOM_LEFT = 42;
         }
 
         // TODO tune these (and kG and kS)

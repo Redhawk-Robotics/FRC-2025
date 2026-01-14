@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Commands.AlignTag;
 // import frc.robot.Commands.RunToPose;
 import frc.robot.Commands.DriveToPose;
 import frc.robot.Commands.PlayMusic;
@@ -39,6 +40,7 @@ import frc.robot.subsystems.AlgaeRoller;
 // import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.Telemetry;
+import frc.robot.subsystems.swerve.Tracking;
 import frc.robot.subsystems.swerve.TunerConstants;
 import frc.robot.subsystems.CoralHandler;
 import frc.robot.subsystems.Vision;
@@ -61,6 +63,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
+    private final Tracking SwerveTracking = new Tracking();
     private final CommandXboxController DRIVER = new CommandXboxController(Settings.Gamepad.DRIVER);
     private final CommandXboxController OPERATOR =
             new CommandXboxController(Settings.Gamepad.OPERATOR);
@@ -230,6 +233,10 @@ public class RobotContainer {
                 .onTrue(PositionerFactory
                         .AlgaeTransfer(this.sysElevator, this.sysPivot, this.sysSpoiler)
                         .withName("AlgaeTransfer (DRIVER.a)"));
+
+        this.DRIVER.b()
+                .onTrue(AlignTag
+                        .alignToTag(this.drivetrain, this.));
 
         if (this.allowMusic) {
             this.DRIVER.y().whileTrue(new PlayMusic("c-maj-test.chrp", this.drivetrain));

@@ -1,0 +1,73 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L3 starting 3 2C(1)"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L3 Position"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake Coral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Feeder Position"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L3 starting 3 2C(2)"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Coral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L3 starting 3 2C(3)"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L3 Position"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Outtake Coral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Feeder Position"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

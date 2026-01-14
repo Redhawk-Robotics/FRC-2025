@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.5684375,
+        "y": 6.637556818181817
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.7711360774037574,
+        "y": 6.625180727301016
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.082670454545455,
+        "y": 6.637556818181817
+      },
+      "prevControl": {
+        "x": 6.659521541705965,
+        "y": 6.626702408186407
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Leaves",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -179.02897806892085
+  },
+  "useDefaultConstraints": true
+}

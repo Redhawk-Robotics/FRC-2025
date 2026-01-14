@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Coral Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Coral Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Feed"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Testing everything"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Feed"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L3 Position"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L3 Position"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Coral Outake"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Testing",
+  "choreoAuto": false
+}

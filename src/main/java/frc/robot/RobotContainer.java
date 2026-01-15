@@ -40,7 +40,6 @@ import frc.robot.subsystems.AlgaeRoller;
 // import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.Telemetry;
-import frc.robot.subsystems.swerve.Tracking;
 import frc.robot.subsystems.swerve.TunerConstants;
 import frc.robot.subsystems.CoralHandler;
 import frc.robot.subsystems.Vision;
@@ -63,7 +62,6 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final Tracking SwerveTracking = new Tracking();
     private final CommandXboxController DRIVER = new CommandXboxController(Settings.Gamepad.DRIVER);
     private final CommandXboxController OPERATOR =
             new CommandXboxController(Settings.Gamepad.OPERATOR);

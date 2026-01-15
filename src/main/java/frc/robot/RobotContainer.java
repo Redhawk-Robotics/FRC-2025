@@ -235,8 +235,8 @@ public class RobotContainer {
                         .withName("AlgaeTransfer (DRIVER.a)"));
 
         this.DRIVER.b()
-                .onTrue(AlignTag
-                        .alignToTag(this.drivetrain, this.));
+                .whileTrue(AlignTag
+                        .alignToTag(this.drivetrain, this.sysVision));
 
         if (this.allowMusic) {
             this.DRIVER.y().whileTrue(new PlayMusic("c-maj-test.chrp", this.drivetrain));

@@ -5,10 +5,14 @@
 package frc.robot.Commands;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.CANRanges;
+import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.util.LimelightHelpers;
 
 // notes
 // let's turn this into a Factory?
@@ -35,10 +39,35 @@ public class AlignTag {
      * satisfied.
      */
 
-     // alligns
-     public static Command alignToTag(CommandSwerveDrivetrain m_drivetrain) {
-        return m_drivetrain.applyRequest(() -> new SwerveRequest.FieldCentric());
-     }
+        // aligns: while scheduled, rotate so the robot faces the detected AprilTag.
+        // This does NOT drive toward the tag; translational velocities are zero.
+        public static Command alignToTag(CommandSwerveDrivetrain m_drivetrain, Vision vision) {
+                final double kP = 1.5; // proportional gain, tune on robot
+                final double maxRot = Math.PI; // max rotational rate (rad/s)
+
+
+                return m_drivetrain.applyRequest(() -> {
+                        try {
+                                LimelightHelpers.LimelightResults results = LimelightHelpers.getLatestResults("limelight");
+                                if (results == null || results.targets_Fiducials == null
+                                                || results.targets_Fiducials.length == 0) {
+                                        // no fiducial seen -> hold brake
+                                        return AlignTag.brake;
+                                }
+
+
+                                double txDegrees = results.targets_Fiducials[0].tx; // horizontal offset in degrees
+                                double rotCmd = kP * Math.toRadians(txDegrees); // convert to rad and scale
+                                rotCmd = MathUtil.clamp(rotCmd, -maxRot, maxRot);
+
+
+                                return new SwerveRequest.FieldCentric().withVelocityX(0).withVelocityY(0)
+                                                .withRotationalRate(rotCmd);
+                        } catch (Exception ex) {
+                                return AlignTag.brake;
+                        }
+                }).withName("AlignToAprilTag/Track");
+        }
 
     public static Command alignToLeftReef(CommandSwerveDrivetrain m_drivetrain,
             CANRanges m_CANRanges) {

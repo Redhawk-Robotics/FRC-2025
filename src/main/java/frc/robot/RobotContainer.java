@@ -234,6 +234,7 @@ public class RobotContainer {
                                                 .AlgaeTransfer(this.sysElevator, this.sysPivot, this.sysSpoiler)
                                                 .withName("AlgaeTransfer (DRIVER.a)"));
 
+                // Maybe defer? pid persists across commands
                 this.DRIVER.b()
                                 .onTrue(AlignTag
                                                 .alignToTag(this.drivetrain, this.AprilTagTracker));
